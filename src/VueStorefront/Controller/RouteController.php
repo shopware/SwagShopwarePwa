@@ -26,6 +26,7 @@ class RouteController extends AbstractController
      * @var SalesChannelRouteRepository
      */
     private $routeRepository;
+
     /**
      * @var int
      */
@@ -38,21 +39,25 @@ class RouteController extends AbstractController
     }
 
     /**
+     *
+     *
      * @Route("/sales-channel-api/v{version}/vsf/routes", name="sales-channel-api.vsf.route.list", methods={"GET"})
      *
      * @param ParameterBag $parameterBag
      * @param SalesChannelContext $context
+     *
+     * @return JsonResponse
      */
-    public function allRoutes(Request $request, SalesChannelContext $context)
+    public function routes(RequestDataBag $data, SalesChannelContext $context): JsonResponse
     {
         $criteria = new Criteria();
 
-        if($request->get('resource') !== null)
+        if($data->get('resource') !== null)
         {
-            switch($request->get('resource'))
+            switch($data->get('resource'))
             {
-                case 'product': $criteria->addFilter(new ContainsFilter('pathInfo', '/detail/')); break;
-                case 'navigation': $criteria->addFilter(new ContainsFilter('pathInfo', '/navigation/')); break;
+                case 'product': $criteria->addFilter(new ContainsFilter('routeName', 'detail')); break;
+                case 'navigation': $criteria->addFilter(new ContainsFilter('routeName', 'navigation')); break;
             }
         }
 
@@ -71,20 +76,26 @@ class RouteController extends AbstractController
     }
 
     /**
-     * @Route("/sales-channel-api/v{version}/vsf/route", name="sales-channel-api.vsf.route.detail", methods={"GET"})
+     * Match and return routes for a given path
+     *
+     * @Route("/sales-channel-api/v{version}/vsf/match", name="sales-channel-api.vsf.route.match", methods={"GET"})
      *
      * @param ParameterBag $parameterBag
      * @param SalesChannelContext $context
+     *
+     * @return JsonResponse
      */
-    public function route(RequestDataBag $data, SalesChannelContext $context)
+    public function match(RequestDataBag $data, SalesChannelContext $context): JsonResponse
     {
+        $criteria = new Criteria();
+
         $path = $data->get('path');
+
         if($path === null) {
             throw new NotFoundHttpException();
         }
 
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('seoPathInfo', $path));
+        $criteria->addFilter(new ContainsFilter('seoPathInfo', $path));
 
         $start = microtime(true);
 
@@ -98,5 +109,20 @@ class RouteController extends AbstractController
             'count' => count($seoUrlCollection),
             'data' => $seoUrlCollection
         ]);
+    }
+
+    /**
+     * Resolve a route and hydrate the result if possible
+     *
+     * @Route("/sales-channel-api/v{version}/vsf/resolve", name="sales-channel-api.vsf.route.resolve", methods={"GET"})
+     *
+     * @param ParameterBag $parameterBag
+     * @param SalesChannelContext $context
+     *
+     * @return JsonResponse
+     */
+    public function resolve(): JsonResponse
+    {
+        return new JsonResponse();
     }
 }
