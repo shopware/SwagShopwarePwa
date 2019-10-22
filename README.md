@@ -47,16 +47,13 @@ Return
         {
             "seoPathInfo": "vsf/",
             "resource": "frontend.navigation.page",
-            "resourceIdentifier": "234fb0e24e5d455e9565fa0400f8f8e7",
-            ...
+            "resourceIdentifier": "234fb0e24e5d455e9565fa0400f8f8e7"
         },
         {
             "seoPathInfo": "vsf/Games-Kids-Electronics/",
             "resource": "frontend.navigation.page",
-            "resourceIdentifier": "c602cdadf511499f8202f10d2b91a446",
-            ...
-        },
-        ...
+            "resourceIdentifier": "c602cdadf511499f8202f10d2b91a446"
+        }
     ]
 }
 ```
@@ -75,11 +72,12 @@ Header parameters (required)
 sw-context-token: your-context-token
 ```
 
-The route path to be matched (required)
+The route path to be matched (required), fuzziness is optional and **slower**!
 
 ```json
 {
-    "path": "vsf/Garden"
+    "path": "vsf/Games",
+    "fuzzy": true
 }
 ```
 
@@ -93,10 +91,8 @@ Return
         {
             "seoPathInfo": "vsf/Games-Kids-Electronics/",
             "resource": "frontend.navigation.page",
-            "resourceIdentifier": "c602cdadf511499f8202f10d2b91a446",
-            ...
-        },
-        ...
+            "resourceIdentifier": "c602cdadf511499f8202f10d2b91a446"
+        }
     ]
 }
 ```

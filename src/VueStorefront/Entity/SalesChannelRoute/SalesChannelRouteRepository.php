@@ -29,13 +29,11 @@ class SalesChannelRouteRepository
      */
     public function search(Criteria $criteria, Context $context): array
     {
-        if(!$context->getSource() instanceof SalesChannelApiSource)
-        {
-            return [];
-        }
+        /** @var SalesChannelApiSource $contextSource */
+        $contextSource = $context->getSource();
 
         $criteria->addFilter(new EqualsFilter('languageId', $context->getLanguageId()));
-        $criteria->addFilter(new EqualsFilter('salesChannelId', $context->getSource()->getSalesChannelId()));
+        $criteria->addFilter(new EqualsFilter('salesChannelId', $contextSource->getSalesChannelId()));
 
         /** @var EntitySearchResult $seoUrlCollection */
         $seoUrlCollection = $this->seoUrlRepository->search($criteria, $context);

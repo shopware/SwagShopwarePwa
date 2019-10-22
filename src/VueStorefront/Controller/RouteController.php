@@ -6,13 +6,15 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\ContainsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\RequestCriteriaBuilder;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
-use Shopware\Core\Framework\Validation\DataBag\RequestDataBag;
+use Shopware\Core\Framework\Seo\SeoUrl\SeoUrlDefinition;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use SwagVueStorefront\VueStorefront\Entity\SalesChannelRoute\SalesChannelRouteRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\ParameterBag;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -27,33 +29,33 @@ class RouteController extends AbstractController
     private $routeRepository;
 
     /**
-     * @var int
+     * @var RequestCriteriaBuilder
      */
-    private $maxLimit;
+    private $criteriaBuilder;
 
-    public function __construct(SalesChannelRouteRepository $routeRepository, int $maxLimit)
+    public function __construct(SalesChannelRouteRepository $routeRepository, RequestCriteriaBuilder $criteriaBuilder)
     {
         $this->routeRepository = $routeRepository;
-        $this->maxLimit = $maxLimit;
+        $this->criteriaBuilder = $criteriaBuilder;
     }
 
     /**
      * Fetches a list of routes for a given sales channel and optionally a given resource type
      *
-     * @Route("/sales-channel-api/v{version}/vsf/routes", name="sales-channel-api.vsf.route.list", methods={"GET"})
+     * @Route("/sales-channel-api/v{version}/vsf/routes", name="sales-channel-api.vsf.route.list", methods={"POST"})
      *
      * @param ParameterBag $parameterBag
      * @param SalesChannelContext $context
      *
      * @return JsonResponse
      */
-    public function routes(RequestDataBag $data, SalesChannelContext $context): JsonResponse
+    public function routes(Request $request, SalesChannelContext $context): JsonResponse
     {
-        $criteria = new Criteria();
+        $criteria = $this->criteriaBuilder->handleRequest($request, new Criteria(), new SeoUrlDefinition(), $context->getContext());
 
-        if($data->get('resource') !== null)
+        if($request->get('resource') !== null)
         {
-            switch($data->get('resource'))
+            switch($request->get('resource'))
             {
                 case 'product': $criteria->addFilter(new EqualsFilter('routeName', 'frontend.detail.page')); break;
                 case 'navigation': $criteria->addFilter(new EqualsFilter('routeName', 'frontend.navigation.page')); break;
@@ -75,26 +77,32 @@ class RouteController extends AbstractController
     }
 
     /**
-     * Match and return routes for a given path
+     * Match and return routes for a given path. Non-fuzzy by default.
      *
-     * @Route("/sales-channel-api/v{version}/vsf/routes/match", name="sales-channel-api.vsf.route.match", methods={"GET"})
+     * @Route("/sales-channel-api/v{version}/vsf/routes/match", name="sales-channel-api.vsf.route.match", methods={"POST"})
      *
      * @param ParameterBag $parameterBag
      * @param SalesChannelContext $context
      *
      * @return JsonResponse
      */
-    public function match(RequestDataBag $data, SalesChannelContext $context): JsonResponse
+    public function match(Request $request, SalesChannelContext $context): JsonResponse
     {
-        $criteria = new Criteria();
+        $criteria = $this->criteriaBuilder->handleRequest($request, new Criteria(), new SeoUrlDefinition(), $context->getContext());
 
-        $path = $data->get('path');
+        $path = $request->get('path');
 
         if($path === null) {
-            throw new NotFoundHttpException();
+            throw new NotFoundHttpException('Please provide a path which the routes should be matched against.');
         }
 
-        $criteria->addFilter(new ContainsFilter('seoPathInfo', $path));
+        // Fuzzy matching (way slower!)
+        if($request->get('fuzzy') === true)
+        {
+            $criteria->addFilter(new ContainsFilter('seoPathInfo', $path));
+        } else {
+            $criteria->addFilter(new EqualsFilter('seoPathInfo', $path));
+        }
 
         $start = microtime(true);
 
@@ -113,7 +121,7 @@ class RouteController extends AbstractController
     /**
      * Resolve a route and hydrate the result if possible
      *
-     * @Route("/sales-channel-api/v{version}/vsf/routes/resolve", name="sales-channel-api.vsf.route.resolve", methods={"GET"})
+     * @Route("/sales-channel-api/v{version}/vsf/routes/resolve", name="sales-channel-api.vsf.route.resolve", methods={"POST"})
      *
      * @param ParameterBag $parameterBag
      * @param SalesChannelContext $context

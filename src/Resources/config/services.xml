@@ -8,7 +8,7 @@
 
         <service id="SwagVueStorefront\VueStorefront\Controller\RouteController" public="true">
             <argument id="SwagVueStorefront\VueStorefront\Entity\SalesChannelRoute\SalesChannelRouteRepository" type="service"/>
-            <argument>%shopware.api.max_limit%</argument>
+            <argument id="Shopware\Core\Framework\DataAbstractionLayer\Search\RequestCriteriaBuilder" type="service"/>
         </service>
 
         <service id="SwagVueStorefront\VueStorefront\Entity\SalesChannelRoute\SalesChannelRouteRepository">
