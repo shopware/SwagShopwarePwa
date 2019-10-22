@@ -14,7 +14,7 @@ This is a **non official extension** and comes without any liability or claim to
 
 ## Endpoints
 
-The extension provides multiple Sales-Channel API endpoints.
+The extension provides additional Sales-Channel API endpoints. Body parameters are json-encoded. Further filtering can be done as well.
 
 ### Routes
 
@@ -26,21 +26,14 @@ Fetches a list of routes for a given sales channel and optionally a given resour
 POST /sales-channel-api/v1/vsf/routes
 ``` 
     
-Header parameters (required)
+**Parameters** (*non-required*)
 
-```http
-sw-context-token: your-context-token
-```
+|parameter type|name|data type|accepted values|description|
+|---|---|---|---|---|
+|header|sw-context-token|string|valid uuid4|your current context token|
+|body|*resource*|string|`product` or `navigation`|Contrain results to type of resource|
 
-Body parameters let you constrain the type of resource `product` or `navigation` (optional)
-
-```json
-{
-    "resource": "navigation"
-}
-```
-
-Return
+**Return**
 
 ```json
 {
@@ -69,22 +62,15 @@ Match and return routes for a given path
 POST /sales-channel-api/v1/vsf/routes/match
 ``` 
 
-Header parameters (required)
+**Parameters** (*non-required*)
 
-```http
-sw-context-token: your-context-token
-```
+|parameter type|name|data type|accepted values|description|
+|---|---|---|---|---|
+|header|sw-context-token|string|valid uuid4|your current context token|
+|body|path|string|any|route path to be matched|
+|body|*fuzzy*|boolean|any|automatic expansion of results?|
 
-The route path to be matched (required), fuzziness is optional and **slower**!
-
-```json
-{
-    "path": "vsf/Games",
-    "fuzzy": true
-}
-```
-
-Return
+**Return**
 
 ```json
 {
@@ -104,17 +90,17 @@ Return
 
 #### Get Context
 
+Returns the current context
+
 ```
 GET /sales-channel-api/v1/vsf/context
 ``` 
     
-Header parameters
+**Parameters** (*non-required*)
 
-```yaml
-sw-context-token: your-context-token
-```
-
-Returns the current context
+|parameter type|name|data type|accepted values|description|
+|---|---|---|---|---|
+|header|sw-context-token|string|valid uuid4|your current context token|
 
 ## Setup
 
