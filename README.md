@@ -1,3 +1,6 @@
+# Shopware 6 Sales Channel API Extension
+
+This is a **non official extension** and comes without any liability or claim to correctness.
 
 ## Table of content
 
