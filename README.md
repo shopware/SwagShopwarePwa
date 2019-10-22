@@ -7,7 +7,7 @@
         * [Match route path](#match-route-path)
     * [Context](context)
         * [Get context](#get-context)
-* [Known Issues](#known-issues)
+* [Setup](#setup)
 
 ## Endpoints
 
@@ -117,8 +117,9 @@ sw-context-token: your-context-token
 
 Returns the current context
 
-## Known Issues
+## Setup
 
-1. The implementation currently relies on the `SeoUrlRoute` implementation inside the Shopware Storefront module and thus has a dependency on this module. Creating custom routes (by implementing `\Shopware\Core\Framework\Seo\SeoUrlRoute\SeoUrlRouteInterface`) for VueStorefront should be considered.
-2. Pagination and page limits are missing
-3. Route content resolving is missing
+1. Clone the repository into the `custom/plugins` directory within your Shopware installation.
+2. From Shopware root run `bin/console plugin:refresh`
+3. From Shopware root run `bin/console plugin:install --activate SwagVueStorefront`
+4. From Shopware root run `bin/console cache:clear`

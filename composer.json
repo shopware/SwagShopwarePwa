@@ -1,6 +1,6 @@
 {
-  "name": "swag/plugin-skeleton",
-  "description": "Skeleton plugin",
+  "name": "swag/vue-storefront",
+  "description": "Extension for routing and context endpoints",
   "type": "shopware-platform-plugin",
   "license": "MIT",
   "autoload": {
@@ -11,8 +11,8 @@
   "extra": {
     "shopware-plugin-class": "SwagVueStorefront\\SwagVueStorefront",
     "label": {
-      "de-DE": "Skeleton plugin",
-      "en-GB": "Skeleton plugin"
+      "de-DE": "PWA Integration",
+      "en-GB": "PWA Integration"
     }
   }
 }
