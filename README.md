@@ -23,7 +23,7 @@ The extension provides multiple Sales-Channel API endpoints.
 Fetches a list of routes for a given sales channel and optionally a given resource type
 
 ```
-GET /sales-channel-api/v1/vsf/routes
+POST /sales-channel-api/v1/vsf/routes
 ``` 
     
 Header parameters (required)
@@ -66,7 +66,7 @@ Return
 Match and return routes for a given path
 
 ```
-GET /sales-channel-api/v1/vsf/match
+POST /sales-channel-api/v1/vsf/routes/match
 ``` 
 
 Header parameters (required)
