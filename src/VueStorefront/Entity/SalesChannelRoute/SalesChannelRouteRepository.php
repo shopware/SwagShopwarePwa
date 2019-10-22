@@ -8,6 +8,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Seo\SeoUrl\SeoUrlEntity;
 
 class SalesChannelRouteRepository
 {
@@ -16,16 +17,16 @@ class SalesChannelRouteRepository
      */
     private $seoUrlRepository;
 
-    private $resourceMapping = [
-        'frontend.detail.page' => 'detail',
-        'frontend.navigation.page' => 'navigation'
-    ];
-
     public function __construct($seoUrlRepository)
     {
         $this->seoUrlRepository = $seoUrlRepository;
     }
 
+    /**
+     * @param Criteria $criteria
+     * @param Context $context
+     * @return array
+     */
     public function search(Criteria $criteria, Context $context): array
     {
         if(!$context->getSource() instanceof SalesChannelApiSource)
@@ -34,8 +35,7 @@ class SalesChannelRouteRepository
         }
 
         $criteria->addFilter(new EqualsFilter('languageId', $context->getLanguageId()));
-
-        //$criteria->addFilter(new EqualsFilter('salesChannelId', $context->getSource()->getSalesChannelId()));
+        $criteria->addFilter(new EqualsFilter('salesChannelId', $context->getSource()->getSalesChannelId()));
 
         /** @var EntitySearchResult $seoUrlCollection */
         $seoUrlCollection = $this->seoUrlRepository->search($criteria, $context);
@@ -44,23 +44,16 @@ class SalesChannelRouteRepository
     }
 
     /**
-     * @param SalesChannelRouteEntity[] $routes
+     * @param SeoUrlEntity[] $routes
+     * @return SalesChannelRouteEntity[]
      */
-    private function prepareRoutes($routes)
+    private function prepareRoutes($routes): array
     {
         $preparedRoutes = [];
 
         foreach($routes as $route)
         {
-            $salesChannelRoute = new SalesChannelRouteEntity();
-
-            $salesChannelRoute->setRouteName($route->getRouteName());
-            $salesChannelRoute->setPathInfo($route->getPathInfo());
-            $salesChannelRoute->setSeoPathInfo($route->getSeoPathInfo());
-            $salesChannelRoute->setIsCanonical($route->getIsCanonical());
-            $salesChannelRoute->setResource($this->resourceMapping[$route->getRouteName()]);
-
-            $preparedRoutes[] = $salesChannelRoute;
+            $preparedRoutes[] = SalesChannelRouteEntity::createFromUrlEntity($route);
         }
 
         return $preparedRoutes;

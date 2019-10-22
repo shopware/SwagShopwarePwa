@@ -2,6 +2,7 @@
 
 namespace SwagVueStorefront\VueStorefront\Entity\SalesChannelRoute;
 
+use Shopware\Core\Framework\Seo\SeoUrl\SeoUrlEntity;
 use Shopware\Core\Framework\Struct\Struct;
 
 class SalesChannelRouteEntity extends Struct
@@ -30,6 +31,11 @@ class SalesChannelRouteEntity extends Struct
      * @var string
      */
     protected $resource;
+
+    /**
+     * @var string
+     */
+    protected $resourceIdentifier;
 
     /**
      * @return string
@@ -96,5 +102,30 @@ class SalesChannelRouteEntity extends Struct
         $this->resource = $resource;
     }
 
+    /**
+     * @return string
+     */
+    public function getResourceIdentifier(): string
+    {
+        return $this->resourceIdentifier;
+    }
+
+    public function setResourceIdentifier(string $resourceIdentifier)
+    {
+        $this->resourceIdentifier = $resourceIdentifier;
+    }
+
+    public static function createFromUrlEntity(SeoUrlEntity $urlEntity): self
+    {
+        $route = new self();
+        $route->setRouteName($urlEntity->getRouteName());
+        $route->setPathInfo($urlEntity->getPathInfo());
+        $route->setSeoPathInfo($urlEntity->getSeoPathInfo());
+        $route->setIsCanonical($urlEntity->getIsCanonical());
+        $route->setResource($urlEntity->getRouteName());
+        $route->setResourceIdentifier($urlEntity->getForeignKey());
+
+        return $route;
+    }
 
 }

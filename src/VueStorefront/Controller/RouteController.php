@@ -13,7 +13,6 @@ use SwagVueStorefront\VueStorefront\Entity\SalesChannelRoute\SalesChannelRouteRe
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\ParameterBag;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -39,7 +38,7 @@ class RouteController extends AbstractController
     }
 
     /**
-     *
+     * Fetches a list of routes for a given sales channel and optionally a given resource type
      *
      * @Route("/sales-channel-api/v{version}/vsf/routes", name="sales-channel-api.vsf.route.list", methods={"GET"})
      *
@@ -56,8 +55,8 @@ class RouteController extends AbstractController
         {
             switch($data->get('resource'))
             {
-                case 'product': $criteria->addFilter(new ContainsFilter('routeName', 'detail')); break;
-                case 'navigation': $criteria->addFilter(new ContainsFilter('routeName', 'navigation')); break;
+                case 'product': $criteria->addFilter(new EqualsFilter('routeName', 'frontend.detail.page')); break;
+                case 'navigation': $criteria->addFilter(new EqualsFilter('routeName', 'frontend.navigation.page')); break;
             }
         }
 
@@ -78,7 +77,7 @@ class RouteController extends AbstractController
     /**
      * Match and return routes for a given path
      *
-     * @Route("/sales-channel-api/v{version}/vsf/match", name="sales-channel-api.vsf.route.match", methods={"GET"})
+     * @Route("/sales-channel-api/v{version}/vsf/routes/match", name="sales-channel-api.vsf.route.match", methods={"GET"})
      *
      * @param ParameterBag $parameterBag
      * @param SalesChannelContext $context
@@ -114,7 +113,7 @@ class RouteController extends AbstractController
     /**
      * Resolve a route and hydrate the result if possible
      *
-     * @Route("/sales-channel-api/v{version}/vsf/resolve", name="sales-channel-api.vsf.route.resolve", methods={"GET"})
+     * @Route("/sales-channel-api/v{version}/vsf/routes/resolve", name="sales-channel-api.vsf.route.resolve", methods={"GET"})
      *
      * @param ParameterBag $parameterBag
      * @param SalesChannelContext $context
