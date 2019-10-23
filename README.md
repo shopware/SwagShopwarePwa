@@ -104,7 +104,17 @@ GET /sales-channel-api/v1/vsf/context
 
 ## Setup
 
+
+### Install plugin
+
 1. Clone the repository into the `custom/plugins` directory within your Shopware installation.
-2. From Shopware root run `bin/console plugin:refresh`
-3. From Shopware root run `bin/console plugin:install --activate SwagVueStorefront`
-4. From Shopware root run `bin/console cache:clear`
+2. From Shopware root run
+    * `bin/console plugin:refresh` - refresh plugin list
+    * `bin/console plugin:install --activate SwagVueStorefront` - install and activate the plugin
+    * `bin/console cache:clear` - no idea what that does
+
+### Generate routes
+
+1. Make sure you've created a sales channel and assigned SEO URL templates
+2. From Shopware root run
+    * `bin/console dal:refresh:index` - refresh the index (and generate routes)
