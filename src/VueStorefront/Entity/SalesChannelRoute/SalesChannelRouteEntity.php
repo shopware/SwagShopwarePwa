@@ -121,7 +121,7 @@ class SalesChannelRouteEntity extends Struct
         $route->setRouteName($urlEntity->getRouteName());
         $route->setPathInfo($urlEntity->getPathInfo());
         $route->setSeoPathInfo($urlEntity->getSeoPathInfo());
-        $route->setIsCanonical($urlEntity->getIsCanonical());
+//        $route->setIsCanonical($urlEntity->getIsCanonical());
         $route->setResource($urlEntity->getRouteName());
         $route->setResourceIdentifier($urlEntity->getForeignKey());
 

@@ -1,0 +1,145 @@
+openapi: 3.0.0
+servers:
+    -   url: 'http://shopware-platform.test/sales-channel-api/v1'
+info:
+    title: Shopware Sales-Channel-API Extension
+    version: 1.0.0
+paths:
+    '/vsf/context':
+        get:
+            summary: Get basic information about your current context
+            operationId: vsf.context
+            responses:
+                '200':
+                    description: Context information
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/context_flat'
+    '/vsf/routes':
+        post:
+            summary: Fetch a list of routes
+            operationId: vsf.route.list
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                path:
+                                    type: string
+                                    default: '/my-path/needs-a-resolve'
+                                    description: 'Path to be resolved'
+            responses:
+                '200':
+                    description: Fetches a list of routes
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    duration:
+                                        type: string
+                                    count:
+                                        type: integer
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/route_flat'
+    '/vsf/routes/match':
+        post:
+            summary: Match and return routes for a given path.
+            operationId: vsf.route.match
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                path:
+                                    type: string
+                                    default: '/my-path/needs-a-resolve'
+                                    description: 'Path to be matched'
+                                fuzzy:
+                                    type: boolean
+                                    default: false
+                                    description: 'Auto-expand results to fuzzy matches (slower!)'
+
+            responses:
+                '200':
+                    description: Matched route(s)
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    duration:
+                                        type: string
+                                    count:
+                                        type: integer
+                                    data:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/route_flat'
+components:
+    schemas:
+        route_flat:
+            type: object
+            properties:
+                routeName:
+                    type: string
+                pathInfo:
+                    type: string
+                seoPathInfo:
+                    type: string
+                isCanonical:
+                    type: boolean
+                resource:
+                    type: string
+                resourceIdentifier:
+                    type: string
+                    format: uuid
+                extensions:
+                    type: array
+                    items:
+                        type: object
+        context_flat:
+            type: object
+            properties:
+                token:
+                    type: string
+                    format: uuid
+                currentCustomerGroup:
+                    type: object
+                fallbackCustomerGroup:
+                    type: object
+                currency:
+                    type: object
+                salesChannel:
+                    type: object
+                taxRules:
+                    type: object
+                customer:
+                    type: object
+                paymentMethod:
+                    type: object
+                shippingMethod:
+                    type: object
+                shippingLocation:
+                    type: object
+                rulesIds:
+                    type: array
+                    items:
+                        type: string
+                        format: uuid
+                rulesLocked:
+                    type: boolean
+                extensions:
+                    type: array
+                    items:
+                        type: object
+    securitySchemes:
+        ApiKey:
+            type: apiKey
+            in: header
+            name: sw-access-key
