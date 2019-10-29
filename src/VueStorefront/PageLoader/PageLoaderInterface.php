@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 interface PageLoaderInterface
 {
-    public function supports(Request $request): bool;
+    public function supports(string $resourceType): bool;
 
-    public function load(Request $request, SalesChannelContext $context);
+    public function load(PageLoaderContext $pageLoaderContext);
 }

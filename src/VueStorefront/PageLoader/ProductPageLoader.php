@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 class ProductPageLoader implements PageLoaderInterface
 {
-    private const RESOURCE_TYPE = 'product';
+    private const RESOURCE_TYPE = 'frontend.detail.page';
 
     /**
      * @var StorefrontProductPageLoader
@@ -22,9 +22,9 @@ class ProductPageLoader implements PageLoaderInterface
      */
     private $resultHydrator;
 
-    public function supports(Request $request): bool
+    public function supports(string $resourceType): bool
     {
-        return $request->get('resource') === self::RESOURCE_TYPE;
+        return $resourceType === self::RESOURCE_TYPE;
     }
 
     public function __construct(StorefrontProductPageLoader $productPageLoader, ProductPageResultHydrator $resultHydrator)
@@ -33,13 +33,11 @@ class ProductPageLoader implements PageLoaderInterface
         $this->resultHydrator = $resultHydrator;
     }
 
-    public function load(Request $request, SalesChannelContext $context): ProductPageResult
+    public function load(PageLoaderContext $pageLoaderContext): ProductPageResult
     {
-        $productId = $request->get('identifier');
+        $pageLoaderContext->getRequest()->attributes->set('productId', $pageLoaderContext->getResourceIdentifier());
 
-        $request->attributes->set('productId', $productId);
-
-        $productPage = $this->productPageLoader->load($request, $context);
+        $productPage = $this->productPageLoader->load($pageLoaderContext->getRequest(), $pageLoaderContext->getContext());
 
         return $this->resultHydrator->hydrate($productPage);
     }

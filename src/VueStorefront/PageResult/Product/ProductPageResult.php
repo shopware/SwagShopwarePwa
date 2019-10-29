@@ -3,17 +3,14 @@
 namespace SwagVueStorefront\VueStorefront\PageResult\Product;
 
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
-use Shopware\Core\Framework\Struct\JsonSerializableTrait;
-use Shopware\Core\Framework\Struct\Struct;
-use Shopware\Storefront\Page\Page;
+use SwagVueStorefront\VueStorefront\PageResult\AbstractPageResult;
 
-class ProductPageResult implements \JsonSerializable
+class ProductPageResult extends AbstractPageResult
 {
-    use JsonSerializableTrait;
     /**
      * @var SalesChannelProductEntity
      */
-    private $product;
+    protected $product;
 
     /**
      * @return SalesChannelProductEntity
