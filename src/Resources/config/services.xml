@@ -14,6 +14,7 @@
         </service>
 
         <service id="SwagVueStorefront\VueStorefront\Controller\PageController" public="true">
+            <argument type="service" id="SwagVueStorefront\VueStorefront\Entity\SalesChannelRoute\SalesChannelRouteRepository"/>
             <argument type="tagged" tag="vsf.page_loader"/>
         </service>
 
@@ -26,7 +27,9 @@
             <tag name="vsf.page_loader"/>
         </service>
 
-        <service id="SwagVueStorefront\VueStorefront\PageLoader\CategoryPageLoader">
+        <service id="SwagVueStorefront\VueStorefront\PageLoader\NavigationPageLoader">
+            <argument type="service" id="sales_channel.category.repository"/>
+            <argument type="service" id="Shopware\Core\Content\Cms\SalesChannel\SalesChannelCmsPageLoader"/>
             <tag name="vsf.page_loader"/>
         </service>
 

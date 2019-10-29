@@ -2,12 +2,19 @@
 
 namespace SwagVueStorefront\VueStorefront\Controller;
 
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use SwagVueStorefront\VueStorefront\Entity\SalesChannelRoute\SalesChannelRouteEntity;
+use SwagVueStorefront\VueStorefront\Entity\SalesChannelRoute\SalesChannelRouteRepository;
+use SwagVueStorefront\VueStorefront\PageLoader\PageLoaderContext;
 use SwagVueStorefront\VueStorefront\PageLoader\PageLoaderInterface;
+use SwagVueStorefront\VueStorefront\PageResult\AbstractPageResult;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -16,12 +23,18 @@ use Symfony\Component\Routing\Annotation\Route;
 class PageController extends AbstractController
 {
     /**
+     * @var SalesChannelRouteRepository
+     */
+    private $routeRepository;
+
+    /**
      * @var PageLoaderInterface[]
      */
     private $pageLoaders;
 
-    public function __construct(iterable $pageLoaders)
+    public function __construct(SalesChannelRouteRepository $routeRepository, iterable $pageLoaders)
     {
+        $this->routeRepository = $routeRepository;
         $this->pageLoaders = $pageLoaders;
     }
 
@@ -37,35 +50,58 @@ class PageController extends AbstractController
      */
     public function resolve(Request $request, SalesChannelContext $context): JsonResponse
     {
-        /**
-         * Pseduo:
-         *
-         * resourceType: 'detail', 'listing'
-         * resourceIdentifier: 'foo'
-         *
-         * 1. determine required page
-         * 2. fetch page data using page loaders
-         * 3. grab enhanced data for potential includes
-         * 4. display / convert data to fit response structure
-         */
+        $pageLoaderContext = $this->getPageLoaderContextByRequest($request, $context);
 
-        $pageLoader = $this->getPageLoaderForRequest($request);
+        $pageLoader = $this->getPageLoader($pageLoaderContext);
 
         if(!$pageLoader)
         {
             return new JsonResponse(['error' => 'Page not found'], 404);
         }
 
-        $pageResult = $pageLoader->load($request, $context);
+        /** @var AbstractPageResult $pageResult */
+        $pageResult = $pageLoader->load($pageLoaderContext);
+        $pageResult->setResourceType($pageLoaderContext->getResourceType());
+        $pageResult->setResourceIdentifier($pageLoaderContext->getResourceIdentifier());
 
         return new JsonResponse($pageResult);
     }
 
-    private function getPageLoaderForRequest(Request $request)
+    private function getPageLoaderContextByRequest(Request $request, SalesChannelContext $context): PageLoaderContext
+    {
+        $path = $request->get('path');
+
+        if($path === null) {
+            throw new NotFoundHttpException('Please provide a path to be resolved.');
+        }
+
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('seoPathInfo', $path));
+
+        /**
+         * @var $routes SalesChannelRouteEntity[]
+         */
+        $routes = $this->routeRepository->search($criteria, $context->getContext());
+
+        if(count($routes) === 0)
+        {
+            throw new NotFoundHttpException(sprintf('Path "%s" could not be resolved', $path));
+        }
+
+        $pageLoaderContext = new PageLoaderContext();
+        $pageLoaderContext->setResourceType($routes[0]->getRouteName());
+        $pageLoaderContext->setResourceIdentifier($routes[0]->getResourceIdentifier());
+        $pageLoaderContext->setContext($context);
+        $pageLoaderContext->setRequest($request);
+
+        return $pageLoaderContext;
+    }
+
+    private function getPageLoader(PageLoaderContext $pageLoaderContext)
     {
         foreach($this->pageLoaders as $pageLoader)
         {
-            if($pageLoader->supports($request)) {
+            if($pageLoader->supports($pageLoaderContext->getResourceType())) {
                 return $pageLoader;
             }
         }
@@ -73,4 +109,3 @@ class PageController extends AbstractController
         return null;
     }
 }
-
