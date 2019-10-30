@@ -1,6 +1,13 @@
 openapi: 3.0.0
 servers:
-    -   url: 'http://shopware-platform.test/sales-channel-api/v1'
+    -   url: '{protocol}://{api_host}/sales-channel-api/v1'
+        variables:
+            protocol:
+                default: 'https'
+                description: transfer protocol (HTTP or HTTPS)
+            api_host:
+                default: 'shopware-platform.test'
+                description: 'Host of your Shopware 6 instance'
 info:
     title: Shopware Sales-Channel-API Extension
     version: 1.0.0
