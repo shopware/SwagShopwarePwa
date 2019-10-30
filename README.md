@@ -9,8 +9,7 @@ This is a **non official extension** and comes without any liability or claim to
 
 ## Documentation
 
-Refer to the [swagger.yaml](_doc/swagger.yaml) included in the plugin to see the API documentation. You can use [Swagger Editor](https://editor.swagger.io) for an interactive presentation.  
-
+Refer to the [swagger.yaml](_doc/swagger.yaml) included in the plugin or see the [swag-vsf-docs](https://swag-vsf-docs.netlify.com/).
 ## Setup
 
 
