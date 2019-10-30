@@ -81,6 +81,38 @@ paths:
                                         type: array
                                         items:
                                             $ref: '#/components/schemas/route_flat'
+    '/vsf/page':
+        post:
+            summary: Resolve page content for a given path.
+            operationId: vsf.page
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                path:
+                                    type: string
+                                    default: '/my-page/needs-a-resolve'
+                                    description: 'Path identifying the page to be resolved'
+                                resource:
+                                    type: object
+                                    properties:
+                                        name:
+                                            type: string
+                                            default: 'product'
+                                            description: 'Type of resource to be fetched'
+                                        identifier:
+                                            type: string
+                                            format: uuid
+                                            description: 'The identifier of the resource to be fetched'
+            responses:
+                '200':
+                    description: Resolved and hydrated page
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/page'
 components:
     schemas:
         route_flat:
@@ -138,6 +170,11 @@ components:
                     type: array
                     items:
                         type: object
+        page:
+            type: object
+            properties:
+                title:
+                    type: string
     securitySchemes:
         ApiKey:
             type: apiKey
