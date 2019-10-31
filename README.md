@@ -6,6 +6,7 @@ This is a **non official extension** and comes without any liability or claim to
 
 * [Documentation](#documentation)
 * [Setup](#setup)
+* [Tests](#tests)
 
 ## Documentation
 
@@ -20,19 +21,19 @@ Clone the repository into the `custom/plugins` directory within your Shopware in
 Refresh plugin list
 
 ```bash
-bin/console plugin:refresh
+$ bin/console plugin:refresh
 ```
 
 Install and activate the plugin
 
 ```bash
-bin/console plugin:install --activate SwagVueStorefront
+$ bin/console plugin:install --activate SwagVueStorefront
 ```
 
 Clear the cache (sometimes invalidation is needed for the new routes to activate)
 
 ```bash
-bin/console cache:clear
+$ bin/console cache:clear
 ```
 
 ### Generate routes
@@ -42,16 +43,17 @@ Make sure you've created a sales channel and assigned SEO URL templates (either 
 Refresh the index tables (containing the SEO URLs) manually
 
 ```bash
-bin/console dal:refresh:index
+$ bin/console dal:refresh:index
 ```
     
 ## Tests
 
 Tests are located in `src/Test` and configured in `phpunit.xml`.
 
-Run the following command in the plugin's root directory.
+Run the following commands in the plugin's root directory.
 
 ```bash
+$ composer install
 $ ../../../vendor/bin/phpunit
 ```
 
