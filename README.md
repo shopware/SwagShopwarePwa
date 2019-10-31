@@ -15,14 +15,44 @@ Refer to the [swagger.yaml](_doc/swagger.yaml) included in the plugin or see the
 
 ### Install plugin
 
-1. Clone the repository into the `custom/plugins` directory within your Shopware installation.
-2. From Shopware root run
-    * `bin/console plugin:refresh` - refresh plugin list
-    * `bin/console plugin:install --activate SwagVueStorefront` - install and activate the plugin
-    * `bin/console cache:clear` - no idea what that does
+Clone the repository into the `custom/plugins` directory within your Shopware installation. And run the following commands in your Shopware root directory.
+
+Refresh plugin list
+
+```bash
+bin/console plugin:refresh
+```
+
+Install and activate the plugin
+
+```bash
+bin/console plugin:install --activate SwagVueStorefront
+```
+
+Clear the cache (sometimes invalidation is needed for the new routes to activate)
+
+```bash
+bin/console cache:clear
+```
 
 ### Generate routes
 
-1. Make sure you've created a sales channel and assigned SEO URL templates
-2. From Shopware root run
-    * `bin/console dal:refresh:index` - refresh the index (and generate routes)
+Make sure you've created a sales channel and assigned SEO URL templates (either using the database or the administration panel)
+
+Refresh the index tables (containing the SEO URLs) manually
+
+```bash
+bin/console dal:refresh:index
+```
+    
+## Tests
+
+Tests are located in `src/Test` and configured in `phpunit.xml`.
+
+Run the following command in the plugin's root directory.
+
+```bash
+$ ../../../vendor/bin/phpunit
+```
+
+Pitfall: The tests may fail upon first run, because the plugin is not activated. Run `./psh.phar init-test-databases` from Shopware root to dump the database and activate the plugin in your test database.

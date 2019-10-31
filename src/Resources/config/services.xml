@@ -11,9 +11,12 @@
             <argument id="Shopware\Core\Framework\DataAbstractionLayer\Search\RequestCriteriaBuilder" type="service"/>
         </service>
 
+        <service id="SwagVueStorefront\VueStorefront\Controller\ContextController" public="true"/>
+
         <service id="SwagVueStorefront\VueStorefront\Entity\SalesChannelRoute\SalesChannelRouteRepository">
             <argument id="seo_url.repository" type="service"/>
         </service>
 
     </services>
+
 </container>
