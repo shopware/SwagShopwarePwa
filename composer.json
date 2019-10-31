@@ -5,7 +5,8 @@
   "license": "MIT",
   "autoload": {
     "psr-4": {
-      "SwagVueStorefront\\": "src/"
+      "SwagVueStorefront\\": "src/",
+      "Shopware\\": "../../platform/src/"
     }
   },
   "extra": {
