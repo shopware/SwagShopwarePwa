@@ -54,3 +54,5 @@ Run the following command in the plugin's root directory.
 ```bash
 $ ../../../vendor/bin/phpunit
 ```
+
+Pitfall: The tests may fail upon first run, because the plugin is not activated. Run `./psh.phar init-test-databases` from Shopware root to dump the database and activate the plugin in your test database.
