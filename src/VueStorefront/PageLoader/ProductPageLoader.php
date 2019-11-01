@@ -2,12 +2,18 @@
 
 namespace SwagVueStorefront\VueStorefront\PageLoader;
 
-use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Page\Product\ProductPageLoader as StorefrontProductPageLoader;
 use SwagVueStorefront\VueStorefront\PageResult\Product\ProductPageResult;
 use SwagVueStorefront\VueStorefront\PageResult\Product\ProductPageResultHydrator;
-use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * This class is a wrapper/proxy for the Shopware\Storefront\Page\Product\ProductPageLoader
+ *
+ * If composite page loading will be included in the Shopware core, this layer of abstraction becomes obsolete.
+ * Otherwise it can serve as a structural reference for the implementation of the sales channel api.
+ *
+ * @package SwagVueStorefront\VueStorefront\PageLoader
+ */
 class ProductPageLoader implements PageLoaderInterface
 {
     private const RESOURCE_TYPE = 'frontend.detail.page';

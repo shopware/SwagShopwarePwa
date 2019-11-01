@@ -9,6 +9,12 @@ use Shopware\Core\Content\Property\PropertyGroupCollection;
 use Shopware\Core\Framework\Pricing\ListingPriceCollection;
 use Shopware\Storefront\Page\Product\ProductPage;
 
+/**
+ * This is a helper class which strips down fields in the response and assembles the product page result.
+ * It's really more of a preprocessor than a hydrator to be exact.
+ *
+ * @package SwagVueStorefront\VueStorefront\PageResult\Product
+ */
 class ProductPageResultHydrator
 {
     public function hydrate(ProductPage $productPage): ProductPageResult
