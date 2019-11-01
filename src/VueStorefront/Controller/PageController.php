@@ -67,6 +67,12 @@ class PageController extends AbstractController
         return new JsonResponse($pageResult);
     }
 
+    /**
+     * @param Request $request
+     * @param SalesChannelContext $context
+     *
+     * @return PageLoaderContext
+     */
     private function getPageLoaderContextByRequest(Request $request, SalesChannelContext $context): PageLoaderContext
     {
         $path = $request->get('path');

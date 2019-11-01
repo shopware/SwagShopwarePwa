@@ -3,6 +3,7 @@
 namespace SwagVueStorefront\Test\Integration;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Content\Cms\DataResolver\FieldConfig;
 use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
@@ -43,6 +44,16 @@ class PageControllerTest extends TestCase
      */
     private $categoryRepository;
 
+    /**
+     * @var string
+     */
+    private $cmsPageId;
+
+    /**
+     * @var EntityRepositoryInterface
+     */
+    private $cmsPageRepository;
+
     public function setUp(): void
     {
         parent::setUp();
@@ -51,10 +62,12 @@ class PageControllerTest extends TestCase
         $this->salesChannelId = $this->getSalesChannelApiSalesChannelId();
         $this->seoUrlRepository = $this->getContainer()->get('seo_url.repository');
         $this->categoryRepository = $this->getContainer()->get('category.repository');
+        $this->cmsPageRepository = $this->getContainer()->get('cms_page.repository');
     }
 
-    public function testResolveRootPage(): void
+    public function testResolveCategoryPage(): void
     {
+        $this->createCmsPage();
         $this->createCategories();
         $this->createSeoUrls();
 
@@ -68,9 +81,13 @@ class PageControllerTest extends TestCase
             $content
         );
 
-        $response = ($this->browser->getResponse()->getContent());
+        $response = \GuzzleHttp\json_decode($this->browser->getResponse()->getContent());
 
-        static::assertObjectHasAttribute('resourceType', $response);
+        static::assertObjectHasAttribute('cmsPage', $response);
+
+        static::assertEquals('frontend.navigation.page', $response->resourceType);
+        static::assertObjectHasAttribute('resourceIdentifier', $response);
+        static::assertNotNull($response->resourceIdentifier);
     }
 
     private function createProduct()
@@ -127,11 +144,44 @@ class PageControllerTest extends TestCase
 
     private function createCategories()
     {
-        $this->categoryId = $this->categoryRepository->create([
+        $resultEvent = $this->categoryRepository->create([
             [
                 'salesChannelId' => $this->salesChannelId,
                 'name' => 'My test category',
+                'cmsPageId' => $this->cmsPageId
             ]
-        ], Context::createDefaultContext())->getEventByEntityName('category')->getIds()[0];
+        ], Context::createDefaultContext());
+
+        $this->categoryId = $resultEvent->getEventByEntityName('category')->getIds()[0];
+    }
+
+    private function createCmsPage()
+    {
+        $page = [
+            'id' => Uuid::randomHex(),
+            'name' => 'shopware AG',
+            'type' => 'landing_page',
+            'sections' => [
+                [
+                    'id' => Uuid::randomHex(),
+                    'type' => 'default',
+                    'position' => 0,
+                    'blocks' => [
+                        [
+                            'position' => 1,
+                            'type' => 'image-text',
+                            'slots' => [
+                                ['type' => 'text', 'slot' => 'left', 'config' => ['content' => ['source' => FieldConfig::SOURCE_STATIC, 'value' => 'Lorem ipsum dolor']]],
+                                ['type' => 'image', 'slot' => 'right', 'config' => ['url' => ['source' => FieldConfig::SOURCE_STATIC, 'value' => 'http://shopware.com/image.jpg']]],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $resultEvent = $this->cmsPageRepository->create([$page], Context::createDefaultContext());
+
+        $this->cmsPageId = $resultEvent->getEventByEntityName('cms_page')->getIds()[0];
     }
 }

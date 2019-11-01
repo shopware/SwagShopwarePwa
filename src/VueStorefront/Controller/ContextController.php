@@ -16,6 +16,8 @@ class ContextController extends AbstractController
     /**
      * @Route("/sales-channel-api/v{version}/vsf/context", name="sales-channel-api.vsf.context", methods={"GET"})
      *
+     * Returns the current context object
+     *
      * @param SalesChannelContext $context
      *
      * @return JsonResponse

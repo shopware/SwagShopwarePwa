@@ -12,6 +12,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class NavigationPageLoader implements PageLoaderInterface
 {
     private const RESOURCE_TYPE = 'frontend.navigation.page';
+
     /**
      * @var SalesChannelCmsPageLoader
      */
