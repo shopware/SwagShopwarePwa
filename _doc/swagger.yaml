@@ -92,6 +92,22 @@ paths:
         post:
             summary: Resolve page content for a given path.
             operationId: vsf.page
+            parameters:
+                - in: query
+                  name: limit
+                  schema:
+                      type: integer
+                      default: 25
+                - in: query
+                  name: page
+                  schema:
+                      type: integer
+                      default: 1
+                - in: query
+                  name: sorting
+                  schema:
+                      type: string
+                      default: 'name-asc'
             requestBody:
                 content:
                     application/json:
@@ -102,24 +118,15 @@ paths:
                                     type: string
                                     default: '/my-page/needs-a-resolve'
                                     description: 'Path identifying the page to be resolved'
-                                resource:
-                                    type: object
-                                    properties:
-                                        name:
-                                            type: string
-                                            default: 'product'
-                                            description: 'Type of resource to be fetched'
-                                        identifier:
-                                            type: string
-                                            format: uuid
-                                            description: 'The identifier of the resource to be fetched'
             responses:
                 '200':
                     description: Resolved and hydrated page
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/page'
+                                oneOf:
+                                    - $ref: '#/components/schemas/navigation_page_response'
+                                    - $ref: '#/components/schemas/product_page_response'
 components:
     schemas:
         route_flat:
@@ -177,13 +184,117 @@ components:
                     type: array
                     items:
                         type: object
-        page:
+        criteria:
             type: object
             properties:
-                title:
+                page:
+                    type: integer
+                limit:
+                    type: integer
+                sort:
+                    type: string
+                filter:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/filter'
+        filter:
+            type: object
+            properties:
+                type:
+                    type: string
+                field:
+                    type: string
+                value:
+                    type: string
+
+        navigation_page_response:
+            type: object
+            properties:
+                resourceType:
+                    type: string
+                resourceId:
+                    type: string
+                    format: uuid
+                cmsPage:
+                    $ref: '#/components/schemas/cms_page'
+
+        product_page_response:
+            type: object
+            properties:
+                resourceType:
+                    type: string
+                resourceId:
+                    type: string
+                    format: uuid
+                product:
+                    type: string
+
+        cms_page:
+            type: object
+            properties:
+                name:
+                    type: string
+                type:
+                    type: string
+                entity:
+                    type: string
+                sections:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/cms_section'
+
+        cms_section:
+            type: object
+            properties:
+                type:
+                    type: string
+                blocks:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/cms_block'
+        cms_block:
+            type: object
+            properties:
+                type:
+                    type: string
+                slots:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/cms_slot'
+
+        cms_slot:
+            type: object
+            properties:
+                type:
+                    type: string
+                slot:
+                    type: string
+                block:
+                    type: string
+                blockId:
+                    type: string
+                    format: uuid
+                config:
+                    type: object
+                fieldConfig:
+                    type: array
+                    description: "Configuration overrides"
+                    items:
+                        $ref: '#/components/schemas/cms_field_config'
+
+        cms_field_config:
+            type: object
+            properties:
+                name:
+                    type: string
+                source:
+                    type: string
+                value:
                     type: string
     securitySchemes:
         ApiKey:
             type: apiKey
             in: header
             name: sw-access-key
+security:
+    - ApiKey: []

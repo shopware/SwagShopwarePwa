@@ -6,12 +6,41 @@
 
     <services>
 
+        <!-- Controllers -->
+
         <service id="SwagVueStorefront\VueStorefront\Controller\RouteController" public="true">
             <argument id="SwagVueStorefront\VueStorefront\Entity\SalesChannelRoute\SalesChannelRouteRepository" type="service"/>
             <argument id="Shopware\Core\Framework\DataAbstractionLayer\Search\RequestCriteriaBuilder" type="service"/>
         </service>
 
         <service id="SwagVueStorefront\VueStorefront\Controller\ContextController" public="true"/>
+
+        <service id="SwagVueStorefront\VueStorefront\Controller\PageController" public="true">
+            <argument type="service" id="SwagVueStorefront\VueStorefront\Entity\SalesChannelRoute\SalesChannelRouteRepository"/>
+            <argument type="tagged" tag="vsf.page_loader"/>
+        </service>
+
+
+        <!-- Page loaders -->
+
+        <service id="SwagVueStorefront\VueStorefront\PageLoader\ProductPageLoader">
+            <argument id="Shopware\Storefront\Page\Product\ProductPageLoader" type="service"/>
+            <argument type="service" id="SwagVueStorefront\VueStorefront\PageResult\Product\ProductPageResultHydrator"/>
+            <tag name="vsf.page_loader"/>
+        </service>
+
+        <service id="SwagVueStorefront\VueStorefront\PageLoader\NavigationPageLoader">
+            <argument type="service" id="sales_channel.category.repository"/>
+            <argument type="service" id="Shopware\Core\Content\Cms\SalesChannel\SalesChannelCmsPageLoader"/>
+            <tag name="vsf.page_loader"/>
+        </service>
+
+        <!-- Page hydrators -->
+
+        <service id="SwagVueStorefront\VueStorefront\PageResult\Product\ProductPageResultHydrator"/>
+
+
+        <!-- Repositories -->
 
         <service id="SwagVueStorefront\VueStorefront\Entity\SalesChannelRoute\SalesChannelRouteRepository">
             <argument id="seo_url.repository" type="service"/>
