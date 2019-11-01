@@ -23,11 +23,17 @@
         </service>
 
         <service id="SwagVueStorefront\VueStorefront\Controller\PageController" public="true">
-            <argument type="service" id="SwagVueStorefront\VueStorefront\Entity\SalesChannelRoute\SalesChannelRouteRepository"/>
+            <argument type="service" id="SwagVueStorefront\VueStorefront\PageLoader\Context\PageLoaderContextBuilder"/>
             <argument type="tagged" tag="vsf.page_loader"/>
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>
+        </service>
+
+        <!-- Page loader context builder -->
+
+        <service id="SwagVueStorefront\VueStorefront\PageLoader\Context\PageLoaderContextBuilder">
+            <argument id="SwagVueStorefront\VueStorefront\Entity\SalesChannelRoute\SalesChannelRouteRepository" type="service"/>
         </service>
 
 
@@ -42,12 +48,15 @@
         <service id="SwagVueStorefront\VueStorefront\PageLoader\NavigationPageLoader">
             <argument type="service" id="sales_channel.category.repository"/>
             <argument type="service" id="Shopware\Core\Content\Cms\SalesChannel\SalesChannelCmsPageLoader"/>
+            <argument type="service" id="SwagVueStorefront\VueStorefront\PageResult\Navigation\NavigationPageResultHydrator"/>
             <tag name="vsf.page_loader"/>
         </service>
 
         <!-- Page hydrators -->
 
         <service id="SwagVueStorefront\VueStorefront\PageResult\Product\ProductPageResultHydrator"/>
+
+        <service id="SwagVueStorefront\VueStorefront\PageResult\Navigation\NavigationPageResultHydrator"/>
 
 
         <!-- Repositories -->

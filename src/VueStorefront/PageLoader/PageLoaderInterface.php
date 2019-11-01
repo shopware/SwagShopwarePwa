@@ -2,6 +2,8 @@
 
 namespace SwagVueStorefront\VueStorefront\PageLoader;
 
+use SwagVueStorefront\VueStorefront\PageLoader\Context\PageLoaderContext;
+
 interface PageLoaderInterface
 {
     public function supports(string $resourceType): bool;

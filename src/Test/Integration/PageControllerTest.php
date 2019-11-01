@@ -90,6 +90,31 @@ class PageControllerTest extends TestCase
         static::assertNotNull($response->resourceIdentifier);
     }
 
+    public function testResolveCategoryWithoutCmsPage(): void
+    {
+        $this->createCategories();
+        $this->createSeoUrls();
+
+        $content = [
+            'path' => '/foo-nav/bar'
+        ];
+
+        $this->browser->request(
+            'POST',
+            '/sales-channel-api/v' . PlatformRequest::API_VERSION . SwagVueStorefront::ENDPOINT_PATH. '/page',
+            $content
+        );
+
+        $response = \GuzzleHttp\json_decode($this->browser->getResponse()->getContent());
+
+        static::assertObjectHasAttribute('cmsPage', $response);
+        static::assertNull($response->cmsPage);
+
+        static::assertEquals('frontend.navigation.page', $response->resourceType);
+        static::assertObjectHasAttribute('resourceIdentifier', $response);
+        static::assertNotNull($response->resourceIdentifier);
+    }
+
     private function createProduct()
     {
         $id = Uuid::randomHex();

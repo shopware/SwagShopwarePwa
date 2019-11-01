@@ -8,30 +8,37 @@ use Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOp
 use Shopware\Core\Content\Property\PropertyGroupCollection;
 use Shopware\Core\Framework\Pricing\ListingPriceCollection;
 use Shopware\Storefront\Page\Product\ProductPage;
+use SwagVueStorefront\VueStorefront\PageLoader\Context\PageLoaderContext;
 
 /**
  * This is a helper class which strips down fields in the response and assembles the product page result.
  * It's really more of a preprocessor than a hydrator to be exact.
  *
+ * It seems reasonable to create an interface for hydrators, however there is no common input format for them other than a custom struct.
+ * Don't want to over-engineer here.
+ *
  * @package SwagVueStorefront\VueStorefront\PageResult\Product
  */
 class ProductPageResultHydrator
 {
-    public function hydrate(ProductPage $productPage): ProductPageResult
+    public function hydrate(PageLoaderContext $pageLoaderContext, ProductPage $productPage): ProductPageResult
     {
-        $productPageResult = new ProductPageResult();
+        $pageResult = new ProductPageResult();
 
-        $productPageResult->setProduct($productPage->getProduct());
+        $pageResult->setProduct($productPage->getProduct());
 
         // Request rückbauen! (WIP)
-        $productPageResult->getProduct()->setProperties(new PropertyGroupOptionCollection());
-        $productPageResult->getProduct()->setSortedProperties(new PropertyGroupCollection());
+        $pageResult->getProduct()->setProperties(new PropertyGroupOptionCollection());
+        $pageResult->getProduct()->setSortedProperties(new PropertyGroupCollection());
 
-        $productPageResult->getProduct()->setPrices(new ProductPriceCollection());
-        $productPageResult->getProduct()->setListingPrices(new ListingPriceCollection());
+        $pageResult->getProduct()->setPrices(new ProductPriceCollection());
+        $pageResult->getProduct()->setListingPrices(new ListingPriceCollection());
 
-        $productPageResult->getProduct()->setMedia(new ProductMediaCollection());
+        $pageResult->getProduct()->setMedia(new ProductMediaCollection());
 
-        return $productPageResult;
+        $pageResult->setResourceType($pageLoaderContext->getResourceType());
+        $pageResult->setResourceIdentifier($pageLoaderContext->getResourceIdentifier());
+
+        return $pageResult;
     }
 }

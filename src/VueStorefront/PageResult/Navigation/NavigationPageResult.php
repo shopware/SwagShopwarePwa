@@ -8,19 +8,19 @@ use SwagVueStorefront\VueStorefront\PageResult\AbstractPageResult;
 class NavigationPageResult extends AbstractPageResult
 {
     /**
-     * @var CmsPageEntity
+     * @var CmsPageEntity|null
      */
     protected $cmsPage;
 
     /**
-     * @return CmsPageEntity
+     * @return CmsPageEntity|null
      */
-    public function getCmsPage(): CmsPageEntity
+    public function getCmsPage(): ?CmsPageEntity
     {
         return $this->cmsPage;
     }
 
-    public function setCmsPage(CmsPageEntity $cmsPage)
+    public function setCmsPage(?CmsPageEntity $cmsPage)
     {
         $this->cmsPage = $cmsPage;
     }
