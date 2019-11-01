@@ -10,9 +10,11 @@ This is a **non official extension** and comes without any liability or claim to
 
 ## Documentation
 
-Refer to the [swagger.yaml](_doc/swagger.yaml) included in the plugin or see the [swag-vsf-docs](https://swag-vsf-docs.netlify.com/).
-## Setup
+[![Netlify Status](https://api.netlify.com/api/v1/badges/038a45ea-3e86-4e17-a826-0ab96e0dfba4/deploy-status)](https://app.netlify.com/sites/swag-vsf-docs/deploys)
 
+Refer to the [swagger.yaml](_doc/swagger.yaml) included in the plugin or see the [swag-vsf-docs](https://swag-vsf-docs.netlify.com/).
+
+## Setup
 
 ### Install plugin
 
