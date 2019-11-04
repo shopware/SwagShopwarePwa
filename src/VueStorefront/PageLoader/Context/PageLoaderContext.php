@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace SwagVueStorefront\VueStorefront\PageLoader;
+namespace SwagVueStorefront\VueStorefront\PageLoader\Context;
 
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Symfony\Component\HttpFoundation\Request;

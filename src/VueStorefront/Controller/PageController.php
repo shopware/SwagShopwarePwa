@@ -2,19 +2,15 @@
 
 namespace SwagVueStorefront\VueStorefront\Controller;
 
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use SwagVueStorefront\VueStorefront\Entity\SalesChannelRoute\SalesChannelRouteEntity;
-use SwagVueStorefront\VueStorefront\Entity\SalesChannelRoute\SalesChannelRouteRepository;
-use SwagVueStorefront\VueStorefront\PageLoader\PageLoaderContext;
+use SwagVueStorefront\VueStorefront\PageLoader\Context\PageLoaderContextBuilder;
+use SwagVueStorefront\VueStorefront\PageLoader\Context\PageLoaderContext;
 use SwagVueStorefront\VueStorefront\PageLoader\PageLoaderInterface;
 use SwagVueStorefront\VueStorefront\PageResult\AbstractPageResult;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -23,18 +19,18 @@ use Symfony\Component\Routing\Annotation\Route;
 class PageController extends AbstractController
 {
     /**
-     * @var SalesChannelRouteRepository
+     * @var PageLoaderContextBuilder
      */
-    private $routeRepository;
+    private $pageLoaderContextBuilder;
 
     /**
      * @var PageLoaderInterface[]
      */
     private $pageLoaders;
 
-    public function __construct(SalesChannelRouteRepository $routeRepository, iterable $pageLoaders)
+    public function __construct(PageLoaderContextBuilder $pageLoaderContextBuilder, iterable $pageLoaders)
     {
-        $this->routeRepository = $routeRepository;
+        $this->pageLoaderContextBuilder = $pageLoaderContextBuilder;
         $this->pageLoaders = $pageLoaders;
     }
 
@@ -42,6 +38,8 @@ class PageController extends AbstractController
      * @Route("/sales-channel-api/v{version}/vsf/page", name="sales-channel-api.vsf.page", methods={"POST"})
      *
      * Resolve a page for a given resource and resource identification or path
+     * First, a PageLoaderContext object is assembled, which includes information about the resource, request and context.
+     * Then, the page is loaded through the page loader only given the page loader context.
      *
      * @param Request $request
      * @param SalesChannelContext $context
@@ -50,13 +48,13 @@ class PageController extends AbstractController
      */
     public function resolve(Request $request, SalesChannelContext $context): JsonResponse
     {
-        $pageLoaderContext = $this->getPageLoaderContextByRequest($request, $context);
+        $pageLoaderContext = $this->pageLoaderContextBuilder->build($request, $context);
 
         $pageLoader = $this->getPageLoader($pageLoaderContext);
 
         if(!$pageLoader)
         {
-            return new JsonResponse(['error' => 'Page not found'], 404);
+            return new JsonResponse(['error' => sprintf('Resource type not supported: "%s"', $pageLoaderContext->getResourceType())], 404);
         }
 
         /** @var AbstractPageResult $pageResult */
@@ -67,41 +65,17 @@ class PageController extends AbstractController
         return new JsonResponse($pageResult);
     }
 
-    private function getPageLoaderContextByRequest(Request $request, SalesChannelContext $context): PageLoaderContext
+    /**
+     * Returns the page loader for a given resource type
+     *
+     * @param PageLoaderContext $pageLoaderContext
+     * @return PageLoaderInterface|null
+     */
+    private function getPageLoader(PageLoaderContext $pageLoaderContext): ?PageLoaderInterface
     {
-        $path = $request->get('path');
-
-        if($path === null) {
-            throw new NotFoundHttpException('Please provide a path to be resolved.');
-        }
-
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('seoPathInfo', $path));
-
-        /**
-         * @var $routes SalesChannelRouteEntity[]
-         */
-        $routes = $this->routeRepository->search($criteria, $context->getContext());
-
-        if(count($routes) === 0)
-        {
-            throw new NotFoundHttpException(sprintf('Path "%s" could not be resolved', $path));
-        }
-
-        $pageLoaderContext = new PageLoaderContext();
-        $pageLoaderContext->setResourceType($routes[0]->getRouteName());
-        $pageLoaderContext->setResourceIdentifier($routes[0]->getResourceIdentifier());
-        $pageLoaderContext->setContext($context);
-        $pageLoaderContext->setRequest($request);
-
-        return $pageLoaderContext;
-    }
-
-    private function getPageLoader(PageLoaderContext $pageLoaderContext)
-    {
-        foreach($this->pageLoaders as $pageLoader)
-        {
-            if($pageLoader->supports($pageLoaderContext->getResourceType())) {
+        foreach($this->pageLoaders as $pageLoader) {
+            if($pageLoader->supports($pageLoaderContext->getResourceType()))
+            {
                 return $pageLoader;
             }
         }

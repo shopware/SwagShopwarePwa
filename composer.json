@@ -3,6 +3,9 @@
   "description": "Extension for routing and context endpoints",
   "type": "shopware-platform-plugin",
   "license": "MIT",
+  "authors": [{
+      "name": "Dominic Klein"
+  }],
   "autoload": {
     "psr-4": {
       "SwagVueStorefront\\": "src/"

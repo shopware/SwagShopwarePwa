@@ -4,6 +4,11 @@ namespace SwagVueStorefront\VueStorefront\PageResult;
 
 use Shopware\Core\Framework\Struct\JsonSerializableTrait;
 
+/**
+ * This abstract class gives structure to any page results by dictating them to have a resource and an identifier
+ *
+ * @package SwagVueStorefront\VueStorefront\PageResult
+ */
 abstract class AbstractPageResult implements \JsonSerializable
 {
     use JsonSerializableTrait;

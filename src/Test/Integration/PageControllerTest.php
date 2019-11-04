@@ -3,6 +3,7 @@
 namespace SwagVueStorefront\Test\Integration;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Content\Cms\DataResolver\FieldConfig;
 use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
@@ -19,9 +20,24 @@ class PageControllerTest extends TestCase
     use SalesChannelApiTestBehaviour;
 
     /**
-     * @var \Symfony\Bundle\FrameworkBundle\KernelBrowser
+     * @var EntityRepositoryInterface
      */
-    private $browser;
+    private $seoUrlRepository;
+
+    /**
+     * @var EntityRepositoryInterface
+     */
+    private $categoryRepository;
+
+    /**
+     * @var EntityRepositoryInterface
+     */
+    private $cmsPageRepository;
+
+    /**
+     * @var EntityRepositoryInterface
+     */
+    private $salesChannelDomainRepository;
 
     /**
      * @var string
@@ -34,14 +50,19 @@ class PageControllerTest extends TestCase
     private $categoryId;
 
     /**
-     * @var EntityRepositoryInterface
+     * @var string
      */
-    private $seoUrlRepository;
+    private $cmsPageId;
 
     /**
-     * @var EntityRepositoryInterface
+     * @var string
      */
-    private $categoryRepository;
+    private $productActiveId;
+
+    /**
+     * @var string
+     */
+    private $productInactiveId;
 
     public function setUp(): void
     {
@@ -51,9 +72,36 @@ class PageControllerTest extends TestCase
         $this->salesChannelId = $this->getSalesChannelApiSalesChannelId();
         $this->seoUrlRepository = $this->getContainer()->get('seo_url.repository');
         $this->categoryRepository = $this->getContainer()->get('category.repository');
+        $this->cmsPageRepository = $this->getContainer()->get('cms_page.repository');
+        $this->salesChannelDomainRepository = $this->getContainer()->get('sales_channel_domain.repository');
     }
 
-    public function testResolveRootPage(): void
+    public function testResolveCategoryPage(): void
+    {
+        $this->createCmsPage();
+        $this->createCategories();
+        $this->createSeoUrls();
+
+        $content = [
+            'path' => '/foo-nav/bar'
+        ];
+
+        $this->salesChannelApiBrowser->request(
+            'POST',
+            '/sales-channel-api/v' . PlatformRequest::API_VERSION . SwagVueStorefront::ENDPOINT_PATH. '/page',
+            $content
+        );
+
+        $response = \GuzzleHttp\json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
+
+        static::assertObjectHasAttribute('cmsPage', $response);
+
+        static::assertEquals('frontend.navigation.page', $response->resourceType);
+        static::assertObjectHasAttribute('resourceIdentifier', $response);
+        static::assertNotNull($response->resourceIdentifier);
+    }
+
+    public function testResolveCategoryWithoutCmsPage(): void
     {
         $this->createCategories();
         $this->createSeoUrls();
@@ -62,41 +110,133 @@ class PageControllerTest extends TestCase
             'path' => '/foo-nav/bar'
         ];
 
-        $this->browser->request(
+        $this->salesChannelApiBrowser->request(
             'POST',
             '/sales-channel-api/v' . PlatformRequest::API_VERSION . SwagVueStorefront::ENDPOINT_PATH. '/page',
             $content
         );
 
-        $response = ($this->browser->getResponse()->getContent());
+        $response = \GuzzleHttp\json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
 
-        static::assertObjectHasAttribute('resourceType', $response);
+        static::assertObjectHasAttribute('cmsPage', $response);
+        static::assertNull($response->cmsPage);
+
+        static::assertEquals('frontend.navigation.page', $response->resourceType);
+        static::assertObjectHasAttribute('resourceIdentifier', $response);
+        static::assertNotNull($response->resourceIdentifier);
+    }
+
+    public function testProductPage(): void
+    {
+        $this->createProduct();
+        $this->createSalesChannelDomain();
+        $this->createSeoUrls();
+
+        $content = [
+            'path' => '/foo-bar/prod'
+        ];
+
+        $this->salesChannelApiBrowser->request(
+            'POST',
+            '/sales-channel-api/v' . PlatformRequest::API_VERSION . SwagVueStorefront::ENDPOINT_PATH. '/page',
+            $content
+        );
+
+        $response = \GuzzleHttp\json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
+
+        static::assertObjectHasAttribute('product', $response);
+
+        static::assertEquals('frontend.detail.page', $response->resourceType);
+        static::assertObjectHasAttribute('resourceIdentifier', $response);
+        static::assertNotNull($response->resourceIdentifier);
+    }
+
+    public function testProductPageForInactive(): void
+    {
+        $this->createProduct();
+        $this->createSalesChannelDomain();
+        $this->createSeoUrls();
+
+        $content = [
+            'path' => '/foo-bar/prod-inactive'
+        ];
+
+        $this->salesChannelApiBrowser->request(
+            'POST',
+            '/sales-channel-api/v' . PlatformRequest::API_VERSION . SwagVueStorefront::ENDPOINT_PATH. '/page',
+            $content
+        );
+
+        $response = \GuzzleHttp\json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
+
+        static::assertObjectHasAttribute('errors', $response);
+        static::assertIsArray($response->errors);
+
+        static::assertEquals(404, $response->errors[0]->status);
+        static::assertEquals('CONTENT__PRODUCT_NOT_FOUND', $response->errors[0]->code);
+
+    }
+
+    private function createSalesChannelDomain()
+    {
+        $this->salesChannelDomainRepository->create([
+            [
+                'url' => '/',
+                'salesChannelId' => $this->salesChannelId,
+                'languageId' => Defaults::LANGUAGE_SYSTEM,
+                'currencyId' => Defaults::CURRENCY,
+                'snippetSetId' => $this->getSnippetSetIdForLocale('en-GB')
+            ]
+        ], Context::createDefaultContext());
     }
 
     private function createProduct()
     {
-        $id = Uuid::randomHex();
+        $this->productActiveId = Uuid::randomHex();
+        $this->productInactiveId = Uuid::randomHex();
+        $categoryId = Uuid::randomHex();
         $data = [
-            'id' => $id,
-            'productNumber' => Uuid::randomHex(),
-            'stock' => 10,
-            'active' => true,
-            'name' => 'test',
-            'price' => [['currencyId' => Defaults::CURRENCY, 'gross' => 99, 'net' => 99, 'linked' => false]],
-            'manufacturer' => ['name' => 'test'],
-            'tax' => ['name' => 'test', 'taxRate' => 99],
-            'categories' => [
-                ['id' => $id, 'name' => 'sampleCategory'],
-            ],
-            'visibilities' => [
-                [
-                    'salesChannelId' => $this->salesChannelId,
-                    'visibility' => ProductVisibilityDefinition::VISIBILITY_ALL,
+            [
+                'id' => $this->productActiveId,
+                'productNumber' => Uuid::randomHex(),
+                'stock' => 10,
+                'active' => true,
+                'name' => 'test',
+                'price' => [['currencyId' => Defaults::CURRENCY, 'gross' => 99, 'net' => 99, 'linked' => false]],
+                'manufacturer' => ['name' => 'test'],
+                'tax' => ['name' => 'test', 'taxRate' => 99],
+                'categories' => [
+                    ['id' => $categoryId, 'name' => 'sampleCategory'],
+                ],
+                'visibilities' => [
+                    [
+                        'salesChannelId' => $this->salesChannelId,
+                        'visibility' => ProductVisibilityDefinition::VISIBILITY_ALL,
+                    ],
                 ],
             ],
+            [
+                'id' => $this->productInactiveId,
+                'productNumber' => Uuid::randomHex(),
+                'stock' => 10,
+                'active' => false,
+                'name' => 'test',
+                'price' => [['currencyId' => Defaults::CURRENCY, 'gross' => 99, 'net' => 99, 'linked' => false]],
+                'manufacturer' => ['name' => 'test'],
+                'tax' => ['name' => 'test', 'taxRate' => 99],
+                'categories' => [
+                    ['id' => $categoryId, 'name' => 'sampleCategory'],
+                ],
+                'visibilities' => [
+                    [
+                        'salesChannelId' => $this->salesChannelId,
+                        'visibility' => ProductVisibilityDefinition::VISIBILITY_ALL,
+                    ],
+                ]
+            ]
         ];
 
-        $this->getContainer()->get('product.repository')->create([$data], Context::createDefaultContext());
+        $this->getContainer()->get('product.repository')->create($data, Context::createDefaultContext());
     }
 
     private function createSeoUrls()
@@ -115,10 +255,20 @@ class PageControllerTest extends TestCase
             [
                 'salesChannelId' => $this->salesChannelId,
                 'languageId' => Defaults::LANGUAGE_SYSTEM,
-                'routeName' => 'frontend.product.page',
+                'routeName' => 'frontend.detail.page',
                 'pathInfo' => '/detail/1234',
                 'seoPathInfo' => '/foo-bar/prod',
-                'foreignKey' => $this->categoryId,
+                'foreignKey' => $this->productActiveId,
+                'isValid' => true,
+                'isCanonical' => null,
+            ],
+            [
+                'salesChannelId' => $this->salesChannelId,
+                'languageId' => Defaults::LANGUAGE_SYSTEM,
+                'routeName' => 'frontend.detail.page',
+                'pathInfo' => '/detail/12345',
+                'seoPathInfo' => '/foo-bar/prod-inactive',
+                'foreignKey' => $this->productInactiveId,
                 'isValid' => true,
                 'isCanonical' => null,
             ],
@@ -127,11 +277,44 @@ class PageControllerTest extends TestCase
 
     private function createCategories()
     {
-        $this->categoryId = $this->categoryRepository->create([
+        $resultEvent = $this->categoryRepository->create([
             [
                 'salesChannelId' => $this->salesChannelId,
                 'name' => 'My test category',
+                'cmsPageId' => $this->cmsPageId
             ]
-        ], Context::createDefaultContext())->getEventByEntityName('category')->getIds()[0];
+        ], Context::createDefaultContext());
+
+        $this->categoryId = $resultEvent->getEventByEntityName('category')->getIds()[0];
+    }
+
+    private function createCmsPage()
+    {
+        $page = [
+            'id' => Uuid::randomHex(),
+            'name' => 'shopware AG',
+            'type' => 'landing_page',
+            'sections' => [
+                [
+                    'id' => Uuid::randomHex(),
+                    'type' => 'default',
+                    'position' => 0,
+                    'blocks' => [
+                        [
+                            'position' => 1,
+                            'type' => 'image-text',
+                            'slots' => [
+                                ['type' => 'text', 'slot' => 'left', 'config' => ['content' => ['source' => FieldConfig::SOURCE_STATIC, 'value' => 'Lorem ipsum dolor']]],
+                                ['type' => 'image', 'slot' => 'right', 'config' => ['url' => ['source' => FieldConfig::SOURCE_STATIC, 'value' => 'http://shopware.com/image.jpg']]],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $resultEvent = $this->cmsPageRepository->create([$page], Context::createDefaultContext());
+
+        $this->cmsPageId = $resultEvent->getEventByEntityName('cms_page')->getIds()[0];
     }
 }
