@@ -20,9 +20,15 @@ class PageLoaderContextBuilder
      */
     private $routeRepository;
 
-    public function __construct(SalesChannelRouteRepository $routeRepository)
+    /**
+     * @var SeoResolver
+     */
+    private $seoResolver;
+
+    public function __construct(SalesChannelRouteRepository $routeRepository, SeoResolver $seoResolver)
     {
         $this->routeRepository = $routeRepository;
+        $this->seoResolver = $seoResolver;
     }
 
     public function build(Request $request, SalesChannelContext $context): PageLoaderContext
@@ -53,5 +59,14 @@ class PageLoaderContextBuilder
         $pageLoaderContext->setRequest($request);
 
         return $pageLoaderContext;
+    }
+
+    private function resolvePath(SalesChannelContext $context, string $path)
+    {
+        return $this->seoResolver->resolveSeoPath(
+            $context->getSalesChannel()->getLanguageId(),
+            $context->getSalesChannel()->getId(),
+            $path
+        );
     }
 }
