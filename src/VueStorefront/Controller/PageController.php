@@ -19,6 +19,15 @@ use Symfony\Component\Routing\Annotation\Route;
 class PageController extends AbstractController
 {
     /**
+     * Placeholder, because these routes names may change during implementation
+     *
+     * string
+     */
+    const PRODUCT_PAGE_ROUTE = 'frontend.detail.page';
+
+    const NAVIGATION_PAGE_ROUTE = 'frontend.navigation.page';
+
+    /**
      * @var PageLoaderContextBuilder
      */
     private $pageLoaderContextBuilder;

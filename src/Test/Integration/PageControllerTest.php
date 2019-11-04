@@ -95,6 +95,7 @@ class PageControllerTest extends TestCase
         $response = \GuzzleHttp\json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
 
         static::assertObjectHasAttribute('cmsPage', $response);
+        static::assertObjectHasAttribute('breadcrumb', $response);
 
         static::assertEquals('frontend.navigation.page', $response->resourceType);
         static::assertObjectHasAttribute('resourceIdentifier', $response);
