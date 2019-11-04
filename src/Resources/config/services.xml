@@ -34,6 +34,7 @@
 
         <service id="SwagVueStorefront\VueStorefront\PageLoader\Context\PageLoaderContextBuilder">
             <argument type="service" id="SwagVueStorefront\VueStorefront\Entity\SalesChannelRoute\SalesChannelRouteRepository"/>
+            <argument type="service" id="Shopware\Core\Framework\Seo\SeoResolver"/>
         </service>
 
 
