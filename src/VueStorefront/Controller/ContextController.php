@@ -10,20 +10,22 @@ use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * @RouteScope(scopes={"sales-channel-api"})
+ *
+ * @deprecated
  */
 class ContextController extends AbstractController
 {
     /**
      * @Route("/sales-channel-api/v{version}/vsf/context", name="sales-channel-api.vsf.context", methods={"GET"})
      *
-     * Returns the current context object
-     *
-     * @param SalesChannelContext $context
+     * @deprecated
      *
      * @return JsonResponse
      */
-    public function context(SalesChannelContext $context): JsonResponse
+    public function context(): JsonResponse
     {
-        return new JsonResponse($context);
+        return new JsonResponse([
+            'error' => 'Method has been removed. Please use "/sales-channel-api/v1/context" instead'
+        ]);
     }
 }

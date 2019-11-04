@@ -12,17 +12,6 @@ info:
     title: Shopware Sales-Channel-API Extension
     version: 1.0.0
 paths:
-    '/vsf/context':
-        get:
-            summary: Get basic information about your current context
-            operationId: vsf.context
-            responses:
-                '200':
-                    description: Context information
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/context_flat'
     '/vsf/routes':
         post:
             summary: Fetch a list of routes
@@ -145,41 +134,6 @@ components:
                 resourceIdentifier:
                     type: string
                     format: uuid
-                extensions:
-                    type: array
-                    items:
-                        type: object
-        context_flat:
-            type: object
-            properties:
-                token:
-                    type: string
-                    format: uuid
-                currentCustomerGroup:
-                    type: object
-                fallbackCustomerGroup:
-                    type: object
-                currency:
-                    type: object
-                salesChannel:
-                    type: object
-                taxRules:
-                    type: object
-                customer:
-                    type: object
-                paymentMethod:
-                    type: object
-                shippingMethod:
-                    type: object
-                shippingLocation:
-                    type: object
-                rulesIds:
-                    type: array
-                    items:
-                        type: string
-                        format: uuid
-                rulesLocked:
-                    type: boolean
                 extensions:
                     type: array
                     items:
