@@ -40,7 +40,9 @@ $ bin/console cache:clear
 
 ### Generate routes
 
-Make sure you've created a sales channel and assigned SEO URL templates (either using the database or the administration panel)
+Make sure you've created a sales channel and assigned SEO URL templates (either using the database or the administration panel).
+
+Currently there are the following requirements: As headless sales channels don't support SEO URLs, you have to select a "storefront" sales channel as a base. 
 
 Refresh the index tables (containing the SEO URLs) manually
 
