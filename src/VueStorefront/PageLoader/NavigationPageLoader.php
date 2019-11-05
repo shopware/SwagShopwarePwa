@@ -3,7 +3,9 @@
 namespace SwagVueStorefront\VueStorefront\PageLoader;
 
 use Shopware\Core\Content\Category\CategoryEntity;
+use Shopware\Core\Content\Cms\DataResolver\ResolverContext\EntityResolverContext;
 use Shopware\Core\Content\Cms\SalesChannel\SalesChannelCmsPageLoader;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
 use SwagVueStorefront\VueStorefront\PageLoader\Context\PageLoaderContext;
@@ -35,11 +37,17 @@ class NavigationPageLoader implements PageLoaderInterface
      */
     private $resultHydrator;
 
-    public function __construct(SalesChannelRepositoryInterface $categoryRepository, SalesChannelCmsPageLoader $cmsPageLaoder, NavigationPageResultHydrator $resultHydrator)
+    /**
+     * @var EntityDefinition
+     */
+    private $categoryDefinition;
+
+    public function __construct(SalesChannelRepositoryInterface $categoryRepository, SalesChannelCmsPageLoader $cmsPageLaoder, NavigationPageResultHydrator $resultHydrator, EntityDefinition $categoryDefinition)
     {
         $this->cmsPageLoader = $cmsPageLaoder;
         $this->categoryRepository = $categoryRepository;
         $this->resultHydrator = $resultHydrator;
+        $this->categoryDefinition = $categoryDefinition;
     }
 
     public function supports(string $resourceType): bool
@@ -62,7 +70,21 @@ class NavigationPageLoader implements PageLoaderInterface
         // The cms page might be empty or non-existent
         if($category->getCmsPageId() !== null)
         {
-            $cmsPages = $this->cmsPageLoader->load($pageLoaderContext->getRequest(), new Criteria([$category->getCmsPageId()]), $pageLoaderContext->getContext());
+            $resolverContext = new EntityResolverContext(
+                $pageLoaderContext->getContext(),
+                $pageLoaderContext->getRequest(),
+                $this->categoryDefinition,
+                $category
+            );
+
+            $cmsPages = $this->cmsPageLoader->load(
+                $pageLoaderContext->getRequest(),
+                new Criteria([$category->getCmsPageId()]),
+                $pageLoaderContext->getContext(),
+                $category->getSlotConfig(),
+                $resolverContext
+            );
+
             $cmsPage = $cmsPages->get($category->getCmsPageId()) ?? null;
         }
 
