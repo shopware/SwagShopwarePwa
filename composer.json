@@ -3,6 +3,7 @@
   "description": "Extension for routing and context endpoints",
   "type": "shopware-platform-plugin",
   "license": "MIT",
+  "version": "v0.0.1",
   "authors": [{
       "name": "Dominic Klein"
   }],
@@ -13,6 +14,7 @@
   },
   "extra": {
     "shopware-plugin-class": "SwagVueStorefront\\SwagVueStorefront",
+    "plugin-icon": "src/Resources/config/plugin.png",
     "label": {
       "de-DE": "PWA Integration",
       "en-GB": "PWA Integration"
