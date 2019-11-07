@@ -57,7 +57,10 @@ class NavigationPageLoader implements PageLoaderInterface
 
     public function load(PageLoaderContext $pageLoaderContext)
     {
-        $categoryResult = $this->categoryRepository->search(new Criteria([$pageLoaderContext->getResourceIdentifier()]), $pageLoaderContext->getContext());
+        $categoryResult = $this->categoryRepository->search(
+            $this->prepareCategoryCriteria($pageLoaderContext),
+            $pageLoaderContext->getContext()
+        );
 
         if(!$categoryResult->has($pageLoaderContext->getResourceIdentifier()))
         {
@@ -91,5 +94,13 @@ class NavigationPageLoader implements PageLoaderInterface
         $pageResult = $this->resultHydrator->hydrate($pageLoaderContext, $category, $cmsPage ?? null);
 
         return $pageResult;
+    }
+
+    public function prepareCategoryCriteria(PageLoaderContext $pageLoaderContext): Criteria
+    {
+        $criteria = new Criteria([$pageLoaderContext->getResourceIdentifier()]);
+        $criteria->addAssociation('media');
+
+        return $criteria;
     }
 }

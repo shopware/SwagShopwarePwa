@@ -45,9 +45,19 @@ class PageLoaderContextBuilder
             throw new NotFoundHttpException(sprintf('Path "%s" could not be resolved', $path));
         }
 
+        $route = array_shift($routes);
+
+        /**
+         * Workaround to come up for: platform/src/Core/Content/Product/SalesChannel/Listing/ProductListingGateway.php:66
+         */
+
+         $request->attributes->set('_route_params', [
+            'navigationId' => $route->getResourceIdentifier()
+        ]);
+
         $pageLoaderContext = new PageLoaderContext();
-        $pageLoaderContext->setResourceType($routes[0]->getRouteName());
-        $pageLoaderContext->setResourceIdentifier($routes[0]->getResourceIdentifier());
+        $pageLoaderContext->setResourceType($route->getRouteName());
+        $pageLoaderContext->setResourceIdentifier($route->getResourceIdentifier());
         $pageLoaderContext->setContext($context);
         $pageLoaderContext->setRequest($request);
 
