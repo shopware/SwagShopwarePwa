@@ -19,6 +19,8 @@ class PageControllerTest extends TestCase
     use IntegrationTestBehaviour;
     use SalesChannelApiTestBehaviour;
 
+    const ENDPOINT_PAGE = '/sales-channel-api/v'.PlatformRequest::API_VERSION.SwagVueStorefront::ENDPOINT_PATH.'/page';
+
     /**
      * @var EntityRepositoryInterface
      */
@@ -88,7 +90,7 @@ class PageControllerTest extends TestCase
 
         $this->salesChannelApiBrowser->request(
             'POST',
-            '/sales-channel-api/v' . PlatformRequest::API_VERSION . SwagVueStorefront::ENDPOINT_PATH. '/page',
+            self::ENDPOINT_PAGE,
             $content
         );
 
@@ -113,7 +115,7 @@ class PageControllerTest extends TestCase
 
         $this->salesChannelApiBrowser->request(
             'POST',
-            '/sales-channel-api/v' . PlatformRequest::API_VERSION . SwagVueStorefront::ENDPOINT_PATH. '/page',
+            self::ENDPOINT_PAGE,
             $content
         );
 
@@ -139,7 +141,7 @@ class PageControllerTest extends TestCase
 
         $this->salesChannelApiBrowser->request(
             'POST',
-            '/sales-channel-api/v' . PlatformRequest::API_VERSION . SwagVueStorefront::ENDPOINT_PATH. '/page',
+            self::ENDPOINT_PAGE,
             $content
         );
 
@@ -164,7 +166,7 @@ class PageControllerTest extends TestCase
 
         $this->salesChannelApiBrowser->request(
             'POST',
-            '/sales-channel-api/v' . PlatformRequest::API_VERSION . SwagVueStorefront::ENDPOINT_PATH. '/page',
+            self::ENDPOINT_PAGE,
             $content
         );
 

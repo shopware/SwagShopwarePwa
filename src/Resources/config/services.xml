@@ -30,6 +30,13 @@
             </call>
         </service>
 
+        <service id="SwagVueStorefront\VueStorefront\Controller\NavigationController" public="true">
+            <argument type="service" id="SwagVueStorefront\VueStorefront\Entity\SalesChannelNavigation\SalesChannelNavigationRepository"/>
+            <call method="setContainer">
+                <argument id="service_container" type="service"/>
+            </call>
+        </service>
+
         <!-- Page loader context builder -->
 
         <service id="SwagVueStorefront\VueStorefront\PageLoader\Context\PageLoaderContextBuilder">
@@ -64,10 +71,14 @@
 
 
         <!-- Repositories -->
-
         <service id="SwagVueStorefront\VueStorefront\Entity\SalesChannelRoute\SalesChannelRouteRepository">
             <argument id="seo_url.repository" type="service"/>
         </service>
+
+        <service id="SwagVueStorefront\VueStorefront\Entity\SalesChannelNavigation\SalesChannelNavigationRepository">
+            <argument id="Shopware\Core\Content\Category\Service\NavigationLoader" type="service"/>
+        </service>
+
 
     </services>
 
