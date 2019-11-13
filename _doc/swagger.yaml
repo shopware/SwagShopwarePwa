@@ -127,7 +127,7 @@ paths:
                             type: object
                             properties:
                                 depth:
-                                    type: string
+                                    type: integer
                                     description: 'Depth of the tree (1 = only  fetch first level children; -1 = fetch full tree)'
                                 rootNode:
                                     type: string
