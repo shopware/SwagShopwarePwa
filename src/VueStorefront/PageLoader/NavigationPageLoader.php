@@ -4,11 +4,13 @@ namespace SwagVueStorefront\VueStorefront\PageLoader;
 
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Cms\DataResolver\ResolverContext\EntityResolverContext;
+use Shopware\Core\Content\Category\Service\NavigationLoader;
 use Shopware\Core\Content\Cms\SalesChannel\SalesChannelCmsPageLoader;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
 use SwagVueStorefront\VueStorefront\PageLoader\Context\PageLoaderContext;
+use SwagVueStorefront\VueStorefront\PageResult\Navigation\NavigationPageResult;
 use SwagVueStorefront\VueStorefront\PageResult\Navigation\NavigationPageResultHydrator;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -33,6 +35,11 @@ class NavigationPageLoader implements PageLoaderInterface
     private $categoryRepository;
 
     /**
+     * @var NavigationLoader
+     */
+    private $navigationLoader;
+
+    /**
      * @var NavigationPageResultHydrator
      */
     private $resultHydrator;
@@ -55,7 +62,7 @@ class NavigationPageLoader implements PageLoaderInterface
         return $resourceType === self::RESOURCE_TYPE;
     }
 
-    public function load(PageLoaderContext $pageLoaderContext)
+    public function load(PageLoaderContext $pageLoaderContext): NavigationPageResult
     {
         $categoryResult = $this->categoryRepository->search(
             $this->prepareCategoryCriteria($pageLoaderContext),

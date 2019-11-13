@@ -13,6 +13,11 @@ class NavigationPageResult extends AbstractPageResult
     protected $cmsPage;
 
     /**
+     * @var array
+     */
+    protected $breadcrumb;
+
+    /**
      * @return CmsPageEntity|null
      */
     public function getCmsPage(): ?CmsPageEntity
@@ -23,5 +28,18 @@ class NavigationPageResult extends AbstractPageResult
     public function setCmsPage(?CmsPageEntity $cmsPage)
     {
         $this->cmsPage = $cmsPage;
+    }
+
+    /**
+     * @return array
+     */
+    public function getBreadcrumb(): array
+    {
+        return $this->breadcrumb;
+    }
+
+    public function setBreadcrumb(array $breadcrumb)
+    {
+        $this->breadcrumb = $breadcrumb;
     }
 }

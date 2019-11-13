@@ -171,7 +171,8 @@ components:
                     format: uuid
                 cmsPage:
                     $ref: '#/components/schemas/cms_page'
-
+                breadcrumb:
+                    type: object
         product_page_response:
             type: object
             properties:

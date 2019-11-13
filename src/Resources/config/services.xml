@@ -33,7 +33,8 @@
         <!-- Page loader context builder -->
 
         <service id="SwagVueStorefront\VueStorefront\PageLoader\Context\PageLoaderContextBuilder">
-            <argument id="SwagVueStorefront\VueStorefront\Entity\SalesChannelRoute\SalesChannelRouteRepository" type="service"/>
+            <argument type="service" id="SwagVueStorefront\VueStorefront\Entity\SalesChannelRoute\SalesChannelRouteRepository"/>
+            <argument type="service" id="Shopware\Core\Framework\Seo\SeoResolver"/>
         </service>
 
 
@@ -57,7 +58,9 @@
 
         <service id="SwagVueStorefront\VueStorefront\PageResult\Product\ProductPageResultHydrator"/>
 
-        <service id="SwagVueStorefront\VueStorefront\PageResult\Navigation\NavigationPageResultHydrator"/>
+        <service id="SwagVueStorefront\VueStorefront\PageResult\Navigation\NavigationPageResultHydrator">
+            <argument type="service" id="Shopware\Storefront\Framework\Routing\Router"/>
+        </service>
 
 
         <!-- Repositories -->
