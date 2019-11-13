@@ -116,8 +116,59 @@ paths:
                                 oneOf:
                                     - $ref: '#/components/schemas/navigation_page_response'
                                     - $ref: '#/components/schemas/product_page_response'
+    '/vsf/navigation':
+        post:
+            summary: Get navigation tree for a given root node
+            operationId: vsf.navigation
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                depth:
+                                    type: string
+                                    description: 'Depth of the tree (1 = only  fetch first level children; -1 = fetch full tree)'
+                                rootNode:
+                                    type: string
+                                    format: uuid
+                                    description: 'Relative root for the tree to be fetched from'
+            responses:
+                '200':
+                    description: Resolved navigation tree
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    count:
+                                        type: integer
+                                    elements:
+                                        type: array
+                                        items:
+                                            $ref: '#/components/schemas/navigation_tree_item'
+
 components:
     schemas:
+
+        navigation_tree_item:
+            type: object
+            properties:
+                id:
+                    type: string
+                    format: uuid
+                path:
+                    type: string
+                name:
+                    type: string
+                children:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/navigation_tree_item'
+                count:
+                    type: integer
+                level:
+                    type: integer
         route_flat:
             type: object
             properties:
@@ -246,6 +297,7 @@ components:
                     type: string
                 value:
                     type: string
+
     securitySchemes:
         ApiKey:
             type: apiKey

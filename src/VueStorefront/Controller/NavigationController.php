@@ -26,6 +26,8 @@ class NavigationController extends AbstractController
     }
 
     /**
+     * Resolves a navigation tree for a given root node at a given depth
+     *
      * @Route("/sales-channel-api/v{version}/vsf/navigation", name="sales-channel-api.vsf.navigation", methods={"POST"})
      *
      * @return JsonResponse
