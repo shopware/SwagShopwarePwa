@@ -62,7 +62,7 @@ class NavigationControllerTest extends TestCase
 
         $this->categoryRepository = $this->getContainer()->get('category.repository');
 
-        $this->rootId = $this->getValidCategoryId();
+        $this->rootId = Uuid::randomHex();
         $this->category1Id = Uuid::randomHex();
         $this->category2Id = Uuid::randomHex();
         $this->category1_1Id = Uuid::randomHex();
@@ -87,30 +87,10 @@ class NavigationControllerTest extends TestCase
         $result = \GuzzleHttp\json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
 
         static::assertObjectHasAttribute('count', $result);
-        static::assertEquals($result->count, 2);
+        static::assertEquals(2, $result->count);
 
         static::assertObjectHasAttribute('elements', $result);
         static::assertNull($result->elements[0]->children);
-    }
-
-    public function testResolveRootLevel(): void
-    {
-        $this->createCategories();
-
-        $content = [
-            'depth' => 2
-        ];
-
-        $this->salesChannelApiBrowser->request(
-            'POST',
-            self::ENDPOINT_NAVIGATION,
-            $content
-        );
-
-        $result = \GuzzleHttp\json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
-
-        static::assertObjectHasAttribute('rootNode', $result);
-        static::assertEquals($this->rootId, $result->rootNode);
     }
 
     public function testResolveFull(): void
@@ -118,7 +98,8 @@ class NavigationControllerTest extends TestCase
         $this->createCategories();
 
         $content = [
-            'depth' => -1
+            'depth' => -1,
+            'rootNode' => $this->rootId
         ];
 
         $this->salesChannelApiBrowser->request(
@@ -131,7 +112,6 @@ class NavigationControllerTest extends TestCase
 
         static::assertCount(2, $result->elements);
         static::assertCount(1, $result->elements[0]->children);
-        static::assertNull($result->elements[0]->children);
     }
 
     private function createCategories():void
