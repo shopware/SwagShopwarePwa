@@ -5,6 +5,8 @@ namespace SwagVueStorefront\VueStorefront\Entity\SalesChannelNavigation;
 use Shopware\Core\Content\Category\Service\NavigationLoader;
 use Shopware\Core\Content\Category\Tree\TreeItem;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use Shopware\Storefront\Framework\Routing\Router;
+use SwagVueStorefront\VueStorefront\Controller\PageController;
 
 class SalesChannelNavigationRepository
 {
@@ -13,9 +15,15 @@ class SalesChannelNavigationRepository
      */
     private $navigationLoader;
 
-    public function __construct(NavigationLoader $navigationLoader)
+    /**
+     * @var Router
+     */
+    private $router;
+
+    public function __construct(NavigationLoader $navigationLoader, Router $router)
     {
         $this->navigationLoader = $navigationLoader;
+        $this->router = $router;
     }
 
     public function loadNavigation(string $rootId, int $depth, SalesChannelContext $context): SalesChannelNavigationEntity
@@ -39,6 +47,13 @@ class SalesChannelNavigationRepository
         $navigationEntity->setName($treeItem->getCategory()->getName());
         $navigationEntity->setLevel($currentLevel);
         $navigationEntity->setCount(count($treeItem->getChildren()));
+
+        $navigationEntity->setPath(
+            $this->router->generate(
+                PageController::NAVIGATION_PAGE_ROUTE,
+                ['navigationId' => $treeItem->getCategory()->getId()]
+            )
+        );
 
         if($currentLevel == $depth) {
             return $navigationEntity;

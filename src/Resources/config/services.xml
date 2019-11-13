@@ -72,11 +72,12 @@
 
         <!-- Repositories -->
         <service id="SwagVueStorefront\VueStorefront\Entity\SalesChannelRoute\SalesChannelRouteRepository">
-            <argument id="seo_url.repository" type="service"/>
+            <argument type="service" id="seo_url.repository"/>
         </service>
 
         <service id="SwagVueStorefront\VueStorefront\Entity\SalesChannelNavigation\SalesChannelNavigationRepository">
-            <argument id="Shopware\Core\Content\Category\Service\NavigationLoader" type="service"/>
+            <argument type="service" id="Shopware\Core\Content\Category\Service\NavigationLoader"/>
+            <argument type="service" id="Shopware\Storefront\Framework\Routing\Router"/>
         </service>
 
 
