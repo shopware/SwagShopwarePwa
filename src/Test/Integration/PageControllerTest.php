@@ -104,6 +104,31 @@ class PageControllerTest extends TestCase
         static::assertNotNull($response->resourceIdentifier);
     }
 
+    public function testResolveCategoryPageTechnicalUrl(): void
+    {
+        $this->createCmsPage();
+        $this->createCategories();
+
+        $content = [
+            'path' => '/navigation/' . $this->categoryId
+        ];
+
+        $this->salesChannelApiBrowser->request(
+            'POST',
+            self::ENDPOINT_PAGE,
+            $content
+        );
+
+        $response = \GuzzleHttp\json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
+
+        static::assertObjectHasAttribute('cmsPage', $response);
+        static::assertObjectHasAttribute('breadcrumb', $response);
+
+        static::assertEquals('frontend.navigation.page', $response->resourceType);
+        static::assertObjectHasAttribute('resourceIdentifier', $response);
+        static::assertNotNull($response->resourceIdentifier);
+    }
+
     public function testResolveCategoryWithoutCmsPage(): void
     {
         $this->createCategories();
@@ -137,6 +162,30 @@ class PageControllerTest extends TestCase
 
         $content = [
             'path' => '/foo-bar/prod'
+        ];
+
+        $this->salesChannelApiBrowser->request(
+            'POST',
+            self::ENDPOINT_PAGE,
+            $content
+        );
+
+        $response = \GuzzleHttp\json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
+
+        static::assertObjectHasAttribute('product', $response);
+
+        static::assertEquals('frontend.detail.page', $response->resourceType);
+        static::assertObjectHasAttribute('resourceIdentifier', $response);
+        static::assertNotNull($response->resourceIdentifier);
+    }
+
+    public function testProductPageTechnicalPath(): void
+    {
+        $this->createProduct();
+        $this->createSalesChannelDomain();
+
+        $content = [
+            'path' => '/detail/' . $this->productActiveId
         ];
 
         $this->salesChannelApiBrowser->request(

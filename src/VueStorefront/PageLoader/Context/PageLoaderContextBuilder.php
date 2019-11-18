@@ -16,19 +16,13 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class PageLoaderContextBuilder
 {
     /**
-     * @var EntityRepositoryInterface
+     * @var PathResolver
      */
-    private $routeRepository;
+    private $pathResolver;
 
-    /**
-     * @var SeoResolver
-     */
-    private $seoResolver;
-
-    public function __construct(SalesChannelRouteRepository $routeRepository, SeoResolver $seoResolver)
+    public function __construct(PathResolver $pathResolver)
     {
-        $this->routeRepository = $routeRepository;
-        $this->seoResolver = $seoResolver;
+        $this->pathResolver = $pathResolver;
     }
 
     public function build(Request $request, SalesChannelContext $context): PageLoaderContext
@@ -39,20 +33,15 @@ class PageLoaderContextBuilder
             throw new NotFoundHttpException('Please provide a path to be resolved.');
         }
 
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('seoPathInfo', $path));
-
         /**
-         * @var $routes SalesChannelRouteEntity[]
+         * @var $routes SalesChannelRouteEntity
          */
-        $routes = $this->routeRepository->search($criteria, $context->getContext());
+        $route = $this->pathResolver->resolve($path, $context->getContext());
 
-        if(count($routes) === 0)
+        if(!$route)
         {
-            throw new NotFoundHttpException(sprintf('Path "%s" could not be resolved', $path));
+            throw new NotFoundHttpException(sprintf('Path `%s` could not be resolved.', $path));
         }
-
-        $route = array_shift($routes);
 
         /**
          * Workaround to come up for: platform/src/Core/Content/Product/SalesChannel/Listing/ProductListingGateway.php:66
@@ -69,14 +58,5 @@ class PageLoaderContextBuilder
         $pageLoaderContext->setRequest($request);
 
         return $pageLoaderContext;
-    }
-
-    private function resolvePath(SalesChannelContext $context, string $path)
-    {
-        return $this->seoResolver->resolveSeoPath(
-            $context->getSalesChannel()->getLanguageId(),
-            $context->getSalesChannel()->getId(),
-            $path
-        );
     }
 }
