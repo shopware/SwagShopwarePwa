@@ -9,6 +9,12 @@ use SwagVueStorefront\VueStorefront\Controller\PageController;
 use SwagVueStorefront\VueStorefront\Entity\SalesChannelRoute\SalesChannelRouteEntity;
 use SwagVueStorefront\VueStorefront\Entity\SalesChannelRoute\SalesChannelRouteRepository;
 
+/**
+ * Resolves a url path to get a route.
+ *
+ * Class PathResolver
+ * @package SwagVueStorefront\VueStorefront\PageLoader\Context
+ */
 class PathResolver implements PathResolverInterface
 {
     private const MATCH_MAP = [
@@ -26,6 +32,14 @@ class PathResolver implements PathResolverInterface
         $this->routeRepository = $routeRepository;
     }
 
+    /**
+     * First, we search for the route within the route repository.
+     * If it doesn't exist in there, we do some generic matching with regular expressions.
+     *
+     * @param string $path
+     * @param Context $context
+     * @return SalesChannelRouteEntity|null
+     */
     public function resolve(string $path, Context $context): ?SalesChannelRouteEntity
     {
         $criteria = new Criteria();

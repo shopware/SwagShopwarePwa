@@ -75,7 +75,7 @@ class PageController extends AbstractController
     }
 
     /**
-     * Returns the page loader for a given resource type
+     * Determines the correct page loader for a given resource type
      *
      * @param PageLoaderContext $pageLoaderContext
      * @return PageLoaderInterface|null

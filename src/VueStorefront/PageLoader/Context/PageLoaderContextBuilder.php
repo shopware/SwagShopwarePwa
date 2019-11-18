@@ -13,6 +13,16 @@ use SwagVueStorefront\VueStorefront\Entity\SalesChannelRoute\SalesChannelRouteRe
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
+/**
+ * This class builds the PageLoaderContext which is required to load a page.
+ * It contains the resource type (which maps to the route name, like 'frontend.detail.page') and the corresponding identifier.
+ * The path is resolved using the PathResolver class.
+ *
+ * Other than that it's just a container for the request and sales channel context.
+ *
+ * Class PageLoaderContextBuilder
+ * @package SwagVueStorefront\VueStorefront\PageLoader\Context
+ */
 class PageLoaderContextBuilder
 {
     /**
@@ -46,7 +56,6 @@ class PageLoaderContextBuilder
         /**
          * Workaround to come up for: platform/src/Core/Content/Product/SalesChannel/Listing/ProductListingGateway.php:66
          */
-
          $request->attributes->set('_route_params', [
             'navigationId' => $route->getResourceIdentifier()
         ]);

@@ -35,11 +35,6 @@ class NavigationPageLoader implements PageLoaderInterface
     private $categoryRepository;
 
     /**
-     * @var NavigationLoader
-     */
-    private $navigationLoader;
-
-    /**
      * @var NavigationPageResultHydrator
      */
     private $resultHydrator;
