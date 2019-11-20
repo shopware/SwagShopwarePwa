@@ -40,7 +40,11 @@ class PageController extends AbstractController
     public function __construct(PageLoaderContextBuilder $pageLoaderContextBuilder, iterable $pageLoaders)
     {
         $this->pageLoaderContextBuilder = $pageLoaderContextBuilder;
-        $this->pageLoaders = $pageLoaders;
+
+        foreach($pageLoaders as $pageLoader)
+        {
+            $this->pageLoaders[$pageLoader->getResourceType()] = $pageLoader;
+        }
     }
 
     /**
@@ -82,13 +86,6 @@ class PageController extends AbstractController
      */
     private function getPageLoader(PageLoaderContext $pageLoaderContext): ?PageLoaderInterface
     {
-        foreach($this->pageLoaders as $pageLoader) {
-            if($pageLoader->supports($pageLoaderContext->getResourceType()))
-            {
-                return $pageLoader;
-            }
-        }
-
-        return null;
+        return $this->pageLoaders[$pageLoaderContext->getResourceType()] ?? null;
     }
 }

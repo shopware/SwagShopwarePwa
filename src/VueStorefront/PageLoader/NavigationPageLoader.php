@@ -51,9 +51,9 @@ class NavigationPageLoader implements PageLoaderInterface
         $this->categoryDefinition = $categoryDefinition;
     }
 
-    public function supports(string $resourceType): bool
+    public function getResourceType(): string
     {
-        return $resourceType === self::RESOURCE_TYPE;
+        return self::RESOURCE_TYPE;
     }
 
     public function load(PageLoaderContext $pageLoaderContext): NavigationPageResult

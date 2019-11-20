@@ -29,9 +29,9 @@ class ProductPageLoader implements PageLoaderInterface
      */
     private $resultHydrator;
 
-    public function supports(string $resourceType): bool
+    public function getResourceType(): string
     {
-        return $resourceType === self::RESOURCE_TYPE;
+        return self::RESOURCE_TYPE;
     }
 
     public function __construct(StorefrontProductPageLoader $productPageLoader, ProductPageResultHydrator $resultHydrator)
