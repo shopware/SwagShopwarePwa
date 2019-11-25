@@ -3,7 +3,6 @@
 namespace SwagVueStorefront\VueStorefront\PageResult\Navigation;
 
 use Shopware\Core\Content\Category\CategoryEntity;
-use Shopware\Core\Content\Cms\Aggregate\CmsSlot\CmsSlotEntity;
 use Shopware\Core\Content\Cms\CmsPageEntity;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Entity;
@@ -15,6 +14,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric
 use Shopware\Storefront\Framework\Routing\Router;
 use SwagVueStorefront\VueStorefront\Controller\PageController;
 use SwagVueStorefront\VueStorefront\PageLoader\Context\PageLoaderContext;
+use SwagVueStorefront\VueStorefront\PageResult\Navigation\AggregationResultHydrator\AggregationResultHydratorInterface;
 
 class NavigationPageResultHydrator
 {
@@ -28,11 +28,22 @@ class NavigationPageResultHydrator
      */
     private $router;
 
-    public function __construct(Router $router)
+    /**
+     * @var AggregationResultHydratorInterface[]
+     */
+    private $aggregationResultHydrators;
+
+    public function __construct(Router $router, iterable $aggregationResultHydrators)
     {
         $this->router = $router;
 
         $this->pageResult = new NavigationPageResult();
+
+        /** @var AggregationResultHydratorInterface[] $aggregationResultHydrators */
+        foreach($aggregationResultHydrators as $resultHydrator)
+        {
+            $this->aggregationResultHydrators[$resultHydrator->getSupportedAggregationType()] = $resultHydrator;
+        }
     }
 
     public function hydrate(PageLoaderContext $pageLoaderContext, CategoryEntity $category, ?CmsPageEntity $cmsPageEntity): NavigationPageResult
@@ -47,94 +58,44 @@ class NavigationPageResultHydrator
         $this->pageResult->setResourceType($pageLoaderContext->getResourceType());
         $this->pageResult->setResourceIdentifier($pageLoaderContext->getResourceIdentifier());
 
-        $this->getAvailableFilters();
+        $this->pageResult->setListingConfiguration($this->getAvailableFilters());
 
         return $this->pageResult;
     }
 
-    /**
-     * @TODO: Destruct method into dedicated services and handlers
-     */
     private function getAvailableFilters(): array
     {
-        /**
-         * Get all listing slots
-         */
-        $listingSlots = $this->pageResult->getCmsPage()->getSections()->getBlocks()->getSlots()->filter(function($slot) {
-            /** @var $slot CmsSlotEntity */
-            return $slot->getType() === 'product-listing';
-        })->getElements();
-
-        /**
-         * Get the listing results of these slots
-         */
-        /** @var ProductListingResult[] $listings */
-        $listings = array_map(function($slot) {
-            /** @var $slot CmsSlotEntity */
-            return $slot->getData()->getListing();
-        }, $listingSlots);
-
-        /**
-         * For every listing create config from aggre
-         */
-        foreach($listings as $listing)
+        if($this->pageResult->getCmsPage() === null)
         {
-            $sortings = $listing->getSortings();
-            $filters = $listing->getAggregations()->getElements();
-
-            $filters = array_map(function($aggregation) {
-                if($aggregation instanceof EntityResult) {
-                    return [
-                        'type' => 'term',
-                        'values' => array_map(function($element) {
-                            return $element->getName(); // Bad, because not all entities have names
-                        }, $aggregation->getEntities()->getElements())
-                    ];
-                }
-
-                if($aggregation instanceof StatsResult) {
-                    return [
-                        'type' => 'range',
-                        'values' => [
-                            'max' => $aggregation->getMax(),
-                            'min' => $aggregation->getMin()
-                        ]
-                    ];
-                }
-                if($aggregation instanceof TermsResult) {
-                    return [
-                        'type' => 'term',
-                        'values' => array_map(function($bucket) {
-                            /** @var $bucket Bucket */
-                            return $bucket->getKey();
-                        }, $aggregation->getBuckets())
-                    ];
-                }
-                if($aggregation instanceof MaxResult) {
-                    return [
-                        'type' => 'boolean',
-                        'max' => $aggregation->getMax()
-                    ];
-                }
-                return [get_class($aggregation)];
-            }, $filters);
-
-            $currentSorting = $listing->getSorting();
-            $currentFilters = $listing->getCurrentFilters();
-
-            $listingConfig = [
-                'sortings' => $sortings,
-                'filters' => $filters,
-                'currentSorting' => $currentSorting,
-                'currentFilters' => $currentFilters
-            ];
-
-            // WIP
-
-            $listing->addExtensions([
-                'listing_config' => $listingConfig
-            ]);
+            return [];
         }
+
+        // Assuming a page only has one listing
+        $listingSlot = $this->pageResult->getCmsPage()->getFirstElementOfType('product-listing');
+
+        if($listingSlot === null)
+        {
+            return [];
+        }
+
+        /** @var ProductListingResult $listing */
+        $listing = $listingSlot->getData()->getListing();
+        $filters = [];
+
+        foreach($listing->getAggregations() as $key => $aggregation)
+        {
+            $filters[$key] = $this->aggregationResultHydrators[get_class($aggregation)]->hydrate($aggregation);
+        }
+
+        $currentFilters = $listing->getCurrentFilters();
+
+        $listingConfig = [
+            'availableSortings' => $listing->getSortings(),
+            'availableFilters' => $filters,
+            'activeFilters' => $currentFilters,
+        ];
+
+        return $listingConfig;
     }
 
     private function setBreadcrumbs(CategoryEntity $category, string $rootCategoryId): void
@@ -147,7 +108,7 @@ class NavigationPageResultHydrator
         {
             $breadcrumbs[$id] = [
                 'name' => $name,
-                'path' => $this->router->generate(PageController::NAVIGATION_PAGE_ROUTE, ['navigationId' => $id])
+                'path' => $this->router->generate(PageController::NAVIGATION_PAGE_ROUTE, ['navigationId' => $id]),
             ];
         }
 

@@ -70,6 +70,25 @@
 
         <service id="SwagVueStorefront\VueStorefront\PageResult\Navigation\NavigationPageResultHydrator">
             <argument type="service" id="Shopware\Storefront\Framework\Routing\Router"/>
+            <argument type="tagged" tag="vsf.page_result.aggregation_result_hydrator"/>
+        </service>
+
+        <!-- Aggregation result hydrators -->
+
+        <service id="SwagVueStorefront\VueStorefront\PageResult\Navigation\AggregationResultHydrator\EntityResultHydrator">
+            <tag name="vsf.page_result.aggregation_result_hydrator"/>
+        </service>
+
+        <service id="SwagVueStorefront\VueStorefront\PageResult\Navigation\AggregationResultHydrator\TermsResultHydrator">
+            <tag name="vsf.page_result.aggregation_result_hydrator"/>
+        </service>
+
+        <service id="SwagVueStorefront\VueStorefront\PageResult\Navigation\AggregationResultHydrator\StatsResultHydrator">
+            <tag name="vsf.page_result.aggregation_result_hydrator"/>
+        </service>
+
+        <service id="SwagVueStorefront\VueStorefront\PageResult\Navigation\AggregationResultHydrator\MaxResultHydrator">
+            <tag name="vsf.page_result.aggregation_result_hydrator"/>
         </service>
 
 

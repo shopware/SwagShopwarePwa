@@ -41,6 +41,7 @@ class PageController extends AbstractController
     {
         $this->pageLoaderContextBuilder = $pageLoaderContextBuilder;
 
+        /** @var PageLoaderInterface $pageLoader */
         foreach($pageLoaders as $pageLoader)
         {
             $this->pageLoaders[$pageLoader->getResourceType()] = $pageLoader;
