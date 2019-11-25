@@ -19,6 +19,7 @@ class EntityResultHydrator implements AggregationResultHydratorInterface
 
         return [
             'type' => 'entity',
+            'name' => $result->getName(),
             'values' => array_map(function($element) {
                 /** @var $element Entity */
                 return $element->getTranslated();

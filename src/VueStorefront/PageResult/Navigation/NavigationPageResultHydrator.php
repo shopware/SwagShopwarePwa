@@ -5,12 +5,9 @@ namespace SwagVueStorefront\VueStorefront\PageResult\Navigation;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Cms\CmsPageEntity;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
-use Shopware\Core\Framework\DataAbstractionLayer\Entity;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Bucket\Bucket;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Bucket\TermsResult;
+use Shopware\Core\Content\Property\PropertyGroupEntity;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationResultCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\EntityResult;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\MaxResult;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\StatsResult;
 use Shopware\Storefront\Framework\Routing\Router;
 use SwagVueStorefront\VueStorefront\Controller\PageController;
 use SwagVueStorefront\VueStorefront\PageLoader\Context\PageLoaderContext;
@@ -82,6 +79,8 @@ class NavigationPageResultHydrator
         $listing = $listingSlot->getData()->getListing();
         $filters = [];
 
+        $this->preparePropertyAggregations($listing->getAggregations());
+
         foreach($listing->getAggregations() as $key => $aggregation)
         {
             $filters[$key] = $this->aggregationResultHydrators[get_class($aggregation)]->hydrate($aggregation);
@@ -113,5 +112,30 @@ class NavigationPageResultHydrator
         }
 
         $this->pageResult->setBreadcrumb($breadcrumbs);
+    }
+
+    private function preparePropertyAggregations(AggregationResultCollection $aggregations): AggregationResultCollection
+    {
+        $propertyFilters = [];
+        foreach($aggregations as $aggKey => $aggregation)
+        {
+            if($aggKey !== 'properties')
+            {
+                continue;
+            }
+
+            /** @var $aggregation EntityResult */
+            foreach($aggregation->getEntities() as $key => $propertyGroup)
+            {
+                /** @var PropertyGroupEntity $propertyGroup */
+                $result = new EntityResult($propertyGroup->getName(), $propertyGroup->getOptions());
+                $aggregations->add($result);
+            }
+
+            $aggregations->remove($aggKey);
+
+        }
+
+        return $aggregations;
     }
 }
