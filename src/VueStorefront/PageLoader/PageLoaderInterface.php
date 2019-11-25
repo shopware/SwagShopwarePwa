@@ -6,7 +6,7 @@ use SwagVueStorefront\VueStorefront\PageLoader\Context\PageLoaderContext;
 
 interface PageLoaderInterface
 {
-    public function supports(string $resourceType): bool;
+    public function getResourceType(): string;
 
     public function load(PageLoaderContext $pageLoaderContext);
 }
