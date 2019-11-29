@@ -86,11 +86,14 @@ class NavigationControllerTest extends TestCase
 
         $result = \GuzzleHttp\json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
 
+        static::assertObjectHasAttribute('route', $result);
+        static::assertObjectHasAttribute('resourceType', $result->route);
+
         static::assertObjectHasAttribute('count', $result);
         static::assertEquals(2, $result->count);
 
-        static::assertObjectHasAttribute('elements', $result);
-        static::assertNull($result->elements[0]->children);
+        static::assertObjectHasAttribute('children', $result);
+        static::assertNull($result->children[0]->children);
     }
 
     public function testResolveFull(): void
@@ -110,8 +113,8 @@ class NavigationControllerTest extends TestCase
 
         $result = \GuzzleHttp\json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
 
-        static::assertCount(2, $result->elements);
-        static::assertCount(1, $result->elements[0]->children);
+        static::assertCount(2, $result->children);
+        static::assertCount(1, $result->children[0]->children);
     }
 
     private function createCategories():void

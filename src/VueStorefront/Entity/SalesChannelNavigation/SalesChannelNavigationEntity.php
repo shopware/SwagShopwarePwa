@@ -9,12 +9,12 @@ class SalesChannelNavigationEntity extends Struct
     /**
      * @var string
      */
-    protected $id;
+    private $id;
 
     /**
-     * @var string
+     * @var array
      */
-    protected $path;
+    protected $route;
 
     /**
      * @var string
@@ -52,14 +52,14 @@ class SalesChannelNavigationEntity extends Struct
     /**
      * @return string
      */
-    public function getPath(): string
+    public function getRoute(): array
     {
-        return $this->path;
+        return $this->route;
     }
 
-    public function setPath(string $path)
+    public function setRoute(array $route)
     {
-        $this->path = $path;
+        $this->route = $route;
     }
 
     /**

@@ -154,11 +154,13 @@ components:
         navigation_tree_item:
             type: object
             properties:
-                id:
-                    type: string
-                    format: uuid
-                path:
-                    type: string
+                route:
+                    type: object
+                    properties:
+                        path:
+                            type: string
+                        resourceType:
+                            type: string
                 name:
                     type: string
                 children:

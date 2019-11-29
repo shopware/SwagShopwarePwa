@@ -48,11 +48,14 @@ class SalesChannelNavigationRepository
         $navigationEntity->setLevel($currentLevel);
         $navigationEntity->setCount(count($treeItem->getChildren()));
 
-        $navigationEntity->setPath(
-            $this->router->generate(
-                PageController::NAVIGATION_PAGE_ROUTE,
-                ['navigationId' => $treeItem->getCategory()->getId()]
-            )
+        $navigationEntity->setRoute(
+            [
+                'path' => $this->router->generate(
+                    PageController::NAVIGATION_PAGE_ROUTE,
+                    ['navigationId' => $treeItem->getCategory()->getId()]
+                ),
+                'resourceType' => PageController::NAVIGATION_PAGE_ROUTE
+            ]
         );
 
         if($currentLevel == $depth) {

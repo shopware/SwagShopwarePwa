@@ -35,8 +35,9 @@ class NavigationController extends AbstractController
     public function resolve(Request $request, SalesChannelContext $context): JsonResponse
     {
         $rootNode = $request->get('rootNode') ?? $context->getSalesChannel()->getNavigationCategoryId();
-        $depth = $request->get('depth', 0);
+        $depth = $request->get('depth');
 
+        // 0 is invalid parameter, pre-check
         if($depth === 0)
         {
             return new JsonResponse([
@@ -44,11 +45,14 @@ class NavigationController extends AbstractController
             ], 400);
         }
 
+        if($depth === null) {
+            $depth = 1;
+        }
+
         $navigation = $this->navigationRepository->loadNavigation($rootNode, $depth, $context);
 
-        return new JsonResponse([
-            'count' => $navigation->getCount(),
-            'elements' => $navigation->getChildren()
-        ]);
+        return new JsonResponse(
+            $navigation
+        );
     }
 }
