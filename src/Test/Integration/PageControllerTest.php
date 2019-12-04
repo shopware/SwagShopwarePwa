@@ -94,7 +94,7 @@ class PageControllerTest extends TestCase
             $content
         );
 
-        $response = \GuzzleHttp\json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
+        $response = json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
 
         static::assertObjectHasAttribute('cmsPage', $response);
         static::assertObjectHasAttribute('breadcrumb', $response);
@@ -119,7 +119,7 @@ class PageControllerTest extends TestCase
             $content
         );
 
-        $response = \GuzzleHttp\json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
+        $response = json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
 
         static::assertObjectHasAttribute('cmsPage', $response);
         static::assertObjectHasAttribute('breadcrumb', $response);
@@ -144,7 +144,7 @@ class PageControllerTest extends TestCase
             $content
         );
 
-        $response = \GuzzleHttp\json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
+        $response = json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
 
         static::assertObjectHasAttribute('cmsPage', $response);
         static::assertNull($response->cmsPage);
@@ -170,7 +170,7 @@ class PageControllerTest extends TestCase
             $content
         );
 
-        $response = \GuzzleHttp\json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
+        $response = json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
 
         static::assertObjectHasAttribute('product', $response);
 
@@ -194,7 +194,7 @@ class PageControllerTest extends TestCase
             $content
         );
 
-        $response = \GuzzleHttp\json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
+        $response = json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
 
         static::assertObjectHasAttribute('product', $response);
 
@@ -219,7 +219,7 @@ class PageControllerTest extends TestCase
             $content
         );
 
-        $response = \GuzzleHttp\json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
+        $response = json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
 
         static::assertObjectHasAttribute('errors', $response);
         static::assertIsArray($response->errors);

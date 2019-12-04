@@ -73,6 +73,7 @@ class PageController extends AbstractController
 
         /** @var AbstractPageResult $pageResult */
         $pageResult = $pageLoader->load($pageLoaderContext);
+
         $pageResult->setResourceType($pageLoaderContext->getResourceType());
         $pageResult->setResourceIdentifier($pageLoaderContext->getResourceIdentifier());
 

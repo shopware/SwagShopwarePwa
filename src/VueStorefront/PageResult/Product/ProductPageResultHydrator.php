@@ -4,6 +4,7 @@ namespace SwagVueStorefront\VueStorefront\PageResult\Product;
 
 use Shopware\Core\Content\Product\Aggregate\ProductMedia\ProductMediaCollection;
 use Shopware\Core\Content\Product\Aggregate\ProductPrice\ProductPriceCollection;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOptionCollection;
 use Shopware\Core\Content\Property\PropertyGroupCollection;
 use Shopware\Core\Framework\Pricing\ListingPriceCollection;
@@ -21,21 +22,13 @@ use SwagVueStorefront\VueStorefront\PageLoader\Context\PageLoaderContext;
  */
 class ProductPageResultHydrator
 {
-    public function hydrate(PageLoaderContext $pageLoaderContext, ProductPage $productPage): ProductPageResult
+    public function hydrate(PageLoaderContext $pageLoaderContext, SalesChannelProductEntity $product): ProductPageResult
     {
         $pageResult = new ProductPageResult();
 
-        $pageResult->setProduct($productPage->getProduct());
+        $pageResult->setProduct($product);
 
         // Request rückbauen! (WIP)
-        $pageResult->getProduct()->setProperties(new PropertyGroupOptionCollection());
-        $pageResult->getProduct()->setSortedProperties(new PropertyGroupCollection());
-
-        $pageResult->getProduct()->setPrices(new ProductPriceCollection());
-        $pageResult->getProduct()->setListingPrices(new ListingPriceCollection());
-
-        $pageResult->getProduct()->setMedia(new ProductMediaCollection());
-
         $pageResult->setResourceType($pageLoaderContext->getResourceType());
         $pageResult->setResourceIdentifier($pageLoaderContext->getResourceIdentifier());
 
