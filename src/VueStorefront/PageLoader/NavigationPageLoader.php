@@ -3,6 +3,7 @@
 namespace SwagVueStorefront\VueStorefront\PageLoader;
 
 use Shopware\Core\Content\Category\CategoryEntity;
+use Shopware\Core\Content\Category\Exception\CategoryNotFoundException;
 use Shopware\Core\Content\Cms\DataResolver\ResolverContext\EntityResolverContext;
 use Shopware\Core\Content\Cms\SalesChannel\SalesChannelCmsPageLoader;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
@@ -11,7 +12,6 @@ use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
 use SwagVueStorefront\VueStorefront\PageLoader\Context\PageLoaderContext;
 use SwagVueStorefront\VueStorefront\PageResult\Navigation\NavigationPageResult;
 use SwagVueStorefront\VueStorefront\PageResult\Navigation\NavigationPageResultHydrator;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * This is a composite loader which utilizes the Shopware\Core\Content\Cms\SalesChannel\SalesChannelCmsPageLoader.
@@ -56,6 +56,13 @@ class NavigationPageLoader implements PageLoaderInterface
         return self::RESOURCE_TYPE;
     }
 
+    /**
+     * @param PageLoaderContext $pageLoaderContext
+     *
+     * @return NavigationPageResult
+     *
+     * @throws CategoryNotFoundException
+     */
     public function load(PageLoaderContext $pageLoaderContext): NavigationPageResult
     {
         $categoryResult = $this->categoryRepository->search(
@@ -65,7 +72,7 @@ class NavigationPageLoader implements PageLoaderInterface
 
         if(!$categoryResult->has($pageLoaderContext->getResourceIdentifier()))
         {
-            throw new NotFoundHttpException(sprintf('Category %s not found.', $pageLoaderContext->getResourceIdentifier()));
+            throw new CategoryNotFoundException($pageLoaderContext->getResourceIdentifier());
         }
 
         /** @var $category CategoryEntity */

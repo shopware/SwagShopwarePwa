@@ -51,8 +51,10 @@
         <!-- Page loaders -->
 
         <service id="SwagVueStorefront\VueStorefront\PageLoader\ProductPageLoader">
-            <argument id="Shopware\Storefront\Page\Product\ProductPageLoader" type="service"/>
+            <argument id="sales_channel.product.repository" type="service"/>
             <argument type="service" id="SwagVueStorefront\VueStorefront\PageResult\Product\ProductPageResultHydrator"/>
+            <argument id="Shopware\Core\Framework\DataAbstractionLayer\Search\RequestCriteriaBuilder" type="service"/>
+            <argument id="Shopware\Core\Content\Product\SalesChannel\SalesChannelProductDefinition" type="service"/>
             <tag name="vsf.page_loader"/>
         </service>
 

@@ -94,7 +94,7 @@ class PageControllerTest extends TestCase
             $content
         );
 
-        $response = \GuzzleHttp\json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
+        $response = json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
 
         static::assertObjectHasAttribute('cmsPage', $response);
         static::assertObjectHasAttribute('breadcrumb', $response);
@@ -119,7 +119,7 @@ class PageControllerTest extends TestCase
             $content
         );
 
-        $response = \GuzzleHttp\json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
+        $response = json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
 
         static::assertObjectHasAttribute('cmsPage', $response);
         static::assertObjectHasAttribute('breadcrumb', $response);
@@ -144,7 +144,7 @@ class PageControllerTest extends TestCase
             $content
         );
 
-        $response = \GuzzleHttp\json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
+        $response = json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
 
         static::assertObjectHasAttribute('cmsPage', $response);
         static::assertNull($response->cmsPage);
@@ -170,13 +170,41 @@ class PageControllerTest extends TestCase
             $content
         );
 
-        $response = \GuzzleHttp\json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
+        $response = json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
 
         static::assertObjectHasAttribute('product', $response);
 
         static::assertEquals('frontend.detail.page', $response->resourceType);
         static::assertObjectHasAttribute('resourceIdentifier', $response);
         static::assertNotNull($response->resourceIdentifier);
+    }
+
+    public function testProductPageWithAssociation(): void
+    {
+        $this->createProduct();
+        $this->createSalesChannelDomain();
+
+        $content = [
+            'path' => '/detail/' . $this->productActiveId,
+            'associations' => [
+                'manufacturer' => [],
+                'categories' => []
+            ]
+        ];
+
+        $this->salesChannelApiBrowser->request(
+            'POST',
+            self::ENDPOINT_PAGE,
+            $content
+        );
+
+        $response = json_decode($this->salesChannelApiBrowser->getResponse()->getContent(), true);
+
+        static::assertArrayHasKey('product', $response);
+        static::assertArrayHasKey('manufacturer', $response['product']);
+        static::assertNotNull($response['product']['manufacturer']);
+        static::assertArrayHasKey('categories', $response['product']);
+        static::assertNotNull($response['product']['categories']);
     }
 
     public function testProductPageTechnicalPath(): void
@@ -194,7 +222,7 @@ class PageControllerTest extends TestCase
             $content
         );
 
-        $response = \GuzzleHttp\json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
+        $response = json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
 
         static::assertObjectHasAttribute('product', $response);
 
@@ -219,7 +247,7 @@ class PageControllerTest extends TestCase
             $content
         );
 
-        $response = \GuzzleHttp\json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
+        $response = json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
 
         static::assertObjectHasAttribute('errors', $response);
         static::assertIsArray($response->errors);

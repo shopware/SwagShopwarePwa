@@ -2,7 +2,14 @@
 
 namespace SwagVueStorefront\VueStorefront\PageLoader;
 
-use Shopware\Storefront\Page\Product\ProductPageLoader as StorefrontProductPageLoader;
+use Shopware\Core\Content\Product\Exception\ProductNumberNotFoundException;
+use Shopware\Core\Content\Product\SalesChannel\ProductAvailableFilter;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductDefinition;
+use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\RequestCriteriaBuilder;
+use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
 use SwagVueStorefront\VueStorefront\PageLoader\Context\PageLoaderContext;
 use SwagVueStorefront\VueStorefront\PageResult\Product\ProductPageResult;
 use SwagVueStorefront\VueStorefront\PageResult\Product\ProductPageResultHydrator;
@@ -20,32 +27,77 @@ class ProductPageLoader implements PageLoaderInterface
     private const RESOURCE_TYPE = 'frontend.detail.page';
 
     /**
-     * @var StorefrontProductPageLoader
+     * @var SalesChannelRepository
      */
-    private $productPageLoader;
+    private $productRepository;
 
     /**
      * @var ProductPageResultHydrator
      */
     private $resultHydrator;
 
+    /**
+     * @var RequestCriteriaBuilder
+     */
+    private $requestCriteriaBuilder;
+
+    /**
+     * @var SalesChannelProductDefinition
+     */
+    private $productDefinition;
+
     public function getResourceType(): string
     {
         return self::RESOURCE_TYPE;
     }
 
-    public function __construct(StorefrontProductPageLoader $productPageLoader, ProductPageResultHydrator $resultHydrator)
+    public function __construct(
+        SalesChannelRepository $productRepository,
+        ProductPageResultHydrator $resultHydrator,
+        RequestCriteriaBuilder $requestCriteriaBuilder,
+        SalesChannelProductDefinition $productDefinition
+    )
     {
-        $this->productPageLoader = $productPageLoader;
+        $this->productRepository = $productRepository;
         $this->resultHydrator = $resultHydrator;
+        $this->requestCriteriaBuilder = $requestCriteriaBuilder;
+        $this->productDefinition = $productDefinition;
     }
 
+    /**
+     * @param PageLoaderContext $pageLoaderContext
+     *
+     * @return ProductPageResult
+     *
+     * @throws ProductNumberNotFoundException
+     */
     public function load(PageLoaderContext $pageLoaderContext): ProductPageResult
     {
-        $pageLoaderContext->getRequest()->attributes->set('productId', $pageLoaderContext->getResourceIdentifier());
+        $criteria = new Criteria([$pageLoaderContext->getResourceIdentifier()]);
+        $criteria->setLimit(1);
 
-        $productPage = $this->productPageLoader->load($pageLoaderContext->getRequest(), $pageLoaderContext->getContext());
+        $criteria = $this->requestCriteriaBuilder->handleRequest(
+            $pageLoaderContext->getRequest(),
+            $criteria,
+            $this->productDefinition,
+            $pageLoaderContext->getContext()->getContext()
+        );
 
-        return $this->resultHydrator->hydrate($pageLoaderContext, $productPage);
+        $criteria->addFilter(
+            new ProductAvailableFilter($pageLoaderContext->getContext()->getSalesChannel()->getId()),
+            new EqualsFilter('active', 1)
+        );
+
+        $searchResult = $this->productRepository->search($criteria, $pageLoaderContext->getContext());
+
+        if($searchResult->count() < 1)
+        {
+            throw new ProductNumberNotFoundException($pageLoaderContext->getResourceIdentifier());
+        }
+
+        /** @var SalesChannelProductEntity $product */
+        $product = $searchResult->first();
+
+        return $this->resultHydrator->hydrate($pageLoaderContext, $product);
     }
 }
