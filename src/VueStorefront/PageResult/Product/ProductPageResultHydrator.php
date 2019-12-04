@@ -7,6 +7,7 @@ use Shopware\Core\Content\Product\Aggregate\ProductPrice\ProductPriceCollection;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOptionCollection;
 use Shopware\Core\Content\Property\PropertyGroupCollection;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationResultCollection;
 use Shopware\Core\Framework\Pricing\ListingPriceCollection;
 use Shopware\Storefront\Page\Product\ProductPage;
 use SwagVueStorefront\VueStorefront\PageLoader\Context\PageLoaderContext;
@@ -22,11 +23,13 @@ use SwagVueStorefront\VueStorefront\PageLoader\Context\PageLoaderContext;
  */
 class ProductPageResultHydrator
 {
-    public function hydrate(PageLoaderContext $pageLoaderContext, SalesChannelProductEntity $product): ProductPageResult
+    public function hydrate(PageLoaderContext $pageLoaderContext, SalesChannelProductEntity $product, AggregationResultCollection $aggregations): ProductPageResult
     {
         $pageResult = new ProductPageResult();
 
         $pageResult->setProduct($product);
+
+        $pageResult->setAggregations($aggregations);
 
         // Request rückbauen! (WIP)
         $pageResult->setResourceType($pageLoaderContext->getResourceType());

@@ -97,7 +97,8 @@ class ProductPageLoader implements PageLoaderInterface
 
         /** @var SalesChannelProductEntity $product */
         $product = $searchResult->first();
+        $aggregations = $searchResult->getAggregations();
 
-        return $this->resultHydrator->hydrate($pageLoaderContext, $product);
+        return $this->resultHydrator->hydrate($pageLoaderContext, $product, $aggregations);
     }
 }
