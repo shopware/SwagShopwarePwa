@@ -2,7 +2,7 @@
 
 namespace SwagVueStorefront\VueStorefront\Entity\SalesChannelRoute;
 
-use Shopware\Core\Framework\Seo\SeoUrl\SeoUrlEntity;
+use Shopware\Core\Content\Seo\SeoUrl\SeoUrlEntity;
 use Shopware\Core\Framework\Struct\Struct;
 
 class SalesChannelRouteEntity extends Struct

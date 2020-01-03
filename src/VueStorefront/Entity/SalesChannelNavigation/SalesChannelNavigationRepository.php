@@ -28,6 +28,8 @@ class SalesChannelNavigationRepository
 
     public function loadNavigation(string $rootId, int $depth, SalesChannelContext $context): SalesChannelNavigationEntity
     {
+        $context->getSalesChannel()->setNavigationCategoryId($rootId);
+
         $navigation = $this->navigationLoader->load($rootId, $context, $rootId);
 
         return $this->createSalesChannelNavigation(
