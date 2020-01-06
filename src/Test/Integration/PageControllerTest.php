@@ -85,7 +85,7 @@ class PageControllerTest extends TestCase
         $this->createSeoUrls();
 
         $content = [
-            'path' => '/foo-nav/bar'
+            'path' => 'Home-Shoes/'
         ];
 
         $this->salesChannelApiBrowser->request(
@@ -135,7 +135,7 @@ class PageControllerTest extends TestCase
         $this->createSeoUrls();
 
         $content = [
-            'path' => '/foo-nav/bar'
+            'path' => 'Home-Shoes/'
         ];
 
         $this->salesChannelApiBrowser->request(
@@ -327,7 +327,7 @@ class PageControllerTest extends TestCase
                 'languageId' => Defaults::LANGUAGE_SYSTEM,
                 'routeName' => 'frontend.navigation.page',
                 'pathInfo' => '/navigation/1234',
-                'seoPathInfo' => '/foo-nav/bar',
+                'seoPathInfo' => 'Home-Shoes/',
                 'foreignKey' => $this->categoryId,
                 'isValid' => true,
                 'isCanonical' => false,
@@ -340,7 +340,7 @@ class PageControllerTest extends TestCase
                 'seoPathInfo' => '/foo-bar/prod',
                 'foreignKey' => $this->productActiveId,
                 'isValid' => true,
-                'isCanonical' => null,
+                'isCanonical' => false,
             ],
             [
                 'salesChannelId' => $this->salesChannelId,
@@ -350,7 +350,7 @@ class PageControllerTest extends TestCase
                 'seoPathInfo' => '/foo-bar/prod-inactive',
                 'foreignKey' => $this->productInactiveId,
                 'isValid' => true,
-                'isCanonical' => null,
+                'isCanonical' => false,
             ],
         ], Context::createDefaultContext());
     }
