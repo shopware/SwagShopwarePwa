@@ -1,0 +1,88 @@
+{% sw_extends 'storefront/page/checkout/cart/index.html.twig' %}
+
+{% block base_body_classes %}pwa-checkout-body {{ parent() }}{% endblock %}
+
+{% block base_header %}
+
+{% endblock %}
+
+{% block base_navigation %}
+    <div class="top-navigation">
+        <header active-sidebar="activeSidebar" class="sf-header">
+            <div class="sf-image sf-header__logo">
+                <img alt="Shopware PWA"
+                       data-src="https://shopware-pwa-faint-money.now.sh/img/logo.svg"
+                       class="sf-image__img"
+                       src="https://shopware-pwa-faint-money.now.sh/img/logo.svg"
+                       data-loaded="true"></div>
+            <nav class="sf-header__navigation">
+
+                <a href="https://shopware-pwa-faint-money.now.sh/" class="nuxt-link-active">
+                    <div class="sf-header-navigation-item">
+
+                        <svg style="margin-right: 10px; color: #1666ad;"
+                             class="sf-arrow__icon pwa-checkout-return-arrow" viewBox="0 0 24 12"
+                             xmlns="http://www.w3.org/2000/svg" focusable="false" aria-hidden="true">
+                            <path d="M24 7L2 7L2 5L24 5L24 7Z"/>
+                            <path
+                                d="M6.61667 1.20934e-07L8 1.25423L2.76478 6L8 10.7458L6.61667 12L-5.24538e-07 5.99998L6.61667 1.20934e-07Z"/>
+                        </svg>
+                        Go back to Store
+
+                    </div>
+                </a>
+
+            </nav>
+        </header>
+    </div>
+{% endblock %}
+
+{% block base_main %}
+
+    <div class="pwa-content">
+
+        {% block page_checkout_steps %}
+            <div class="sf-steps" style="margin-bottom: 70px;">
+                <div class="sf-steps__header">
+                    <div class="sf-steps__header-step sf-steps__header-step-current"><span>Overview</span></div>
+                    <div class="sf-steps__header-step"><span>Payment & Shipping</span></div>
+                    <div class="sf-steps__header-step"><span>Completion</span></div>
+                    <div class="sf-steps__progress" style="width: 33.33%; transform: scaleX(1);"></div>
+                </div>
+            </div>
+        {% endblock %}
+
+        {% block page_checkout_cart_product_table %}
+            {{ parent() }}
+        {% endblock %}
+
+        {% block page_checkout_aside %}
+            {{ parent() }}
+            {% block page_checkout_aside_actions %}
+            {% endblock %}
+
+        {% endblock %}
+
+        {% block page_checkout_cart_add_promotion %}
+            {{ parent() }}
+        {% endblock %}
+
+        {% block page_checkout_cart_action_proceed %}
+            <div class="checkout-aside-action">
+                <a href="{{ path('frontend.checkout.confirm.page') }}"
+                   class="sf-button sf-button--full-width"
+                   title="{{ "checkout.proceedLink"|trans|striptags }}">
+                    <b>{{ "checkout.proceedLink"|trans|sw_sanitize }}</b>
+                </a>
+            </div>
+        {% endblock %}
+
+    </div>
+
+{% endblock %}
+
+{% block base_footer %}
+    <div class="sf-footer">
+        <div style="width: 100%; text-align: center;">from Vue Storefront with ❤️</div>
+    </div>
+{% endblock %}

@@ -1,0 +1,32 @@
+body {
+    font-weight: 300;
+    font-size: 1rem;
+}
+
+a:hover {
+    text-decoration: none !important;
+}
+
+.pwa-checkout-body {
+    max-width: 1320px;
+    margin: auto;
+}
+
+.pwa-content
+{
+    margin: 20px;
+    padding: 1.25rem 2.5rem 2.5rem;
+}
+
+.pwa-checkout-heading
+{
+    margin-bottom: 40px;
+}
+
+.pwa-checkout-return-arrow
+{
+    path
+    {
+        fill: $c-primary;
+    }
+}

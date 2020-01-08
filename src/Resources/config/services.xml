@@ -106,15 +106,7 @@
 
 
         <!-- Storefront Controller Decorators -->
-        <service id="SwagVueStorefront\VueStorefront\Controller\DecoratedCheckoutController" decorates="Shopware\Storefront\Controller\CheckoutController" public="true">
-            <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
-            <argument type="service" id="Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPageLoader"/>
-            <argument type="service" id="Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoader"/>
-            <argument type="service" id="Shopware\Storefront\Page\Checkout\Finish\CheckoutFinishPageLoader"/>
-            <argument type="service" id="Shopware\Core\Checkout\Order\SalesChannel\OrderService"/>
-            <argument type="service" id="Shopware\Core\Checkout\Payment\PaymentService"/>
-            <argument type="service" id="Shopware\Storefront\Page\Checkout\Offcanvas\OffcanvasCartPageLoader"/>
-            <argument type="service" id="order.repository"/>
+        <service id="SwagVueStorefront\VueStorefront\Controller\DecoratedCheckoutController" public="true">
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>

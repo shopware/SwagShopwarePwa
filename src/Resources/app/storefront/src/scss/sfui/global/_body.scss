@@ -1,0 +1,21 @@
+body {
+  background: $c-body;
+  color: $c-text;
+  font-size: $body-font-size-mobile;
+  font-family: $body-font-family-primary;
+  font-weight: $body-font-weight-primary;
+  margin: 0;
+  padding: 0;
+  @media (min-width: $desktop-min) {
+    font-size: $body-font-size-desktop;
+  }
+}
+
+a {
+  text-decoration: none;
+  color: $c-link;
+
+  &:hover {
+    color: $c-link-hover;
+  }
+}

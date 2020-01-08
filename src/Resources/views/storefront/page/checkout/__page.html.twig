@@ -1,0 +1,34 @@
+{% sw_extends 'storefront/base.html.twig' %}
+
+{% block foo %}
+
+<div id="__layout">
+    <div id="layout">
+        <div class="top-navigation">
+            <header active-sidebar="activeSidebar" class="sf-header">
+                <div class="sf-image sf-header__logo"><!----> <img alt="Shopware PWA" data-src="https://shopware-pwa-faint-money.now.sh/img/logo.svg"
+                                                                   class="sf-image__img" src="https://shopware-pwa-faint-money.now.sh/img/logo.svg"
+                                                                   data-loaded="true"></div>
+                <nav class="sf-header__navigation"></nav>
+                <div class="search--blank"></div>
+                <div class="sf-header__icons">
+                    return to Shop
+                </div>
+            </header>
+        </div>
+        <div>
+            <div class="cms-page">
+                <div class="sw-text" style="margin: 20px;">
+                    Checkout
+                </div>
+            </div>
+        </div>
+        <div class="sw-footer">
+            <div class="sf-footer" style="--col-width:25%;">
+                <div class="content sw-footer__signature">from Vue Storefront with ❤️</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
