@@ -120,6 +120,12 @@
             </call>
         </service>
 
+        <!-- Storefront Subscribers -->
+        <service id="SwagVueStorefront\VueStorefront\Subscriber\ContextRedirectSubscriber">
+            <argument type="service" id="request_stack"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
     </services>
 
 </container>
