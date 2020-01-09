@@ -106,7 +106,7 @@
 
 
         <!-- Storefront Controller Decorators -->
-        <service id="SwagVueStorefront\VueStorefront\Controller\DecoratedCheckoutController" public="true">
+        <service id="SwagVueStorefront\VueStorefront\Controller\RedirectCheckoutController" public="true">
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>

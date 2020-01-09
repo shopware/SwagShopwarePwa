@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @RouteScope(scopes={"storefront"})
  */
-class DecoratedCheckoutController extends StorefrontController
+class RedirectCheckoutController extends StorefrontController
 {
     private $appUrl = 'https://shopware-pwa-faint-money.now.sh/';
 
