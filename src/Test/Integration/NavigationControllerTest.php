@@ -3,6 +3,7 @@
 namespace SwagVueStorefront\Test\Integration;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
@@ -53,6 +54,11 @@ class NavigationControllerTest extends TestCase
      */
     private $categoryRepository;
 
+    /**
+     * @var EntityRepositoryInterface
+     */
+    private $seoUrlRepository;
+
     public function setUp(): void
     {
         parent::setUp();
@@ -61,6 +67,7 @@ class NavigationControllerTest extends TestCase
         $this->salesChannelId = $this->getSalesChannelApiSalesChannelId();
 
         $this->categoryRepository = $this->getContainer()->get('category.repository');
+        $this->seoUrlRepository = $this->getContainer()->get('seo_url.repository');
 
         $this->rootId = Uuid::randomHex();
         $this->category1Id = Uuid::randomHex();
@@ -117,6 +124,28 @@ class NavigationControllerTest extends TestCase
         static::assertCount(1, $result->children[0]->children);
     }
 
+    public function testResolveSeoUrl(): void
+    {
+        $this->createCategories();
+        $this->createSeoUrls();
+
+        $content = [
+            'depth' => 1,
+            'rootNode' => $this->rootId
+        ];
+
+        $this->salesChannelApiBrowser->request(
+            'POST',
+            self::ENDPOINT_NAVIGATION,
+            $content
+        );
+
+        $result = \GuzzleHttp\json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
+
+        static::assertEquals('/', $result->route->path);
+        static::assertEquals('Home-Shoes/Children/', $result->children[0]->route->path);
+    }
+
     private function createCategories():void
     {
         $this->categoryRepository->upsert([
@@ -146,6 +175,22 @@ class NavigationControllerTest extends TestCase
                     ],
                 ],
             ],
+        ], Context::createDefaultContext());
+    }
+
+    private function createSeoUrls(): void
+    {
+        $this->seoUrlRepository->create([
+            [
+                'salesChannelId' => $this->salesChannelId,
+                'languageId' => Defaults::LANGUAGE_SYSTEM,
+                'routeName' => 'frontend.navigation.page',
+                'pathInfo' => '/navigation/123',
+                'seoPathInfo' => 'Home-Shoes/Children/',
+                'foreignKey' => $this->category1Id,
+                'isValid' => true,
+                'isCanonical' => false,
+            ]
         ], Context::createDefaultContext());
     }
 

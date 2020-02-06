@@ -4,9 +4,13 @@ namespace SwagVueStorefront\VueStorefront\Entity\SalesChannelNavigation;
 
 use Shopware\Core\Content\Category\Service\NavigationLoader;
 use Shopware\Core\Content\Category\Tree\TreeItem;
+use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\Storefront\Framework\Routing\Router;
 use SwagVueStorefront\VueStorefront\Controller\PageController;
+use SwagVueStorefront\VueStorefront\Entity\SalesChannelRoute\SalesChannelRouteEntity;
+use SwagVueStorefront\VueStorefront\Entity\SalesChannelRoute\SalesChannelRouteRepository;
 
 class SalesChannelNavigationRepository
 {
@@ -16,14 +20,14 @@ class SalesChannelNavigationRepository
     private $navigationLoader;
 
     /**
-     * @var Router
+     * @var SalesChannelRouteRepository
      */
-    private $router;
+    private $routeRepository;
 
-    public function __construct(NavigationLoader $navigationLoader, Router $router)
+    public function __construct(NavigationLoader $navigationLoader, SalesChannelRouteRepository $routeRepository)
     {
         $this->navigationLoader = $navigationLoader;
-        $this->router = $router;
+        $this->routeRepository = $routeRepository;
     }
 
     public function loadNavigation(string $rootId, int $depth, SalesChannelContext $context): SalesChannelNavigationEntity
@@ -33,6 +37,7 @@ class SalesChannelNavigationRepository
         $navigation = $this->navigationLoader->load($rootId, $context, $rootId);
 
         return $this->createSalesChannelNavigation(
+            $context->getContext(),
             new TreeItem(
                 $navigation->getActive(),
                 $navigation->getTree()
@@ -41,7 +46,7 @@ class SalesChannelNavigationRepository
         );
     }
 
-    private function createSalesChannelNavigation(TreeItem $treeItem, int $depth = PHP_INT_MAX, $currentLevel = 0): SalesChannelNavigationEntity
+    private function createSalesChannelNavigation(Context $context, TreeItem $treeItem, int $depth = PHP_INT_MAX, $currentLevel = 0): SalesChannelNavigationEntity
     {
         $navigationEntity = new SalesChannelNavigationEntity();
 
@@ -50,12 +55,16 @@ class SalesChannelNavigationRepository
         $navigationEntity->setLevel($currentLevel);
         $navigationEntity->setCount(count($treeItem->getChildren()));
 
+        /** @var SalesChannelRouteEntity $route */
+        $route = $this->getSeoRoute(
+            $context,
+            PageController::NAVIGATION_PAGE_ROUTE,
+            $navigationEntity->getId()
+        );
+
         $navigationEntity->setRoute(
             [
-                'path' => $this->router->generate(
-                    PageController::NAVIGATION_PAGE_ROUTE,
-                    ['navigationId' => $treeItem->getCategory()->getId()]
-                ),
+                'path' => $route->getSeoPathInfo(),
                 'resourceType' => PageController::NAVIGATION_PAGE_ROUTE
             ]
         );
@@ -70,11 +79,37 @@ class SalesChannelNavigationRepository
         foreach($treeItem->getChildren() as $child)
         {
             /** @var $child TreeItem */
-            $children[] = $this->createSalesChannelNavigation($child, $depth, $currentLevel);
+            $children[] = $this->createSalesChannelNavigation($context, $child, $depth, $currentLevel);
         }
 
         $navigationEntity->setChildren($children);
 
         return $navigationEntity;
+    }
+
+    private function getSeoRoute(Context $context, string $name, string $resourceIdentifier): SalesChannelRouteEntity
+    {
+
+        $criteria = new Criteria();
+        $criteria->addFilter(
+            new EqualsFilter('foreignKey', $resourceIdentifier)
+        );
+
+        $routes = $this->routeRepository->search($criteria, $context);
+
+        if(count($routes) >= 1)
+        {
+            return $routes[0];
+        }
+
+        $route = new SalesChannelRouteEntity();
+
+        $route->setPathInfo('/');
+        $route->setSeoPathInfo('/');
+        $route->setResourceIdentifier($resourceIdentifier);
+        $route->setRouteName($name);
+        $route->setResource($name);
+
+        return $route;
     }
 }
