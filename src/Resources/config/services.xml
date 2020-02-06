@@ -37,6 +37,7 @@
             </call>
         </service>
 
+
         <!-- Page loader context builder -->
 
         <service id="SwagVueStorefront\VueStorefront\PageLoader\Context\PageLoaderContextBuilder">
@@ -66,6 +67,7 @@
             <tag name="vsf.page_loader"/>
         </service>
 
+
         <!-- Page hydrators -->
 
         <service id="SwagVueStorefront\VueStorefront\PageResult\Product\ProductPageResultHydrator"/>
@@ -74,6 +76,7 @@
             <argument type="service" id="Shopware\Storefront\Framework\Routing\Router"/>
             <argument type="tagged" tag="vsf.page_result.aggregation_result_hydrator"/>
         </service>
+
 
         <!-- Aggregation result hydrators -->
 
@@ -102,22 +105,6 @@
         <service id="SwagVueStorefront\VueStorefront\Entity\SalesChannelNavigation\SalesChannelNavigationRepository">
             <argument type="service" id="Shopware\Core\Content\Category\Service\NavigationLoader"/>
             <argument type="service" id="SwagVueStorefront\VueStorefront\Entity\SalesChannelRoute\SalesChannelRouteRepository"/>
-        </service>
-
-
-        <!-- Storefront Controller Decorators -->
-        <service id="SwagVueStorefront\VueStorefront\Controller\DecoratedCheckoutController" decorates="Shopware\Storefront\Controller\CheckoutController" public="true">
-            <argument type="service" id="Shopware\Core\Checkout\Cart\SalesChannel\CartService"/>
-            <argument type="service" id="Shopware\Storefront\Page\Checkout\Cart\CheckoutCartPageLoader"/>
-            <argument type="service" id="Shopware\Storefront\Page\Checkout\Confirm\CheckoutConfirmPageLoader"/>
-            <argument type="service" id="Shopware\Storefront\Page\Checkout\Finish\CheckoutFinishPageLoader"/>
-            <argument type="service" id="Shopware\Core\Checkout\Order\SalesChannel\OrderService"/>
-            <argument type="service" id="Shopware\Core\Checkout\Payment\PaymentService"/>
-            <argument type="service" id="Shopware\Storefront\Page\Checkout\Offcanvas\OffcanvasCartPageLoader"/>
-            <argument type="service" id="order.repository"/>
-            <call method="setContainer">
-                <argument type="service" id="service_container"/>
-            </call>
         </service>
 
     </services>
