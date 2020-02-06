@@ -23,7 +23,10 @@
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
         </service>
 
-        <service id="SwagVueStorefront\VueStorefront\Bundle\AssetService"/>
+        <service id="SwagVueStorefront\VueStorefront\Bundle\AssetService">
+            <argument type="service" id="kernel" />
+            <argument id="plugin.repository" type="service"/>
+        </service>
 
 
     </services>

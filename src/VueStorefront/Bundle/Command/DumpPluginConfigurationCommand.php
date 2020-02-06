@@ -47,6 +47,7 @@ class DumpPluginConfigurationCommand extends Command
         $io->comment('Wrote configurations to \'' . $configArtifact . '\'');
 
         $io->text('Assets');
-        $this->assetService->dumpBundles();
+        $assetArtifact = $this->assetService->dumpBundles();
+        $io->comment('Wrote assets to \'' . $assetArtifact . '\'');
     }
 }
