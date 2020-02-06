@@ -6,13 +6,16 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Plugin\Event\PluginPostActivateEvent;
+use Shopware\Core\Framework\Plugin\Event\PluginPostDeactivateEvent;
 use Shopware\Core\Framework\Plugin\PluginCollection;
 use Shopware\Core\Framework\Plugin\PluginEntity;
 use Shopware\Core\Kernel;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 
-class ConfigurationService
+class ConfigurationService implements EventSubscriberInterface
 {
     private $artifactPath = 'pwa-bundles.json';
 
@@ -35,6 +38,14 @@ class ConfigurationService
         $this->kernel = $kernel;
         $this->pluginRepository = $pluginRepository;
         $this->configService = $configService;
+    }
+
+    public static function getSubscribedEvents()
+    {
+        return [
+            PluginPostActivateEvent::class => 'dumpBundles',
+            PluginPostDeactivateEvent::class => 'dumpBundles'
+        ];
     }
 
     public function dumpBundles(): string

@@ -6,13 +6,16 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\Framework\Plugin\Event\PluginPostActivateEvent;
+use Shopware\Core\Framework\Plugin\Event\PluginPostDeactivateEvent;
 use Shopware\Core\Framework\Plugin\PluginCollection;
 use Shopware\Core\Framework\Plugin\PluginEntity;
 use Shopware\Core\Kernel;
 use SplFileInfo;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 
-class AssetService
+class AssetService implements EventSubscriberInterface
 {
     private $assetArtifactDirectory = 'pwa-bundles-assets';
 
@@ -35,6 +38,14 @@ class AssetService
         $this->pluginRepository = $pluginRepository;
     }
 
+    public static function getSubscribedEvents()
+    {
+        return [
+            PluginPostActivateEvent::class => 'dumpBundles',
+            PluginPostDeactivateEvent::class => 'dumpBundles'
+        ];
+    }
+
     public function dumpBundles(): string
     {
         // Create temporary directory
@@ -49,7 +60,7 @@ class AssetService
         return $this->assetArtifactDirectory . '.zip';
     }
 
-    private function createAssetsArchive(string $archivePath, array $bundles): ?\ZipArchive
+    private function createAssetsArchive(string $archivePath, array $bundles)
     {
         $zip = new \ZipArchive();
         $zip->open($archivePath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
@@ -80,8 +91,6 @@ class AssetService
         }
 
         $zip->close();
-
-        return null;
     }
 
     private function getBundles(): array
