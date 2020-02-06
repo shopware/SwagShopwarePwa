@@ -56,4 +56,30 @@ class SalesChannelRouteRepository
 
         return $preparedRoutes;
     }
+
+    public function getSeoRoute(Context $context, string $name, string $resourceIdentifier): SalesChannelRouteEntity
+    {
+
+        $criteria = new Criteria();
+        $criteria->addFilter(
+            new EqualsFilter('foreignKey', $resourceIdentifier)
+        );
+
+        $routes = $this->search($criteria, $context);
+
+        if(count($routes) >= 1)
+        {
+            return $routes[0];
+        }
+
+        $route = new SalesChannelRouteEntity();
+
+        $route->setPathInfo('/');
+        $route->setSeoPathInfo('/');
+        $route->setResourceIdentifier($resourceIdentifier);
+        $route->setRouteName($name);
+        $route->setResource($name);
+
+        return $route;
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace SwagVueStorefront\VueStorefront\Entity\SalesChannelNavigation;
 
+use Shopware\Core\Content\Category\Tree\TreeItem;
 use Shopware\Core\Framework\Struct\Struct;
 
 class SalesChannelNavigationEntity extends Struct
@@ -112,5 +113,16 @@ class SalesChannelNavigationEntity extends Struct
     public function setLevel(int $level)
     {
         $this->level = $level;
+    }
+
+    public static function createFromTreeItem(TreeItem $treeItem): self
+    {
+        $navigationEntity = new self();
+
+        $navigationEntity->setId($treeItem->getCategory()->getId());
+        $navigationEntity->setName($treeItem->getCategory()->getName());
+        $navigationEntity->setCount(count($treeItem->getChildren()));
+
+        return $navigationEntity;
     }
 }

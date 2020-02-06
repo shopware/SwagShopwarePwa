@@ -48,15 +48,11 @@ class SalesChannelNavigationRepository
 
     private function createSalesChannelNavigation(Context $context, TreeItem $treeItem, int $depth = PHP_INT_MAX, $currentLevel = 0): SalesChannelNavigationEntity
     {
-        $navigationEntity = new SalesChannelNavigationEntity();
-
-        $navigationEntity->setId($treeItem->getCategory()->getId());
-        $navigationEntity->setName($treeItem->getCategory()->getName());
+        $navigationEntity = SalesChannelNavigationEntity::createFromTreeItem($treeItem);
         $navigationEntity->setLevel($currentLevel);
-        $navigationEntity->setCount(count($treeItem->getChildren()));
 
         /** @var SalesChannelRouteEntity $route */
-        $route = $this->getSeoRoute(
+        $route = $this->routeRepository->getSeoRoute(
             $context,
             PageController::NAVIGATION_PAGE_ROUTE,
             $navigationEntity->getId()
@@ -85,31 +81,5 @@ class SalesChannelNavigationRepository
         $navigationEntity->setChildren($children);
 
         return $navigationEntity;
-    }
-
-    private function getSeoRoute(Context $context, string $name, string $resourceIdentifier): SalesChannelRouteEntity
-    {
-
-        $criteria = new Criteria();
-        $criteria->addFilter(
-            new EqualsFilter('foreignKey', $resourceIdentifier)
-        );
-
-        $routes = $this->routeRepository->search($criteria, $context);
-
-        if(count($routes) >= 1)
-        {
-            return $routes[0];
-        }
-
-        $route = new SalesChannelRouteEntity();
-
-        $route->setPathInfo('/');
-        $route->setSeoPathInfo('/');
-        $route->setResourceIdentifier($resourceIdentifier);
-        $route->setRouteName($name);
-        $route->setResource($name);
-
-        return $route;
     }
 }

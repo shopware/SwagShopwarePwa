@@ -127,5 +127,4 @@ class SalesChannelRouteEntity extends Struct
 
         return $route;
     }
-
 }
