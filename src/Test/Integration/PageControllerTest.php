@@ -66,12 +66,18 @@ class PageControllerTest extends TestCase
      */
     private $productInactiveId;
 
+    /**
+     * @var string
+     */
+    private $childCategoryId = '4cb685159a9748289cbd6a36f6b33acb';
+
     public function setUp(): void
     {
         parent::setUp();
 
         $this->browser = $this->getSalesChannelBrowser();
         $this->salesChannelId = $this->getSalesChannelApiSalesChannelId();
+
         $this->seoUrlRepository = $this->getContainer()->get('seo_url.repository');
         $this->categoryRepository = $this->getContainer()->get('category.repository');
         $this->cmsPageRepository = $this->getContainer()->get('cms_page.repository');
@@ -335,6 +341,16 @@ class PageControllerTest extends TestCase
             [
                 'salesChannelId' => $this->salesChannelId,
                 'languageId' => Defaults::LANGUAGE_SYSTEM,
+                'routeName' => 'frontend.navigation.page',
+                'pathInfo' => '/navigation/123',
+                'seoPathInfo' => 'Home-Shoes/Children/',
+                'foreignKey' => $this->childCategoryId,
+                'isValid' => true,
+                'isCanonical' => false,
+            ],
+            [
+                'salesChannelId' => $this->salesChannelId,
+                'languageId' => Defaults::LANGUAGE_SYSTEM,
                 'routeName' => 'frontend.detail.page',
                 'pathInfo' => '/detail/1234',
                 'seoPathInfo' => '/foo-bar/prod',
@@ -361,7 +377,13 @@ class PageControllerTest extends TestCase
             [
                 'salesChannelId' => $this->salesChannelId,
                 'name' => 'My test category',
-                'cmsPageId' => $this->cmsPageId
+                'cmsPageId' => $this->cmsPageId,
+                'children' => [
+                    [
+                        'id' => $this->childCategoryId,
+                        'name' => 'foo'
+                    ]
+                ]
             ]
         ], Context::createDefaultContext());
 

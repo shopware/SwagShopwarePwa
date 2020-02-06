@@ -123,6 +123,12 @@ class NavigationPageResultHydrator
                 continue;
             }
 
+            // For categories/listings without products
+            if(!$aggregation instanceof EntityResult)
+            {
+                continue;
+            }
+
             /** @var $aggregation EntityResult */
             foreach($aggregation->getEntities() as $key => $propertyGroup)
             {

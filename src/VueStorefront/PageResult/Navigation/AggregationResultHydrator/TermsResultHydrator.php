@@ -19,10 +19,7 @@ class TermsResultHydrator implements AggregationResultHydratorInterface
 
         return [
             'type' => 'term',
-            'values' => array_map(function($bucket) {
-                /** @var $bucket Bucket */
-                return $bucket;
-            }, $result->getBuckets()),
+            'values' => $result->getBuckets()
         ];
     }
 }
