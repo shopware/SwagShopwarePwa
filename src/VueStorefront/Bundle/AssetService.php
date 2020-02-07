@@ -12,13 +12,20 @@ use Shopware\Core\Framework\Plugin\PluginCollection;
 use Shopware\Core\Framework\Plugin\PluginEntity;
 use Shopware\Core\Kernel;
 use SplFileInfo;
+use SwagVueStorefront\VueStorefront\Bundle\Helper\FormattingHelper;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 
 class AssetService implements EventSubscriberInterface
 {
+    /**
+     * @var string
+     */
     private $assetArtifactDirectory = 'pwa-bundles-assets';
 
+    /**
+     * @var string
+     */
     private $resourcesDirectory = '/Resources/app/pwa';
 
     /**
@@ -32,10 +39,16 @@ class AssetService implements EventSubscriberInterface
 
     private $pluginRepository;
 
-    public function __construct(Kernel $kernel, EntityRepositoryInterface $pluginRepository)
+    /**
+     * @var FormattingHelper
+     */
+    private $helper;
+
+    public function __construct(Kernel $kernel, EntityRepositoryInterface $pluginRepository, FormattingHelper $helper)
     {
         $this->kernel = $kernel;
         $this->pluginRepository = $pluginRepository;
+        $this->helper = $helper;
     }
 
     public static function getSubscribedEvents()
@@ -85,7 +98,7 @@ class AssetService implements EventSubscriberInterface
                     continue;
                 }
 
-                $localPath = $bundle['name'] . '/' . substr($file->getRealPath(), strlen($bundleAssetPath) + 1);
+                $localPath = $this->helper->convertToDashCase($bundle['name']) . '/' . substr($file->getRealPath(), strlen($bundleAssetPath) + 1);
                 $zip->addFile($file->getRealPath(), $localPath);
             }
         }

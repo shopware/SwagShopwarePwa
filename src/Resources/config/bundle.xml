@@ -20,14 +20,18 @@
             <argument type="service" id="kernel" />
             <argument id="plugin.repository" type="service"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="SwagVueStorefront\VueStorefront\Bundle\Helper\FormattingHelper"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 
         <service id="SwagVueStorefront\VueStorefront\Bundle\AssetService">
             <argument type="service" id="kernel" />
             <argument id="plugin.repository" type="service"/>
+            <argument type="service" id="SwagVueStorefront\VueStorefront\Bundle\Helper\FormattingHelper"/>
             <tag name="kernel.event_subscriber"/>
         </service>
+
+        <service id="SwagVueStorefront\VueStorefront\Bundle\Helper\FormattingHelper"/>
 
     </services>
 </container>

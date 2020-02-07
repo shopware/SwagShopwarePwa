@@ -12,11 +12,15 @@ use Shopware\Core\Framework\Plugin\PluginCollection;
 use Shopware\Core\Framework\Plugin\PluginEntity;
 use Shopware\Core\Kernel;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
+use SwagVueStorefront\VueStorefront\Bundle\Helper\FormattingHelper;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 
 class ConfigurationService implements EventSubscriberInterface
 {
+    /**
+     * @var string
+     */
     private $artifactPath = 'pwa-bundles.json';
 
     /**
@@ -33,11 +37,21 @@ class ConfigurationService implements EventSubscriberInterface
      */
     private $configService;
 
-    public function __construct(Kernel $kernel, EntityRepositoryInterface $pluginRepository, SystemConfigService $configService)
+    /**
+     * @var FormattingHelper
+     */
+    private $helper;
+
+    public function __construct(
+        Kernel $kernel,
+        EntityRepositoryInterface $pluginRepository,
+        SystemConfigService $configService,
+        FormattingHelper $helper)
     {
         $this->kernel = $kernel;
         $this->pluginRepository = $pluginRepository;
         $this->configService = $configService;
+        $this->helper = $helper;
     }
 
     public static function getSubscribedEvents()
@@ -82,7 +96,7 @@ class ConfigurationService implements EventSubscriberInterface
                 continue;
             }
 
-            $bundleInfos[$kernelBundle->getName()] = [
+            $bundleInfos[$this->helper->convertToDashCase($kernelBundle->getName())] = [
                 'configuration' => $this->getPluginConfiguration($kernelBundle->getName())
             ];
         }
