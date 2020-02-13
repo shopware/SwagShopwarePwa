@@ -83,21 +83,31 @@ class ConfigurationService implements EventSubscriberInterface
 
         /** @var PluginCollection $plugins */
         $plugins = $this->pluginRepository->search($criteria, Context::createDefaultContext());
-        $pluginNames = $plugins->map(function (PluginEntity $plugin) {
-            return $plugin->getName();
-        });
+
+        /** @var PluginEntity[] $pluginsAssoc */
+        $pluginsAssoc = [];
+
+        /** @var PluginEntity $plugin */
+        foreach($plugins as $plugin)
+        {
+            $pluginsAssoc[$plugin->getName()] = $plugin;
+        }
 
         /** @var BundleInterface[] $kernelBundles */
         $kernelBundles = $this->kernel->getBundles();
 
         foreach($kernelBundles as $kernelBundle)
         {
-            if(!in_array($kernelBundle->getName(), $pluginNames)) {
+            if(!key_exists($kernelBundle->getName(), $pluginsAssoc)) {
                 continue;
             }
 
+            $currentPlugin = $pluginsAssoc[$kernelBundle->getName()];
+
             $bundleInfos[$this->helper->convertToDashCase($kernelBundle->getName())] = [
-                'configuration' => $this->getPluginConfiguration($kernelBundle->getName())
+                'configuration' => $this->getPluginConfiguration($kernelBundle->getName()),
+                'installedAt' => date('Y-m-d H:i:s', $currentPlugin->getInstalledAt()->getTimestamp()),
+                'version' => $currentPlugin->getVersion()
             ];
         }
 
