@@ -103,6 +103,12 @@ class AssetService implements EventSubscriberInterface
             }
         }
 
+        if($zip->count() <= 0)
+        {
+            $zip->addFromString('_placeholder_', '');
+            return 0;
+        }
+
         $zip->close();
     }
 

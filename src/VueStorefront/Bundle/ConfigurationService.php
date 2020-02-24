@@ -96,6 +96,8 @@ class ConfigurationService implements EventSubscriberInterface
         /** @var BundleInterface[] $kernelBundles */
         $kernelBundles = $this->kernel->getBundles();
 
+        $pluginConfigurations = $this->getPluginConfigurations();
+
         foreach($kernelBundles as $kernelBundle)
         {
             if(!key_exists($kernelBundle->getName(), $pluginsAssoc)) {
@@ -104,8 +106,15 @@ class ConfigurationService implements EventSubscriberInterface
 
             $currentPlugin = $pluginsAssoc[$kernelBundle->getName()];
 
+            $configuration = [];
+
+            if(array_key_exists($kernelBundle->getName(), $pluginConfigurations))
+            {
+                $configuration = $pluginConfigurations[$kernelBundle->getName()];
+            }
+
             $bundleInfos[$this->helper->convertToDashCase($kernelBundle->getName())] = [
-                'configuration' => $this->getPluginConfiguration($kernelBundle->getName()),
+                'configuration' => $configuration,
                 'installedAt' => date('Y-m-d H:i:s', $currentPlugin->getInstalledAt()->getTimestamp()),
                 'version' => $currentPlugin->getVersion()
             ];
@@ -114,8 +123,8 @@ class ConfigurationService implements EventSubscriberInterface
         return $bundleInfos;
     }
 
-    private function getPluginConfiguration(string $pluginName)
+    private function getPluginConfigurations()
     {
-        return $this->configService->getDomain($pluginName);
+        return $this->configService->all();
     }
 }
