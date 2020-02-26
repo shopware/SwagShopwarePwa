@@ -52,12 +52,13 @@ class PwaController extends AbstractController
             $assetArtifact = $this->assetService->dumpBundles();
         } catch (\Exception $e) {
             return new JsonResponse([
+                'success' => false,
                 'error' => $e->getMessage()
             ], 500);
         }
 
         return new JsonResponse([
-            'success' => 1,
+            'success' => true,
             'buildArtifact' => [
                 'config' => $this->packages->getUrl($configArtifact),
                 'asset' => $this->packages->getUrl($assetArtifact)
