@@ -2,6 +2,8 @@
 
 namespace SwagVueStorefront\VueStorefront\Bundle;
 
+use League\Flysystem\FileNotFoundException;
+use League\Flysystem\FilesystemInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -44,11 +46,17 @@ class AssetService implements EventSubscriberInterface
      */
     private $helper;
 
-    public function __construct(Kernel $kernel, EntityRepositoryInterface $pluginRepository, FormattingHelper $helper)
+    /**
+     * @var FilesystemInterface
+     */
+    private $fileSystem;
+
+    public function __construct(Kernel $kernel, EntityRepositoryInterface $pluginRepository, FormattingHelper $helper, FilesystemInterface $fileSystem)
     {
         $this->kernel = $kernel;
         $this->pluginRepository = $pluginRepository;
         $this->helper = $helper;
+        $this->fileSystem = $fileSystem;
     }
 
     public static function getSubscribedEvents()
@@ -65,12 +73,12 @@ class AssetService implements EventSubscriberInterface
         $archivePath = $this->kernel->getCacheDir() . '/../../' . $this->assetArtifactDirectory . '.zip';
 
         // Look for assets
-        $bundles = $this->getBundles();
+        list($bundles, $checksum) = $this->getBundles();
 
         // Zip directory
         $this->createAssetsArchive($archivePath, $bundles);
 
-        return $this->assetArtifactDirectory . '.zip';
+        return $this->writeToPublicDirectory($archivePath, $checksum);
     }
 
     private function createAssetsArchive(string $archivePath, array $bundles)
@@ -106,13 +114,12 @@ class AssetService implements EventSubscriberInterface
         if($zip->count() <= 0)
         {
             $zip->addFromString('_placeholder_', '');
-            return 0;
         }
 
         $zip->close();
     }
 
-    private function getBundles(): array
+    private function getBundles()
     {
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('active', true));
@@ -138,6 +145,28 @@ class AssetService implements EventSubscriberInterface
             ];
         }
 
-        return $bundles;
+        $checksum = md5(\GuzzleHttp\json_encode($bundles));
+
+        return [$bundles, $checksum];
+    }
+
+    private function writeToPublicDirectory(string $sourceArchive, string $checksum = null): string
+    {
+        $this->fileSystem->createDir('pwa');
+
+        $output = $checksum ?? 'pwa_assets';
+
+        $outputPath = 'pwa/' . $output  . '.zip';
+
+        try {
+            $this->fileSystem->delete($outputPath);
+        } catch (FileNotFoundException $e)
+        {
+            // Catch gracefully
+        }
+
+        $this->fileSystem->writeStream($outputPath, fopen($sourceArchive, 'r'));
+
+        return $outputPath;
     }
 }

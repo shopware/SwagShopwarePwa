@@ -2,6 +2,8 @@
 
 namespace SwagVueStorefront\VueStorefront\Bundle;
 
+use League\Flysystem\FileNotFoundException;
+use League\Flysystem\FilesystemInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -42,16 +44,23 @@ class ConfigurationService implements EventSubscriberInterface
      */
     private $helper;
 
+    /**
+     * @var FilesystemInterface
+     */
+    private $fileSystem;
+
     public function __construct(
         Kernel $kernel,
         EntityRepositoryInterface $pluginRepository,
         SystemConfigService $configService,
-        FormattingHelper $helper)
+        FormattingHelper $helper,
+        FilesystemInterface $fileSystem)
     {
         $this->kernel = $kernel;
         $this->pluginRepository = $pluginRepository;
         $this->configService = $configService;
         $this->helper = $helper;
+        $this->fileSystem = $fileSystem;
     }
 
     public static function getSubscribedEvents()
@@ -64,19 +73,12 @@ class ConfigurationService implements EventSubscriberInterface
 
     public function dumpBundles(): string
     {
-        $bundleInformation = $this->getInfo();
+        $bundleInformationSerialized = json_encode($this->getInfo(), JSON_PRETTY_PRINT);
 
-        $filePath = $this->kernel->getCacheDir() . '/../../' . $this->artifactPath;
-
-        file_put_contents(
-            $filePath,
-            json_encode($bundleInformation, JSON_PRETTY_PRINT)
-        );
-
-        return $this->artifactPath;
+        return $this->writeToPublicDirectory($bundleInformationSerialized, md5($bundleInformationSerialized));
     }
 
-    private function getInfo()
+    private function getInfo(): array
     {
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('active', true));
@@ -126,5 +128,25 @@ class ConfigurationService implements EventSubscriberInterface
     private function getPluginConfigurations()
     {
         return $this->configService->all();
+    }
+
+    private function writeToPublicDirectory(string $content, string $checksum): string
+    {
+        $this->fileSystem->createDir('pwa');
+
+        $output = $checksum ?? 'pwa_bundles';
+
+        $outputPath = 'pwa/' . $output  . '.json';
+
+        try {
+            $this->fileSystem->delete($outputPath);
+        } catch (FileNotFoundException $e)
+        {
+            // Catch gracefully
+        }
+
+        $this->fileSystem->write($outputPath, $content);
+
+        return $outputPath;
     }
 }
