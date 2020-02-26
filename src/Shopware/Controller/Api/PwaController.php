@@ -6,7 +6,9 @@ use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use SwagVueStorefront\VueStorefront\Bundle\AssetService;
 use SwagVueStorefront\VueStorefront\Bundle\ConfigurationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Asset\Packages;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -24,10 +26,16 @@ class PwaController extends AbstractController
      */
     private $assetService;
 
-    public function __construct(ConfigurationService $configurationService, AssetService $assetService)
+    /**
+     * @var Packages
+     */
+    private $packages;
+
+    public function __construct(ConfigurationService $configurationService, AssetService $assetService, Packages $packages)
     {
         $this->configurationService = $configurationService;
         $this->assetService = $assetService;
+        $this->packages = $packages;
     }
 
     /**
@@ -35,7 +43,7 @@ class PwaController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function dumpBundles(): JsonResponse
+    public function dumpBundles(Request $request): JsonResponse
     {
         try {
             $configArtifact = $this->configurationService->dumpBundles();
@@ -49,8 +57,8 @@ class PwaController extends AbstractController
         return new JsonResponse([
             'success' => 1,
             'buildArtifact' => [
-                'config' => $configArtifact,
-                'asset' => $assetArtifact
+                'config' => $request->getSchemeAndHttpHost() . $this->packages->getUrl($configArtifact),
+                'asset' => $request->getSchemeAndHttpHost() . $this->packages->getUrl($assetArtifact)
             ]
         ]);
     }

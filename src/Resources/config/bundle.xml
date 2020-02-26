@@ -21,7 +21,8 @@
             </call>
             <argument id="SwagVueStorefront\VueStorefront\Bundle\ConfigurationService" type="service"/>
             <argument id="SwagVueStorefront\VueStorefront\Bundle\AssetService" type="service"/>
-    </service>
+            <argument type="service" id="assets.packages"/>
+        </service>
 
 
         <!-- Services -->
