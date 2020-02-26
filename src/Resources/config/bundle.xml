@@ -13,6 +13,16 @@
             <tag name="console.command"/>
         </service>
 
+        <!-- Controllers -->
+
+        <service id="SwagVueStorefront\Shopware\Controller\Api\PwaController" public="true">
+            <call method="setContainer">
+                <argument id="service_container" type="service"/>
+            </call>
+            <argument id="SwagVueStorefront\VueStorefront\Bundle\ConfigurationService" type="service"/>
+            <argument id="SwagVueStorefront\VueStorefront\Bundle\AssetService" type="service"/>
+    </service>
+
 
         <!-- Services -->
 
@@ -21,6 +31,7 @@
             <argument id="plugin.repository" type="service"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="SwagVueStorefront\VueStorefront\Bundle\Helper\FormattingHelper"/>
+            <argument type="service" id="shopware.filesystem.public"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 
@@ -28,6 +39,7 @@
             <argument type="service" id="kernel" />
             <argument id="plugin.repository" type="service"/>
             <argument type="service" id="SwagVueStorefront\VueStorefront\Bundle\Helper\FormattingHelper"/>
+            <argument type="service" id="shopware.filesystem.public"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 

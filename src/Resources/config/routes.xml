@@ -5,5 +5,6 @@
         https://symfony.com/schema/routing/routing-1.0.xsd">
 
     <import resource="../../**/VueStorefront/Controller/*Controller.php" type="annotation" />
+    <import resource="../../**/Shopware/Controller/Api/*Controller.php" type="annotation" />
 
 </routes>
