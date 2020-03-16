@@ -1,9 +1,8 @@
 {
-  "name": "swag/shopware-pwa",
+  "name": "shopware-pwa/shopware-pwa",
   "description": "Shopware PWA extension",
   "type": "shopware-platform-plugin",
   "license": "MIT",
-  "version": "v0.0.1",
   "authors": [{
       "name": "shopware AG"
   }],
