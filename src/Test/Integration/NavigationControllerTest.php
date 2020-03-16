@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace SwagVueStorefront\Test\Integration;
+namespace SwagShopwarePwa\Test\Integration;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Defaults;
@@ -10,14 +10,14 @@ use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\SalesChannelApiTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\PlatformRequest;
-use SwagVueStorefront\SwagVueStorefront;
+use SwagShopwarePwa\SwagShopwarePwa;
 
 class NavigationControllerTest extends TestCase
 {
     use IntegrationTestBehaviour;
     use SalesChannelApiTestBehaviour;
 
-    const ENDPOINT_NAVIGATION = '/sales-channel-api/v'.PlatformRequest::API_VERSION.SwagVueStorefront::ENDPOINT_PATH.'/navigation';
+    const ENDPOINT_NAVIGATION = '/sales-channel-api/v' . PlatformRequest::API_VERSION . '/vsf/navigation';
 
     /**
      * @var string
@@ -124,6 +124,9 @@ class NavigationControllerTest extends TestCase
         static::assertCount(1, $result->children[0]->children);
     }
 
+    /**
+     * Needs fix, because order of children is not deterministic and fails sometimes
+     */
     public function testResolveSeoUrl(): void
     {
         $this->createCategories();

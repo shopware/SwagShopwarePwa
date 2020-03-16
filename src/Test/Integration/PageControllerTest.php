@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace SwagVueStorefront\Test\Integration;
+namespace SwagShopwarePwa\Test\Integration;
 
 use PHPUnit\Framework\TestCase;
 use Shopware\Core\Content\Cms\DataResolver\FieldConfig;
@@ -12,14 +12,14 @@ use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\SalesChannelApiTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\PlatformRequest;
-use SwagVueStorefront\SwagVueStorefront;
+use SwagShopwarePwa\SwagShopwarePwa;
 
 class PageControllerTest extends TestCase
 {
     use IntegrationTestBehaviour;
     use SalesChannelApiTestBehaviour;
 
-    const ENDPOINT_PAGE = '/sales-channel-api/v'.PlatformRequest::API_VERSION.SwagVueStorefront::ENDPOINT_PATH.'/page';
+    const ENDPOINT_PAGE = '/sales-channel-api/v' . PlatformRequest::API_VERSION . '/vsf/page';
 
     /**
      * @var EntityRepositoryInterface

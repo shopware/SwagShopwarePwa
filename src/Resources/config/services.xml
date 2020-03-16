@@ -12,30 +12,30 @@
 
         <!-- Controllers -->
 
-        <service id="SwagVueStorefront\VueStorefront\Controller\RouteController" public="true">
-            <argument id="SwagVueStorefront\VueStorefront\Entity\SalesChannelRoute\SalesChannelRouteRepository" type="service"/>
+        <service id="SwagShopwarePwa\Pwa\Controller\RouteController" public="true">
+            <argument id="SwagShopwarePwa\Pwa\Entity\SalesChannelRoute\SalesChannelRouteRepository" type="service"/>
             <argument id="Shopware\Core\Framework\DataAbstractionLayer\Search\RequestCriteriaBuilder" type="service"/>
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>
         </service>
 
-        <service id="SwagVueStorefront\VueStorefront\Controller\ContextController" public="true">
+        <service id="SwagShopwarePwa\Pwa\Controller\ContextController" public="true">
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>
         </service>
 
-        <service id="SwagVueStorefront\VueStorefront\Controller\PageController" public="true">
-            <argument type="service" id="SwagVueStorefront\VueStorefront\PageLoader\Context\PageLoaderContextBuilder"/>
-            <argument type="tagged" tag="vsf.page_loader"/>
+        <service id="SwagShopwarePwa\Pwa\Controller\PageController" public="true">
+            <argument type="service" id="SwagShopwarePwa\Pwa\PageLoader\Context\PageLoaderContextBuilder"/>
+            <argument type="tagged" tag="pwa.page_loader"/>
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>
         </service>
 
-        <service id="SwagVueStorefront\VueStorefront\Controller\NavigationController" public="true">
-            <argument type="service" id="SwagVueStorefront\VueStorefront\Entity\SalesChannelNavigation\SalesChannelNavigationRepository"/>
+        <service id="SwagShopwarePwa\Pwa\Controller\NavigationController" public="true">
+            <argument type="service" id="SwagShopwarePwa\Pwa\Entity\SalesChannelNavigation\SalesChannelNavigationRepository"/>
             <call method="setContainer">
                 <argument id="service_container" type="service"/>
             </call>
@@ -44,71 +44,71 @@
 
         <!-- Page loader context builder -->
 
-        <service id="SwagVueStorefront\VueStorefront\PageLoader\Context\PageLoaderContextBuilder">
-            <argument type="service" id="SwagVueStorefront\VueStorefront\PageLoader\Context\PathResolver"/>
+        <service id="SwagShopwarePwa\Pwa\PageLoader\Context\PageLoaderContextBuilder">
+            <argument type="service" id="SwagShopwarePwa\Pwa\PageLoader\Context\PathResolver"/>
         </service>
 
-        <service id="SwagVueStorefront\VueStorefront\PageLoader\Context\PathResolver">
-            <argument id="SwagVueStorefront\VueStorefront\Entity\SalesChannelRoute\SalesChannelRouteRepository" type="service"/>
+        <service id="SwagShopwarePwa\Pwa\PageLoader\Context\PathResolver">
+            <argument id="SwagShopwarePwa\Pwa\Entity\SalesChannelRoute\SalesChannelRouteRepository" type="service"/>
         </service>
 
 
         <!-- Page loaders -->
 
-        <service id="SwagVueStorefront\VueStorefront\PageLoader\ProductPageLoader">
+        <service id="SwagShopwarePwa\Pwa\PageLoader\ProductPageLoader">
             <argument id="sales_channel.product.repository" type="service"/>
-            <argument type="service" id="SwagVueStorefront\VueStorefront\PageResult\Product\ProductPageResultHydrator"/>
+            <argument type="service" id="SwagShopwarePwa\Pwa\PageResult\Product\ProductPageResultHydrator"/>
             <argument id="Shopware\Core\Framework\DataAbstractionLayer\Search\RequestCriteriaBuilder" type="service"/>
             <argument id="Shopware\Core\Content\Product\SalesChannel\SalesChannelProductDefinition" type="service"/>
-            <tag name="vsf.page_loader"/>
+            <tag name="pwa.page_loader"/>
         </service>
 
-        <service id="SwagVueStorefront\VueStorefront\PageLoader\NavigationPageLoader">
+        <service id="SwagShopwarePwa\Pwa\PageLoader\NavigationPageLoader">
             <argument type="service" id="sales_channel.category.repository"/>
             <argument type="service" id="Shopware\Core\Content\Cms\SalesChannel\SalesChannelCmsPageLoader"/>
-            <argument type="service" id="SwagVueStorefront\VueStorefront\PageResult\Navigation\NavigationPageResultHydrator"/>
+            <argument type="service" id="SwagShopwarePwa\Pwa\PageResult\Navigation\NavigationPageResultHydrator"/>
             <argument type="service" id="Shopware\Core\Content\Category\CategoryDefinition"/>
-            <tag name="vsf.page_loader"/>
+            <tag name="pwa.page_loader"/>
         </service>
 
 
         <!-- Page hydrators -->
 
-        <service id="SwagVueStorefront\VueStorefront\PageResult\Product\ProductPageResultHydrator"/>
+        <service id="SwagShopwarePwa\Pwa\PageResult\Product\ProductPageResultHydrator"/>
 
-        <service id="SwagVueStorefront\VueStorefront\PageResult\Navigation\NavigationPageResultHydrator">
+        <service id="SwagShopwarePwa\Pwa\PageResult\Navigation\NavigationPageResultHydrator">
             <argument type="service" id="Shopware\Storefront\Framework\Routing\Router"/>
-            <argument type="tagged" tag="vsf.page_result.aggregation_result_hydrator"/>
+            <argument type="tagged" tag="pwa.page_result.aggregation_result_hydrator"/>
         </service>
 
 
         <!-- Aggregation result hydrators -->
 
-        <service id="SwagVueStorefront\VueStorefront\PageResult\Navigation\AggregationResultHydrator\EntityResultHydrator">
-            <tag name="vsf.page_result.aggregation_result_hydrator"/>
+        <service id="SwagShopwarePwa\Pwa\PageResult\Navigation\AggregationResultHydrator\EntityResultHydrator">
+            <tag name="pwa.page_result.aggregation_result_hydrator"/>
         </service>
 
-        <service id="SwagVueStorefront\VueStorefront\PageResult\Navigation\AggregationResultHydrator\TermsResultHydrator">
-            <tag name="vsf.page_result.aggregation_result_hydrator"/>
+        <service id="SwagShopwarePwa\Pwa\PageResult\Navigation\AggregationResultHydrator\TermsResultHydrator">
+            <tag name="pwa.page_result.aggregation_result_hydrator"/>
         </service>
 
-        <service id="SwagVueStorefront\VueStorefront\PageResult\Navigation\AggregationResultHydrator\StatsResultHydrator">
-            <tag name="vsf.page_result.aggregation_result_hydrator"/>
+        <service id="SwagShopwarePwa\Pwa\PageResult\Navigation\AggregationResultHydrator\StatsResultHydrator">
+            <tag name="pwa.page_result.aggregation_result_hydrator"/>
         </service>
 
-        <service id="SwagVueStorefront\VueStorefront\PageResult\Navigation\AggregationResultHydrator\MaxResultHydrator">
-            <tag name="vsf.page_result.aggregation_result_hydrator"/>
+        <service id="SwagShopwarePwa\Pwa\PageResult\Navigation\AggregationResultHydrator\MaxResultHydrator">
+            <tag name="pwa.page_result.aggregation_result_hydrator"/>
         </service>
 
 
         <!-- Repositories -->
-        <service id="SwagVueStorefront\VueStorefront\Entity\SalesChannelRoute\SalesChannelRouteRepository">
+        <service id="SwagShopwarePwa\Pwa\Entity\SalesChannelRoute\SalesChannelRouteRepository">
             <argument type="service" id="seo_url.repository"/>
         </service>
 
-        <service id="SwagVueStorefront\VueStorefront\Entity\SalesChannelNavigation\SalesChannelNavigationRepository">
+        <service id="SwagShopwarePwa\Pwa\Entity\SalesChannelNavigation\SalesChannelNavigationRepository">
             <argument type="service" id="Shopware\Core\Content\Category\Service\NavigationLoader"/>
-            <argument type="service" id="SwagVueStorefront\VueStorefront\Entity\SalesChannelRoute\SalesChannelRouteRepository"/>
+            <argument type="service" id="SwagShopwarePwa\Pwa\Entity\SalesChannelRoute\SalesChannelRouteRepository"/>
         </service>
 
     </services>

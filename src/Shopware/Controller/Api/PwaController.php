@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace SwagVueStorefront\Shopware\Controller\Api;
+namespace SwagShopwarePwa\Shopware\Controller\Api;
 
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
-use SwagVueStorefront\VueStorefront\Bundle\AssetService;
-use SwagVueStorefront\VueStorefront\Bundle\ConfigurationService;
+use SwagShopwarePwa\Pwa\Bundle\AssetService;
+use SwagShopwarePwa\Pwa\Bundle\ConfigurationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Asset\Packages;
 use Symfony\Component\HttpFoundation\JsonResponse;
