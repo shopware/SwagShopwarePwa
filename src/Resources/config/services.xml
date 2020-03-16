@@ -20,12 +20,6 @@
             </call>
         </service>
 
-        <service id="SwagShopwarePwa\Pwa\Controller\ContextController" public="true">
-            <call method="setContainer">
-                <argument type="service" id="service_container"/>
-            </call>
-        </service>
-
         <service id="SwagShopwarePwa\Pwa\Controller\PageController" public="true">
             <argument type="service" id="SwagShopwarePwa\Pwa\PageLoader\Context\PageLoaderContextBuilder"/>
             <argument type="tagged" tag="pwa.page_loader"/>
