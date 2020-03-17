@@ -14,7 +14,7 @@ CHANGELOG for Shopware PWA
 
 * Moved namespace `SwagVueStorefront` to `SwagShopwarePwa`
 * Moved namespace `SwagVueStorefront\VueStorefront` to `SwagShopwarePwa\Pwa`
-* Renamed plugin package from `swag/vue-storefront` to `showpare-pwa/shopware-pwa`
+* Renamed plugin package from `swag/vue-storefront` to `shopware-pwa/shopware-pwa`
 * Renamed plugin baseclass from `SwagVueStorefront` to `SwagShopwarePwa`
 
 **Deprecated**
