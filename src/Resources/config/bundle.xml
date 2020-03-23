@@ -7,44 +7,44 @@
 
         <!-- Commands -->
 
-        <service id="SwagVueStorefront\VueStorefront\Bundle\Command\DumpPluginConfigurationCommand">
-            <argument type="service" id="SwagVueStorefront\VueStorefront\Bundle\ConfigurationService"/>
-            <argument type="service" id="SwagVueStorefront\VueStorefront\Bundle\AssetService"/>
+        <service id="SwagShopwarePwa\Pwa\Bundle\Command\DumpPluginConfigurationCommand">
+            <argument type="service" id="SwagShopwarePwa\Pwa\Bundle\ConfigurationService"/>
+            <argument type="service" id="SwagShopwarePwa\Pwa\Bundle\AssetService"/>
             <tag name="console.command"/>
         </service>
 
         <!-- Controllers -->
 
-        <service id="SwagVueStorefront\Shopware\Controller\Api\PwaController" public="true">
+        <service id="SwagShopwarePwa\Shopware\Controller\Api\PwaController" public="true">
             <call method="setContainer">
                 <argument id="service_container" type="service"/>
             </call>
-            <argument id="SwagVueStorefront\VueStorefront\Bundle\ConfigurationService" type="service"/>
-            <argument id="SwagVueStorefront\VueStorefront\Bundle\AssetService" type="service"/>
+            <argument id="SwagShopwarePwa\Pwa\Bundle\ConfigurationService" type="service"/>
+            <argument id="SwagShopwarePwa\Pwa\Bundle\AssetService" type="service"/>
             <argument type="service" id="assets.packages"/>
         </service>
 
 
         <!-- Services -->
 
-        <service id="SwagVueStorefront\VueStorefront\Bundle\ConfigurationService">
+        <service id="SwagShopwarePwa\Pwa\Bundle\ConfigurationService">
             <argument type="service" id="kernel" />
             <argument id="plugin.repository" type="service"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
-            <argument type="service" id="SwagVueStorefront\VueStorefront\Bundle\Helper\FormattingHelper"/>
+            <argument type="service" id="SwagShopwarePwa\Pwa\Bundle\Helper\FormattingHelper"/>
             <argument type="service" id="shopware.filesystem.public"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 
-        <service id="SwagVueStorefront\VueStorefront\Bundle\AssetService">
+        <service id="SwagShopwarePwa\Pwa\Bundle\AssetService">
             <argument type="service" id="kernel" />
             <argument id="plugin.repository" type="service"/>
-            <argument type="service" id="SwagVueStorefront\VueStorefront\Bundle\Helper\FormattingHelper"/>
+            <argument type="service" id="SwagShopwarePwa\Pwa\Bundle\Helper\FormattingHelper"/>
             <argument type="service" id="shopware.filesystem.public"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 
-        <service id="SwagVueStorefront\VueStorefront\Bundle\Helper\FormattingHelper"/>
+        <service id="SwagShopwarePwa\Pwa\Bundle\Helper\FormattingHelper"/>
 
     </services>
 </container>

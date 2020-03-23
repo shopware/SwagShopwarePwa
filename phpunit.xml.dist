@@ -15,7 +15,7 @@ cacheTokens="false">
     </php>
 
     <testsuites>
-        <testsuite name="Swag Vue Storefront Integration Tests">
+        <testsuite name="Swag Shopware PWA Integration Tests">
             <directory>src/Test</directory>
         </testsuite>
     </testsuites>

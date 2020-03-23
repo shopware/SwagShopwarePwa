@@ -1,6 +1,6 @@
-# Shopware 6 Sales Channel API Extension
+# Shopware PWA extension
 
-This is a **non official extension** and comes without any liability or claim to correctness.
+This extension provides a collection of helper functions to integrate with the [shopware-pwa](https://github.com/DivanteLtd/shopware-pwa) client library.
 
 ## Table of content
 
@@ -29,7 +29,7 @@ $ bin/console plugin:refresh
 Install and activate the plugin
 
 ```bash
-$ bin/console plugin:install --activate SwagVueStorefront
+$ bin/console plugin:install --activate SwagShopwarePwa
 ```
 
 Clear the cache (sometimes invalidation is needed for the new routes to activate)

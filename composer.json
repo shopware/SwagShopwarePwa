@@ -1,19 +1,18 @@
 {
-  "name": "swag/vue-storefront",
-  "description": "Extension for routing and context endpoints",
+  "name": "shopware-pwa/shopware-pwa",
+  "description": "Shopware PWA extension",
   "type": "shopware-platform-plugin",
   "license": "MIT",
-  "version": "v0.0.1",
   "authors": [{
-      "name": "Dominic Klein"
+      "name": "shopware AG"
   }],
   "autoload": {
     "psr-4": {
-      "SwagVueStorefront\\": "src/"
+      "SwagShopwarePwa\\": "src/"
     }
   },
   "extra": {
-    "shopware-plugin-class": "SwagVueStorefront\\SwagVueStorefront",
+    "shopware-plugin-class": "SwagShopwarePwa\\SwagShopwarePwa",
     "plugin-icon": "src/Resources/config/plugin.png",
     "label": {
       "de-DE": "PWA Integration",
