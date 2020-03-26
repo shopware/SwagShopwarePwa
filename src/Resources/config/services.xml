@@ -44,6 +44,7 @@
 
         <service id="SwagShopwarePwa\Pwa\PageLoader\Context\PathResolver">
             <argument id="SwagShopwarePwa\Pwa\Entity\SalesChannelRoute\SalesChannelRouteRepository" type="service"/>
+            <argument id="sales_channel.repository" type="service"/>
         </service>
 
 

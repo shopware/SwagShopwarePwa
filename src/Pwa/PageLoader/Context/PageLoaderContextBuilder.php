@@ -46,7 +46,7 @@ class PageLoaderContextBuilder
         /**
          * @var $routes SalesChannelRouteEntity
          */
-        $route = $this->pathResolver->resolve($path, $context->getContext());
+        $route = $this->pathResolver->resolve($path, $context);
 
         if(!$route)
         {

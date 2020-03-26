@@ -8,6 +8,9 @@ use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityD
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Event\EntitySearchResultLoadedEvent;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\SalesChannelApiTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
@@ -40,6 +43,11 @@ class PageControllerTest extends TestCase
      * @var EntityRepositoryInterface
      */
     private $salesChannelDomainRepository;
+
+    /**
+     * @var EntityRepositoryInterface
+     */
+    private $salesChannelRepository;
 
     /**
      * @var string
@@ -82,6 +90,31 @@ class PageControllerTest extends TestCase
         $this->categoryRepository = $this->getContainer()->get('category.repository');
         $this->cmsPageRepository = $this->getContainer()->get('cms_page.repository');
         $this->salesChannelDomainRepository = $this->getContainer()->get('sales_channel_domain.repository');
+        $this->salesChannelRepository = $this->getContainer()->get('sales_channel.repository');
+    }
+
+    public function testResolveRootCategoryPage(): void
+    {
+        $this->createCmsPage();
+        $this->createCategories();
+
+        $content = [
+            'path' => ''
+        ];
+
+        $this->salesChannelApiBrowser->request(
+            'POST',
+            self::ENDPOINT_PAGE,
+            $content
+        );
+
+        $response = json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
+
+        static::assertObjectHasAttribute('cmsPage', $response);
+
+        static::assertEquals('frontend.navigation.page', $response->resourceType);
+        static::assertObjectHasAttribute('resourceIdentifier', $response);
+        static::assertEquals($this->categoryId, $response->resourceIdentifier);
     }
 
     public function testResolveCategoryPage(): void
@@ -373,8 +406,11 @@ class PageControllerTest extends TestCase
 
     private function createCategories()
     {
+        $this->categoryId = UUid::randomHex();
+
         $resultEvent = $this->categoryRepository->create([
             [
+                'id' => $this->categoryId,
                 'salesChannelId' => $this->salesChannelId,
                 'name' => 'My test category',
                 'cmsPageId' => $this->cmsPageId,
@@ -387,7 +423,12 @@ class PageControllerTest extends TestCase
             ]
         ], Context::createDefaultContext());
 
-        $this->categoryId = $resultEvent->getEventByEntityName('category')->getIds()[0];
+        $this->salesChannelRepository->upsert([
+            [
+                'id' => $this->salesChannelId,
+                'navigationCategoryId' => $this->categoryId
+            ]
+        ], Context::createDefaultContext());
     }
 
     private function createCmsPage()
