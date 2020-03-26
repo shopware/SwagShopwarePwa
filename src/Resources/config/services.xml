@@ -27,6 +27,14 @@
             </call>
         </service>
 
+        <service id="SwagShopwarePwa\Pwa\Controller\CmsPageController" public="true">
+            <argument type="service" id="SwagShopwarePwa\Pwa\PageLoader\Context\PageLoaderContextBuilder"/>
+            <argument type="tagged" tag="pwa.page_loader"/>
+            <call method="setContainer">
+                <argument id="service_container" type="service"/>
+            </call>
+        </service>
+
 
         <!-- Page loader context builder -->
 

@@ -3,13 +3,14 @@
 namespace SwagShopwarePwa\Pwa\PageResult;
 
 use Shopware\Core\Framework\Struct\JsonSerializableTrait;
+use Shopware\Core\Framework\Struct\Struct;
 
 /**
  * This abstract class gives structure to any page results by dictating them to have a resource and an identifier
  *
  * @package SwagShopwarePwa\Pwa\PageResult
  */
-abstract class AbstractPageResult implements \JsonSerializable
+abstract class AbstractPageResult extends Struct implements \JsonSerializable
 {
     use JsonSerializableTrait;
 
@@ -29,6 +30,11 @@ abstract class AbstractPageResult implements \JsonSerializable
     public function getResourceType(): string
     {
         return $this->resourceType;
+    }
+
+    public function getApiAlias(): string
+    {
+        return 'pwa_page_result';
     }
 
     public function setResourceType(string $resourceType)

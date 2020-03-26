@@ -48,7 +48,7 @@ class PageLoaderContextBuilder
          */
         $route = $this->pathResolver->resolve($path, $context);
 
-        if(!$route)
+        if($route === null)
         {
             throw new NotFoundHttpException(sprintf('Path `%s` could not be resolved.', $path));
         }
