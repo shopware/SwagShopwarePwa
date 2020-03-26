@@ -2,6 +2,8 @@
 
 This extension provides a collection of helper functions to integrate with the [shopware-pwa](https://github.com/DivanteLtd/shopware-pwa) client library.
 
+**Important Notice**: As of 2020-03-26 the plugin is only compatible with `shopware/platform@master` since some required additions have not yet been released.
+
 ## Table of content
 
 * [Documentation](#documentation)
@@ -54,11 +56,17 @@ $ bin/console dal:refresh:index
 
 Tests are located in `src/Test` and configured in `phpunit.xml`.
 
-Run the following commands in the plugin's root directory.
+In order to run the tests you have to set up the test database so that Shopware runs them with our plugin enabled.
+
+After the plugin is installed in your shop, make sure you execute the follwing command (in the Shopware root directory) to dump the current configuration of your shop to the test-database (when using Docker, run it inside the container):
+
+```bash
+$ ./psh.phar init-test-databases
+```
+
+Then execute the following commands in the plugin's root directory to run the test.
 
 ```bash
 $ composer install
 $ ../../../vendor/bin/phpunit
 ```
-
-Pitfall: The tests may fail upon first run, because the plugin is not activated. Run `./psh.phar init-test-databases` from Shopware root to dump the database and activate the plugin in your test database.
