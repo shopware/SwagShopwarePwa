@@ -17,7 +17,7 @@ class NavigationControllerTest extends TestCase
     use IntegrationTestBehaviour;
     use SalesChannelApiTestBehaviour;
 
-    const ENDPOINT_NAVIGATION = '/sales-channel-api/v' . PlatformRequest::API_VERSION . '/vsf/navigation';
+    const ENDPOINT_NAVIGATION = '/store-api/v' . PlatformRequest::API_VERSION . '/pwa/navigation';
 
     /**
      * @var string

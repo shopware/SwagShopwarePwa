@@ -19,7 +19,7 @@ class PageControllerTest extends TestCase
     use IntegrationTestBehaviour;
     use SalesChannelApiTestBehaviour;
 
-    const ENDPOINT_PAGE = '/sales-channel-api/v' . PlatformRequest::API_VERSION . '/vsf/page';
+    const ENDPOINT_PAGE = '/store-api/v' . PlatformRequest::API_VERSION . '/pwa/page';
 
     /**
      * @var EntityRepositoryInterface
