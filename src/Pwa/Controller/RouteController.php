@@ -19,7 +19,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @RouteScope(scopes={"sales-channel-api"})
+ * @RouteScope(scopes={"sales-channel-api", "store-api"})
  */
 class RouteController extends AbstractController
 {
