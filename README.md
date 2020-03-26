@@ -12,9 +12,31 @@ This extension provides a collection of helper functions to integrate with the [
 
 ## Documentation
 
+### Endpoints
+
+This plugin adds multiple endpoints to both, the store and the admin API. All endpoints below accept `POST` requests.
+
+**/store-api/v1/pwa/page**
+
+Resolves a given path to a cms or product page and returns it.
+
+**/store-api/v1/pwa/navigation**
+
+Delivers a category along with its child categories down to a desired level.
+ 
+**/store-api/v1/pwa/cms-page-resolve**
+
+Resolves a given path to cms or product page and accepts include parameters to specifiy the fields contained in your response.
+ 
+**/api/v1/_action/pwa/dump-bundles**
+
+This endpoint is required to connect Shopware plugins with your PWA during the application build. It dumps your bundles metadata and PWA specific source files and delivers via a safe channel.
+
+### API Reference
+
 [![Netlify Status](https://api.netlify.com/api/v1/badges/038a45ea-3e86-4e17-a826-0ab96e0dfba4/deploy-status)](https://app.netlify.com/sites/swag-vsf-docs/deploys)
 
-Refer to the [swagger.yaml](_doc/swagger.yaml) included in the plugin or see the [swag-vsf-docs](https://swag-vsf-docs.netlify.com/).
+For more specific documentation, please refer to the [swagger.yaml](_doc/swagger.yaml) included in the plugin or see the [swag-vsf-docs](https://swag-vsf-docs.netlify.com/). It is not fully complete, but provides a good overview of usage and strucutre of the endpoints.
 
 ## Setup
 
