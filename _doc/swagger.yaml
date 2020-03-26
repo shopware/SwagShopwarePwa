@@ -1,6 +1,6 @@
 openapi: 3.0.0
 servers:
-    -   url: '{protocol}://{api_host}/sales-channel-api/v1'
+    -   url: '{protocol}://{api_host}/store-api/v1'
         variables:
             protocol:
                 default: 'https'
@@ -10,77 +10,12 @@ servers:
                 description: 'Host of your Shopware 6 instance'
 info:
     title: Shopware Sales-Channel-API Extension
-    version: 1.0.0
+    version: 0.1.2
 paths:
-    '/vsf/routes':
-        post:
-            summary: Fetch a list of routes
-            operationId: vsf.route.list
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            type: object
-                            properties:
-                                path:
-                                    type: string
-                                    default: '/my-path/needs-a-resolve'
-                                    description: 'Path to be resolved'
-            responses:
-                '200':
-                    description: Fetches a list of routes
-                    content:
-                        application/json:
-                            schema:
-                                type: object
-                                properties:
-                                    duration:
-                                        type: string
-                                    count:
-                                        type: integer
-                                    data:
-                                        type: array
-                                        items:
-                                            $ref: '#/components/schemas/route_flat'
-    '/vsf/routes/match':
-        post:
-            summary: Match and return routes for a given path.
-            operationId: vsf.route.match
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            type: object
-                            properties:
-                                path:
-                                    type: string
-                                    default: '/my-path/needs-a-resolve'
-                                    description: 'Path to be matched'
-                                fuzzy:
-                                    type: boolean
-                                    default: false
-                                    description: 'Auto-expand results to fuzzy matches (slower!)'
-
-            responses:
-                '200':
-                    description: Matched route(s)
-                    content:
-                        application/json:
-                            schema:
-                                type: object
-                                properties:
-                                    duration:
-                                        type: string
-                                    count:
-                                        type: integer
-                                    data:
-                                        type: array
-                                        items:
-                                            $ref: '#/components/schemas/route_flat'
-    '/vsf/page':
+    '/pwa/page':
         post:
             summary: Resolve page content for a given path.
-            operationId: vsf.page
+            operationId: pwa.page
             parameters:
                 - in: query
                   name: limit
@@ -116,10 +51,10 @@ paths:
                                 oneOf:
                                     - $ref: '#/components/schemas/navigation_page_response'
                                     - $ref: '#/components/schemas/product_page_response'
-    '/vsf/navigation':
+    '/pwa/navigation':
         post:
             summary: Get navigation tree for a given root node
-            operationId: vsf.navigation
+            operationId: pwa.navigation
             requestBody:
                 content:
                     application/json:
