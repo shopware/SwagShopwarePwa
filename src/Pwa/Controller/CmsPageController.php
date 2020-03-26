@@ -24,9 +24,20 @@ class CmsPageController extends AbstractController
      */
     private $pageLoaderContextBuilder;
 
-    public function __construct(PageLoaderContextBuilder $pageLoaderContextBuilder)
+    /**
+     * @var PageLoaderInterface[]
+     */
+    private $pageLoaders;
+
+    public function __construct(PageLoaderContextBuilder $pageLoaderContextBuilder, iterable $pageLoaders)
     {
         $this->pageLoaderContextBuilder = $pageLoaderContextBuilder;
+
+        /** @var PageLoaderInterface $pageLoader */
+        foreach($pageLoaders as $pageLoader)
+        {
+            $this->pageLoaders[$pageLoader->getResourceType()] = $pageLoader;
+        }
     }
 
     /**
@@ -44,7 +55,7 @@ class CmsPageController extends AbstractController
 
         if(!$pageLoader)
         {
-                throw new PageNotFoundException($pageLoaderContext->getResourceType() . $pageLoaderContext->getResourceIdentifier());
+            throw new PageNotFoundException($pageLoaderContext->getResourceType() . $pageLoaderContext->getResourceIdentifier());
         }
 
         return new CmsPageRouteResponse($this->getPageResult($pageLoader, $pageLoaderContext));
