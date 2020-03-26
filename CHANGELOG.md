@@ -3,6 +3,10 @@ CHANGELOG for Shopware PWA
 
 ### v0.1.2 - [to be scheduled]
 
+**Added**
+
+* Controller `SwagShopwarePwa\Pwa\Controller\CmsPageController` which allows for `include` field usage at the `store-api/v1/pwa/cms-page-resolve` endpoint.
+
 **Removed**
 
 * Controller `SwagShopwarePwa\Pwa\Controller\RouteController`
