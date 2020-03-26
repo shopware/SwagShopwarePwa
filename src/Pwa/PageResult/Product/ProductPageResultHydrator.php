@@ -2,14 +2,8 @@
 
 namespace SwagShopwarePwa\Pwa\PageResult\Product;
 
-use Shopware\Core\Content\Product\Aggregate\ProductMedia\ProductMediaCollection;
-use Shopware\Core\Content\Product\Aggregate\ProductPrice\ProductPriceCollection;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
-use Shopware\Core\Content\Property\Aggregate\PropertyGroupOption\PropertyGroupOptionCollection;
-use Shopware\Core\Content\Property\PropertyGroupCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationResultCollection;
-use Shopware\Core\Framework\Pricing\ListingPriceCollection;
-use Shopware\Storefront\Page\Product\ProductPage;
 use SwagShopwarePwa\Pwa\PageLoader\Context\PageLoaderContext;
 
 /**
@@ -31,7 +25,6 @@ class ProductPageResultHydrator
 
         $pageResult->setAggregations($aggregations);
 
-        // Request rückbauen! (WIP)
         $pageResult->setResourceType($pageLoaderContext->getResourceType());
         $pageResult->setResourceIdentifier($pageLoaderContext->getResourceIdentifier());
 
