@@ -2,10 +2,10 @@
 
 namespace SwagShopwarePwa\Pwa\PageLoader\Context;
 
-use Shopware\Core\Framework\Context;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use SwagShopwarePwa\Pwa\Entity\SalesChannelRoute\SalesChannelRouteEntity;
 
 interface PathResolverInterface
 {
-    public function resolve(string $path, Context $context): ?SalesChannelRouteEntity;
+    public function resolve(string $path, SalesChannelContext $context): ?SalesChannelRouteEntity;
 }
