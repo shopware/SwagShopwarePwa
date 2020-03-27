@@ -2,12 +2,14 @@
 
 namespace SwagShopwarePwa\Pwa\Controller;
 
+use Shopware\Core\Content\Cms\Exception\PageNotFoundException;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use SwagShopwarePwa\Pwa\PageLoader\Context\PageLoaderContextBuilder;
 use SwagShopwarePwa\Pwa\PageLoader\Context\PageLoaderContext;
 use SwagShopwarePwa\Pwa\PageLoader\PageLoaderInterface;
 use SwagShopwarePwa\Pwa\PageResult\AbstractPageResult;
+use SwagShopwarePwa\Pwa\Response\CmsPageRouteResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -62,41 +64,34 @@ class PageController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function resolveOld(Request $request, SalesChannelContext $context): JsonResponse
+    public function resolveOld(Request $request, SalesChannelContext $context): CmsPageRouteResponse
     {
         return $this->resolve($request, $context);
     }
 
     /**
-     * @Route("/store-api/v{version}/pwa/page", name="store-api.pwa.page", methods={"POST"})
+     * @Route("/store-api/v{version}/pwa/page", name="store-api.pwa.cms-page-resolve", methods={"POST"})
      *
      * Resolve a page for a given resource and resource identification or path
      * First, a PageLoaderContext object is assembled, which includes information about the resource, request and context.
      * Then, the page is loaded through the page loader only given the page loader context.
      *
      * @param Request $request
-     * @param SalesChannelContext $context
-     *
-     * @return JsonResponse
+     * @return CmsPageRouteResponse
      */
-    public function resolve(Request $request, SalesChannelContext $context): JsonResponse
+    public function resolve(Request $request, SalesChannelContext $context): CmsPageRouteResponse
     {
+        /** @var PageLoaderContext $pageLoaderContext */
         $pageLoaderContext = $this->pageLoaderContextBuilder->build($request, $context);
 
         $pageLoader = $this->getPageLoader($pageLoaderContext);
 
         if(!$pageLoader)
         {
-            return new JsonResponse(['error' => sprintf('Resource type not supported: "%s"', $pageLoaderContext->getResourceType())], 404);
+            throw new PageNotFoundException($pageLoaderContext->getResourceType() . $pageLoaderContext->getResourceIdentifier());
         }
 
-        /** @var AbstractPageResult $pageResult */
-        $pageResult = $pageLoader->load($pageLoaderContext);
-
-        $pageResult->setResourceType($pageLoaderContext->getResourceType());
-        $pageResult->setResourceIdentifier($pageLoaderContext->getResourceIdentifier());
-
-        return new JsonResponse($pageResult);
+        return new CmsPageRouteResponse($this->getPageResult($pageLoader, $pageLoaderContext));
     }
 
     /**
@@ -108,5 +103,24 @@ class PageController extends AbstractController
     private function getPageLoader(PageLoaderContext $pageLoaderContext): ?PageLoaderInterface
     {
         return $this->pageLoaders[$pageLoaderContext->getResourceType()] ?? null;
+    }
+
+    /**
+     * Loads the page given the correct page loader and context and returns the assembled page result.
+     *
+     * @param PageLoaderInterface $pageLoader
+     * @param PageLoaderContext $pageLoaderContext
+     * @return AbstractPageResult
+     */
+    private function getPageResult(PageLoaderInterface $pageLoader, PageLoaderContext $pageLoaderContext): AbstractPageResult
+    {
+
+        /** @var AbstractPageResult $pageResult */
+        $pageResult = $pageLoader->load($pageLoaderContext);
+
+        $pageResult->setResourceType($pageLoaderContext->getResourceType());
+        $pageResult->setResourceIdentifier($pageLoaderContext->getResourceIdentifier());
+
+        return $pageResult;
     }
 }

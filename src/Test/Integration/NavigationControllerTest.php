@@ -123,10 +123,7 @@ class NavigationControllerTest extends TestCase
         static::assertCount(2, $result->children);
         static::assertCount(1, $result->children[0]->children);
     }
-
-    /**
-     * Needs fix, because order of children is not deterministic and fails sometimes
-     */
+    
     public function testResolveSeoUrl(): void
     {
         $this->createCategories();
@@ -146,7 +143,14 @@ class NavigationControllerTest extends TestCase
         $result = \GuzzleHttp\json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
 
         static::assertEquals('/', $result->route->path);
-        static::assertEquals('Home-Shoes/Children/', $result->children[0]->route->path);
+        static::assertCount(2, $result->children);
+
+        $childrenPaths = array_map(function($item) {
+            return $item->route->path;
+        }, $result->children);
+
+        static::assertContains('Home-Shoes/Children/', $childrenPaths);
+        static::assertContains('Home-Shoes/Children/', $childrenPaths);
     }
 
     private function createCategories():void

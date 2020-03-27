@@ -8,14 +8,10 @@ use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityD
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Event\EntitySearchResultLoadedEvent;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\SalesChannelApiTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\PlatformRequest;
-use SwagShopwarePwa\SwagShopwarePwa;
 
 class PageControllerTest extends TestCase
 {
@@ -93,7 +89,7 @@ class PageControllerTest extends TestCase
         $this->salesChannelRepository = $this->getContainer()->get('sales_channel.repository');
     }
 
-    public function testResolveRootCategoryPage(): void
+    public function testResolveCategoryPageRootPath(): void
     {
         $this->createCmsPage();
         $this->createCategories();
@@ -246,7 +242,7 @@ class PageControllerTest extends TestCase
         static::assertNotNull($response['product']['categories']);
     }
 
-    public function testProductPageTechnicalPath(): void
+    public function testProductPageTechnicalUrl(): void
     {
         $this->createProduct();
         $this->createSalesChannelDomain();
@@ -294,6 +290,35 @@ class PageControllerTest extends TestCase
         static::assertEquals(404, $response->errors[0]->status);
         static::assertEquals('CONTENT__PRODUCT_NOT_FOUND', $response->errors[0]->code);
 
+    }
+
+    public function testResolveCategoryPageWithIncludes(): void
+    {
+        $this->createCmsPage();
+        $this->createCategories();
+        $this->createSeoUrls();
+
+        $content = [
+            'path' => 'Home-Shoes/',
+            'includes' => [
+                'pwa_page_result' => ['cmsPage'],
+                'section' => ['id']
+            ]
+        ];
+
+        $this->salesChannelApiBrowser->request(
+            'POST',
+            self::ENDPOINT_PAGE,
+            $content
+        );
+
+        $response = json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
+
+        static::assertObjectHasAttribute('cmsPage', $response);
+        static::assertNotNull($response->cmsPage);
+        static::assertObjectHasAttribute('sections', $response->cmsPage);
+        static::assertObjectNotHasAttribute('blocks', $response->cmsPage);
+        static::assertObjectNotHasAttribute('breadcrumb', $response);
     }
 
     private function createSalesChannelDomain()
