@@ -18,15 +18,11 @@ This plugin adds multiple endpoints to both, the store and the admin API. All en
 
 **/store-api/v1/pwa/page**
 
-Resolves a given path to a cms or product page and returns it.
+Resolves a given path to cms or product page and accepts include parameters to specifiy the fields contained in your response.
 
 **/store-api/v1/pwa/navigation**
 
 Delivers a category along with its child categories down to a desired level.
- 
-**/store-api/v1/pwa/cms-page-resolve**
-
-Resolves a given path to cms or product page and accepts include parameters to specifiy the fields contained in your response.
  
 **/api/v1/_action/pwa/dump-bundles**
 
