@@ -4,8 +4,9 @@ namespace SwagShopwarePwa\Pwa\Response;
 
 use Shopware\Core\System\SalesChannel\StoreApiResponse;
 use SwagShopwarePwa\Pwa\PageResult\AbstractPageResult;
+use Symfony\Component\HttpFoundation\Response;
 
-class CmsPageRouteResponse extends StoreApiResponse
+class CmsPageRouteResponse extends Response
 {
     /**
      * @var AbstractPageResult

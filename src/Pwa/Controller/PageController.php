@@ -15,9 +15,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @RouteScope(scopes={"sales-channel-api", "store-api"})
- */
 class PageController extends AbstractController
 {
     /**
@@ -52,6 +49,7 @@ class PageController extends AbstractController
 
     /**
      * @Route("/sales-channel-api/v{version}/vsf/page", name="sales-channel-api.vsf.page", methods={"POST"})
+     * @RouteScope(scopes={"sales-channel-api"})
      *
      * Resolve a page for a given resource and resource identification or path
      * First, a PageLoaderContext object is assembled, which includes information about the resource, request and context.
@@ -64,13 +62,14 @@ class PageController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function resolveOld(Request $request, SalesChannelContext $context): CmsPageRouteResponse
+    public function resolveOld(Request $request, SalesChannelContext $context): JsonResponse
     {
         return $this->resolve($request, $context);
     }
 
     /**
      * @Route("/store-api/v{version}/pwa/page", name="store-api.pwa.cms-page-resolve", methods={"POST"})
+     * @RouteScope(scopes={"store-api"})
      *
      * Resolve a page for a given resource and resource identification or path
      * First, a PageLoaderContext object is assembled, which includes information about the resource, request and context.
@@ -79,7 +78,7 @@ class PageController extends AbstractController
      * @param Request $request
      * @return CmsPageRouteResponse
      */
-    public function resolve(Request $request, SalesChannelContext $context): CmsPageRouteResponse
+    public function resolve(Request $request, SalesChannelContext $context): JsonResponse
     {
         /** @var PageLoaderContext $pageLoaderContext */
         $pageLoaderContext = $this->pageLoaderContextBuilder->build($request, $context);
@@ -91,7 +90,12 @@ class PageController extends AbstractController
             throw new PageNotFoundException($pageLoaderContext->getResourceType() . $pageLoaderContext->getResourceIdentifier());
         }
 
-        return new CmsPageRouteResponse($this->getPageResult($pageLoader, $pageLoaderContext));
+        /** @var AbstractPageResult $result */
+        $result = $this->getPageResult($pageLoader, $pageLoaderContext);
+
+        return new JsonResponse(
+            $this->getPageResult($pageLoader, $pageLoaderContext)
+        );
     }
 
     /**

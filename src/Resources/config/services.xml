@@ -98,6 +98,12 @@
             <argument type="service" id="SwagShopwarePwa\Pwa\Entity\SalesChannelRoute\SalesChannelRouteRepository"/>
         </service>
 
+
+        <!-- Patched RouteScope -->
+        <service id="SwagShopwarePwa\Pwa\RouteScope\StoreApiRouteScope">
+            <tag name="shopware.route_scope"/>
+        </service>
+
     </services>
 
 </container>
