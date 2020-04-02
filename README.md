@@ -2,7 +2,7 @@
 
 This extension provides a collection of helper functions to integrate with the [shopware-pwa](https://github.com/DivanteLtd/shopware-pwa) client library.
 
-**Important Version Notice**: As of 2020-03-26 the plugin is only compatible with `shopware/platform@master` since some required additions have not yet been released. For temporary workarounds, please use the `shopware-6-1-compatibility` branch of this plugin until a version of Shopware 6.2 has been released. There is a [video on how to set up](https://drive.google.com/open?id=1ynpoWw9b7hljzkqzVv2JFDxTtgomyVg4) Shopware 6.1 with this plugin. 
+**Important Version Notice**: If you want to use the plugin with a current **stable version** of Shopware 6 (e.g. 6.1.4), please use the `shopware-6-1-compatibility` branch. There is a [video on how to set up](https://drive.google.com/open?id=1ynpoWw9b7hljzkqzVv2JFDxTtgomyVg4) Shopware 6.1 with this plugin. 
 
 ## Table of content
 
