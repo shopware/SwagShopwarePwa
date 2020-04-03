@@ -2,7 +2,7 @@
 
 This extension provides a collection of helper functions to integrate with the [shopware-pwa](https://github.com/DivanteLtd/shopware-pwa) client library.
 
-**Important Notice**: As of 2020-03-26 the plugin is only compatible with `shopware/platform@master` since some required additions have not yet been released.
+**Important Notice**: If you intend to use this plugin with a non-stable Shopware version (master or 6.2.* and above), please use the `master` branch.
 
 ## Table of content
 
@@ -38,7 +38,13 @@ For more specific documentation, please refer to the [swagger.yaml](_doc/swagger
 
 ### Install plugin
 
-Clone the repository into the `custom/plugins` directory within your Shopware installation. And run the following commands in your Shopware root directory.
+Clone the repository into the `custom/plugins` directory within your Shopware installation:
+
+```bash
+git clone -b shopware-6-1-compatibility git@github.com:elkmod/SwagShopwarePwa.git
+```
+
+Run the following commands in your Shopware root directory:
 
 Refresh plugin list
 
