@@ -6,6 +6,7 @@ use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Category\Exception\CategoryNotFoundException;
 use Shopware\Core\Content\Cms\DataResolver\ResolverContext\EntityResolverContext;
 use Shopware\Core\Content\Cms\SalesChannel\SalesChannelCmsPageLoader;
+use Shopware\Core\Content\Cms\SalesChannel\SalesChannelCmsPageLoaderInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
@@ -14,7 +15,7 @@ use SwagShopwarePwa\Pwa\PageResult\Navigation\NavigationPageResult;
 use SwagShopwarePwa\Pwa\PageResult\Navigation\NavigationPageResultHydrator;
 
 /**
- * This is a composite loader which utilizes the Shopware\Core\Content\Cms\SalesChannel\SalesChannelCmsPageLoader.
+ * This is a composite loader which utilizes the Shopware\Core\Content\Cms\SalesChannel\SalesChannelCmsPageLoaderInterface.
  * On top of fetching a resolved and hydrated CMS page, it fetches additional information about the category.
  *
  * @package SwagShopwarePwa\Pwa\PageLoader
@@ -43,7 +44,7 @@ class NavigationPageLoader implements PageLoaderInterface
      */
     private $categoryDefinition;
 
-    public function __construct(SalesChannelRepositoryInterface $categoryRepository, SalesChannelCmsPageLoader $cmsPageLaoder, NavigationPageResultHydrator $resultHydrator, EntityDefinition $categoryDefinition)
+    public function __construct(SalesChannelRepositoryInterface $categoryRepository, SalesChannelCmsPageLoaderInterface $cmsPageLaoder, NavigationPageResultHydrator $resultHydrator, EntityDefinition $categoryDefinition)
     {
         $this->cmsPageLoader = $cmsPageLaoder;
         $this->categoryRepository = $categoryRepository;
