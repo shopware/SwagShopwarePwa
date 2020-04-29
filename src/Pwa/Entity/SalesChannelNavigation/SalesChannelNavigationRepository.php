@@ -34,7 +34,7 @@ class SalesChannelNavigationRepository
     {
         $context->getSalesChannel()->setNavigationCategoryId($rootId);
 
-        $navigation = $this->navigationLoader->load($rootId, $context, $rootId);
+        $navigation = $this->navigationLoader->load($rootId, $context, $rootId, $depth);
 
         return $this->createSalesChannelNavigation(
             $context->getContext(),
