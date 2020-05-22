@@ -120,7 +120,7 @@ class SalesChannelNavigationEntity extends Struct
         $navigationEntity = new self();
 
         $navigationEntity->setId($treeItem->getCategory()->getId());
-        $navigationEntity->setName($treeItem->getCategory()->getName());
+        $navigationEntity->setName($treeItem->getCategory()->getTranslated()['name']);
         $navigationEntity->setCount(count($treeItem->getChildren()));
 
         return $navigationEntity;
