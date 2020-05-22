@@ -25,7 +25,7 @@ class NavigationPageLoader implements PageLoaderInterface
     private const RESOURCE_TYPE = 'frontend.navigation.page';
 
     /**
-     * @var SalesChannelCmsPageLoader
+     * @var SalesChannelCmsPageLoaderInterface
      */
     private $cmsPageLoader;
 
