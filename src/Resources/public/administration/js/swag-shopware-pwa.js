@@ -1,0 +1,1 @@
+(this.webpackJsonp=this.webpackJsonp||[]).push([["swag-shopware-pwa"],{B7Eo:function(s,e,n){"use strict";n.r(e);var t=n("x7CU"),o=n.n(t);Shopware.Component.override("sw-cms-sidebar",{template:o.a})},x7CU:function(s,e){s.exports="{% block sw_cms_sidebar_page_settings_form %}\n    {% parent %}\n\n    That's my stuff\n{% endblock %}\n"}},[["B7Eo","runtime"]]]);
