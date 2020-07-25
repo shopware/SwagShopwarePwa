@@ -24,10 +24,6 @@ Shopware.Component.override('sw-cms-sidebar', {
             return this.repositoryFactory.create('sales_channel')
         },
 
-        salesChannelTitle: function () {
-            return 'In which Sales Channel?';
-        },
-
         salesChannelDomains: function () {
             return this.previewSalesChannel.domains.map((domain) => {
                 return {
@@ -40,8 +36,29 @@ Shopware.Component.override('sw-cms-sidebar', {
 
     methods: {
         previewPage: function () {
-            var win = window.open(this.previewDomain, '_blank');
+            const entity = {
+                entity: this.demoEntity,
+                id: this.demoEntityId
+            };
+
+            const previewLink = this.buildPreviewLink(this.previewDomain, this.page, entity);
+
+            var win = window.open(previewLink, '_blank');
             win.focus();
+        },
+
+        buildPreviewLink: function (domain, page, entity) {
+            let previewLink = `${domain}`;
+
+            if (page.type === 'product_list' && entity.entity === 'category') {
+                previewLink += `navigation/${entity.id}`;
+            }
+
+            if (page.id) {
+                previewLink += `/__preview/${page.id}`;
+            }
+
+            return previewLink;
         },
 
         onSalesChannelChanged: function (salesChannelId) {

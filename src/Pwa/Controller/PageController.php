@@ -7,6 +7,7 @@ use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use SwagShopwarePwa\Pwa\PageLoader\Context\PageLoaderContextBuilder;
 use SwagShopwarePwa\Pwa\PageLoader\Context\PageLoaderContext;
+use SwagShopwarePwa\Pwa\PageLoader\Context\PageLoaderContextBuilderInterface;
 use SwagShopwarePwa\Pwa\PageLoader\PageLoaderInterface;
 use SwagShopwarePwa\Pwa\PageResult\AbstractPageResult;
 use SwagShopwarePwa\Pwa\Response\CmsPageRouteResponse;
@@ -30,7 +31,7 @@ class PageController extends AbstractController
     const NAVIGATION_PAGE_ROUTE = 'frontend.navigation.page';
 
     /**
-     * @var PageLoaderContextBuilder
+     * @var PageLoaderContextBuilderInterface
      */
     private $pageLoaderContextBuilder;
 
@@ -39,7 +40,7 @@ class PageController extends AbstractController
      */
     private $pageLoaders;
 
-    public function __construct(PageLoaderContextBuilder $pageLoaderContextBuilder, iterable $pageLoaders)
+    public function __construct(PageLoaderContextBuilderInterface $pageLoaderContextBuilder, iterable $pageLoaders)
     {
         $this->pageLoaderContextBuilder = $pageLoaderContextBuilder;
 
