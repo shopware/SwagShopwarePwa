@@ -28,9 +28,16 @@ Shopware.Component.override('sw-cms-sidebar', {
             return this.previewSalesChannel.domains.map((domain) => {
                 return {
                     value: domain.url,
-                    label: domain.url
+                    label: `${domain.language.name} (${domain.url})`
                 };
             });
+        },
+
+        previewEnabled: function () {
+            return this.previewDomain !== null &&
+                this.demoEntityId !== null &&
+                this.demoEntity !== null &&
+                this.page !== null;
         }
     },
 
@@ -67,6 +74,7 @@ Shopware.Component.override('sw-cms-sidebar', {
             const criteria = new Criteria({limit: 1});
             criteria.ids = [salesChannelId];
             criteria.addAssociation('domains');
+            criteria.addAssociation('domains.language');
 
             this.salesChannelRepository.search(criteria, Context.api).then((salesChannelCollection) => {
                 this.previewSalesChannel = salesChannelCollection[0];

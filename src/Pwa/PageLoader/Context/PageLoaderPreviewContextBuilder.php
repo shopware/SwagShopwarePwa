@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Request;
 class PageLoaderPreviewContextBuilder implements PageLoaderContextBuilderInterface
 {
     public const PREVIEW_DELIMITER = '__preview';
+
     /**
      * @var PageLoaderContextBuilderInterface
      */
