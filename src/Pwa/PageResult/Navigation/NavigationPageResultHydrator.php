@@ -6,11 +6,19 @@ use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Cms\CmsPageEntity;
 use Shopware\Core\Content\Product\SalesChannel\Listing\ProductListingResult;
 use Shopware\Core\Content\Property\PropertyGroupEntity;
+use Shopware\Core\Content\Seo\SeoUrl\SeoUrlEntity;
+use Shopware\Core\Framework\Context;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationResultCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\Metric\EntityResult;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
+use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Storefront\Framework\Routing\Router;
 use SwagShopwarePwa\Pwa\Controller\PageController;
 use SwagShopwarePwa\Pwa\PageLoader\Context\PageLoaderContext;
+use SwagShopwarePwa\Pwa\PageLoader\NavigationPageLoader;
 use SwagShopwarePwa\Pwa\PageResult\Navigation\AggregationResultHydrator\AggregationResultHydratorInterface;
 
 class NavigationPageResultHydrator
@@ -19,6 +27,11 @@ class NavigationPageResultHydrator
      * @var NavigationPageResult
      */
     private $pageResult;
+
+    /**
+     * @var EntityRepositoryInterface
+     */
+    private $seoUrlRepository;
 
     /**
      * @var Router
@@ -30,15 +43,15 @@ class NavigationPageResultHydrator
      */
     private $aggregationResultHydrators;
 
-    public function __construct(Router $router, iterable $aggregationResultHydrators)
+    public function __construct(Router $router, EntityRepositoryInterface $seoUrlRepository, iterable $aggregationResultHydrators)
     {
         $this->router = $router;
+        $this->seoUrlRepository = $seoUrlRepository;
 
         $this->pageResult = new NavigationPageResult();
 
         /** @var AggregationResultHydratorInterface[] $aggregationResultHydrators */
-        foreach($aggregationResultHydrators as $resultHydrator)
-        {
+        foreach ($aggregationResultHydrators as $resultHydrator) {
             $this->aggregationResultHydrators[$resultHydrator->getSupportedAggregationType()] = $resultHydrator;
         }
     }
@@ -49,7 +62,7 @@ class NavigationPageResultHydrator
 
         $this->setBreadcrumbs(
             $category,
-            $pageLoaderContext->getContext()->getSalesChannel()->getNavigationCategoryId()
+            $pageLoaderContext->getContext()
         );
 
         $this->pageResult->setResourceType($pageLoaderContext->getResourceType());
@@ -62,16 +75,14 @@ class NavigationPageResultHydrator
 
     private function getAvailableFilters(): array
     {
-        if($this->pageResult->getCmsPage() === null)
-        {
+        if ($this->pageResult->getCmsPage() === null) {
             return [];
         }
 
         // Assuming a page only has one listing
         $listingSlot = $this->pageResult->getCmsPage()->getFirstElementOfType('product-listing');
 
-        if($listingSlot === null)
-        {
+        if ($listingSlot === null) {
             return [];
         }
 
@@ -81,8 +92,7 @@ class NavigationPageResultHydrator
 
         $this->preparePropertyAggregations($listing->getAggregations());
 
-        foreach($listing->getAggregations() as $key => $aggregation)
-        {
+        foreach ($listing->getAggregations() as $key => $aggregation) {
             $filters[$key] = $this->aggregationResultHydrators[get_class($aggregation)]->hydrate($aggregation);
         }
 
@@ -97,21 +107,46 @@ class NavigationPageResultHydrator
         return $listingConfig;
     }
 
-    private function setBreadcrumbs(CategoryEntity $category, string $rootCategoryId): void
+    private function setBreadcrumbs(CategoryEntity $category, SalesChannelContext $context): void
     {
         $breadcrumbs = [];
 
+        $rootCategoryId = $context->getSalesChannel()->getNavigationCategoryId();
+
         $categoryBreadcrumbs = $category->buildSeoBreadcrumb($rootCategoryId) ?? [];
 
-        foreach($categoryBreadcrumbs as $id => $name)
-        {
+        $canonicalUrls = $this->getCanonicalUrls(array_keys($categoryBreadcrumbs), $context->getContext());
+
+        foreach ($categoryBreadcrumbs as $id => $name) {
             $breadcrumbs[$id] = [
                 'name' => $name,
-                'path' => $this->router->generate(PageController::NAVIGATION_PAGE_ROUTE, ['navigationId' => $id]),
+                'path' => $canonicalUrls[$id] ?? $this->router->generate(PageController::NAVIGATION_PAGE_ROUTE, ['navigationId' => $id]),
             ];
         }
 
         $this->pageResult->setBreadcrumb($breadcrumbs);
+    }
+
+    private function getCanonicalUrls(array $categoryIds, Context $context): array
+    {
+        $criteria = new Criteria();
+
+        $criteria->addFilter(new EqualsFilter('routeName', PageController::NAVIGATION_PAGE_ROUTE));
+        $criteria->addFilter(new EqualsFilter('isCanonical', true));
+        $criteria->addFilter(new EqualsAnyFilter('foreignKey', $categoryIds));
+
+
+        $result = $this->seoUrlRepository->search($criteria, $context);
+
+        $pathByCategoryId = [];
+
+        /** @var SeoUrlEntity $seoUrl */
+        foreach($result as $seoUrl) {
+            // Map all urls to their corresponding category
+            $pathByCategoryId[$seoUrl->getForeignKey()] = '/' . ( $seoUrl->getSeoPathInfo() ?? $seoUrl->getPathInfo() );
+        }
+
+        return $pathByCategoryId;
     }
 
     private function preparePropertyAggregations(AggregationResultCollection $aggregations): AggregationResultCollection

@@ -65,6 +65,7 @@
 
         <service id="SwagShopwarePwa\Pwa\PageResult\Navigation\NavigationPageResultHydrator">
             <argument type="service" id="Shopware\Storefront\Framework\Routing\Router"/>
+            <argument type="service" id="seo_url.repository"/>
             <argument type="tagged" tag="pwa.page_result.aggregation_result_hydrator"/>
         </service>
 
