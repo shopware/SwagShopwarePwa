@@ -2,16 +2,10 @@
 
 namespace SwagShopwarePwa\Pwa\PageLoader\Context;
 
-use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
+use Shopware\Core\Content\Seo\SeoResolverInterface;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use SwagShopwarePwa\Pwa\Controller\PageController;
 use SwagShopwarePwa\Pwa\Entity\SalesChannelRoute\SalesChannelRouteEntity;
-use SwagShopwarePwa\Pwa\Entity\SalesChannelRoute\SalesChannelRouteRepository;
 
 /**
  * Resolves a url path to get a route.
@@ -29,68 +23,50 @@ class PathResolver implements PathResolverInterface
     private const ROOT_ROUTE_NAME = PageController::NAVIGATION_PAGE_ROUTE;
 
     /**
-     * @var SalesChannelRouteRepository
+     * @var SeoResolverInterface
      */
-    private $routeRepository;
+    private $seoResolver;
 
-    /**
-     * @var EntityRepositoryInterface
-     */
-    private $salesChannelRepository;
-
-
-    public function __construct(SalesChannelRouteRepository $routeRepository, EntityRepositoryInterface $salesChannelRepository)
+    public function __construct(SeoResolverInterface $seoResolver)
     {
-        $this->routeRepository = $routeRepository;
-        $this->salesChannelRepository = $salesChannelRepository;
+        $this->seoResolver = $seoResolver;
     }
 
     /**
      * First, we search for the route within the route repository.
      * If it doesn't exist in there, we do some generic matching with regular expressions.
      *
-     * @param string $path
-     * @param SalesChannelContext $context
-     * @return SalesChannelRouteEntity|null
      */
     public function resolve(string $path, SalesChannelContext $context): ?SalesChannelRouteEntity
     {
-        if($path === '/' || $path === '')
-        {
+        if ($path === '/' || $path === '') {
             return $this->resolveRootPath($context);
         }
 
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsFilter('seoPathInfo', $path));
+        $result = $this->seoResolver->resolveSeoPath(
+            $context->getContext()->getLanguageId(),
+            $context->getSalesChannel()->getId(),
+            $path
+        );
 
-        $routes = $this->routeRepository->search($criteria, $context->getContext());
-
-        if (count($routes) === 0) {
-            return $this->resolveTechnicalPath($path);
-        }
-
-        return array_shift($routes);
+        return $this->resolveTechnicalPath($result['pathInfo'], $result['canonicalPathInfo'] ?? $path);
     }
 
     /**
      * Tries to resolve the route given the regular expressions above (to imitate the annotated routing)
-     *
-     * @param string $path
-     * @return SalesChannelRouteEntity|null
      */
-    private function resolveTechnicalPath(string $path): ?SalesChannelRouteEntity
+    private function resolveTechnicalPath(string $path, string $canonicalPathInfo): ?SalesChannelRouteEntity
     {
         $matches = null;
 
-        foreach(self::MATCH_MAP as $routeName => $routePattern)
-        {
-            if(preg_match($routePattern, $path, $matches))
-            {
+        foreach (self::MATCH_MAP as $routeName => $routePattern) {
+            if (preg_match($routePattern, $path, $matches)) {
                 $route = new SalesChannelRouteEntity();
                 $route->setResource($routeName);
                 $route->setResourceIdentifier($matches[1]);
                 $route->setPathInfo($path);
                 $route->setRouteName($routeName);
+                $route->setCanonicalPathInfo($canonicalPathInfo);
 
                 return $route;
             }
@@ -103,8 +79,7 @@ class PathResolver implements PathResolverInterface
     {
         $rootCategoryId = $context->getSalesChannel()->getNavigationCategoryId();
 
-        if(!$rootCategoryId)
-        {
+        if (!$rootCategoryId) {
             return null;
         }
 

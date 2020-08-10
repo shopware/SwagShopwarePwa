@@ -38,6 +38,11 @@ class SalesChannelRouteEntity extends Struct
     protected $resourceIdentifier;
 
     /**
+     * @var string|null
+     */
+    protected $canonicalPathInfo;
+
+    /**
      * @return string
      */
     public function getRouteName(): string
@@ -121,10 +126,19 @@ class SalesChannelRouteEntity extends Struct
         $route->setRouteName($urlEntity->getRouteName());
         $route->setPathInfo($urlEntity->getPathInfo());
         $route->setSeoPathInfo($urlEntity->getSeoPathInfo());
-//        $route->setIsCanonical($urlEntity->getIsCanonical());
         $route->setResource($urlEntity->getRouteName());
         $route->setResourceIdentifier($urlEntity->getForeignKey());
 
         return $route;
+    }
+
+    public function getCanonicalPathInfo(): ?string
+    {
+        return $this->canonicalPathInfo;
+    }
+
+    public function setCanonicalPathInfo(?string $canonicalPathInfo): void
+    {
+        $this->canonicalPathInfo = $canonicalPathInfo;
     }
 }
