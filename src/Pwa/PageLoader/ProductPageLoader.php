@@ -65,10 +65,6 @@ class ProductPageLoader implements PageLoaderInterface
     }
 
     /**
-     * @param PageLoaderContext $pageLoaderContext
-     *
-     * @return ProductPageResult
-     *
      * @throws ProductNumberNotFoundException
      */
     public function load(PageLoaderContext $pageLoaderContext): ProductPageResult
@@ -90,8 +86,7 @@ class ProductPageLoader implements PageLoaderInterface
 
         $searchResult = $this->productRepository->search($criteria, $pageLoaderContext->getContext());
 
-        if($searchResult->count() < 1)
-        {
+        if ($searchResult->count() < 1) {
             throw new ProductNumberNotFoundException($pageLoaderContext->getResourceIdentifier());
         }
 

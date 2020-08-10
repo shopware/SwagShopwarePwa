@@ -45,6 +45,7 @@ class NavigationPageResultHydrator
 
     public function hydrate(PageLoaderContext $pageLoaderContext, CategoryEntity $category, ?CmsPageEntity $cmsPageEntity): NavigationPageResult
     {
+        $this->pageResult->setCategory($category);
         $this->pageResult->setCmsPage($cmsPageEntity);
 
         $this->setBreadcrumbs(
