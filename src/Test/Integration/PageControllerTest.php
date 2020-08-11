@@ -131,6 +131,7 @@ class PageControllerTest extends TestCase
 
         $response = json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
 
+
         static::assertObjectHasAttribute('cmsPage', $response);
         static::assertObjectHasAttribute('breadcrumb', $response);
 
@@ -321,6 +322,31 @@ class PageControllerTest extends TestCase
         static::assertObjectNotHasAttribute('breadcrumb', $response);
     }
 
+    public function testResolveCanonicalUrl(): void
+    {
+        $this->createCmsPage();
+        $this->createCategories();
+        $this->createSeoUrls();
+
+        $content = [
+            'path' => 'Home-Shoes/',
+            'includes' => [
+                'pwa_page_result' => ['canonicalPathInfo']
+            ]
+        ];
+
+        $this->salesChannelApiBrowser->request(
+            'POST',
+            self::ENDPOINT_PAGE,
+            $content
+        );
+
+        $response = json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
+
+        static::assertObjectHasAttribute('canonicalPathInfo', $response);
+        static::assertEquals('/Home-Shoes/canonical/', $response->canonicalPathInfo);
+    }
+
     private function createSalesChannelDomain()
     {
         $this->salesChannelDomainRepository->create([
@@ -390,7 +416,7 @@ class PageControllerTest extends TestCase
                 'salesChannelId' => $this->salesChannelId,
                 'languageId' => Defaults::LANGUAGE_SYSTEM,
                 'routeName' => 'frontend.navigation.page',
-                'pathInfo' => '/navigation/1234',
+                'pathInfo' => '/navigation/' . $this->categoryId,
                 'seoPathInfo' => 'Home-Shoes/',
                 'foreignKey' => $this->categoryId,
                 'isValid' => true,
@@ -400,7 +426,17 @@ class PageControllerTest extends TestCase
                 'salesChannelId' => $this->salesChannelId,
                 'languageId' => Defaults::LANGUAGE_SYSTEM,
                 'routeName' => 'frontend.navigation.page',
-                'pathInfo' => '/navigation/123',
+                'pathInfo' => '/navigation/' . $this->categoryId,
+                'seoPathInfo' => 'Home-Shoes/canonical/',
+                'foreignKey' => $this->categoryId,
+                'isValid' => true,
+                'isCanonical' => true,
+            ],
+            [
+                'salesChannelId' => $this->salesChannelId,
+                'languageId' => Defaults::LANGUAGE_SYSTEM,
+                'routeName' => 'frontend.navigation.page',
+                'pathInfo' => '/navigation/' . $this->childCategoryId,
                 'seoPathInfo' => 'Home-Shoes/Children/',
                 'foreignKey' => $this->childCategoryId,
                 'isValid' => true,
@@ -410,8 +446,8 @@ class PageControllerTest extends TestCase
                 'salesChannelId' => $this->salesChannelId,
                 'languageId' => Defaults::LANGUAGE_SYSTEM,
                 'routeName' => 'frontend.detail.page',
-                'pathInfo' => '/detail/1234',
-                'seoPathInfo' => '/foo-bar/prod',
+                'pathInfo' => '/detail/' . $this->productActiveId,
+                'seoPathInfo' => 'foo-bar/prod',
                 'foreignKey' => $this->productActiveId,
                 'isValid' => true,
                 'isCanonical' => false,
@@ -420,8 +456,8 @@ class PageControllerTest extends TestCase
                 'salesChannelId' => $this->salesChannelId,
                 'languageId' => Defaults::LANGUAGE_SYSTEM,
                 'routeName' => 'frontend.detail.page',
-                'pathInfo' => '/detail/12345',
-                'seoPathInfo' => '/foo-bar/prod-inactive',
+                'pathInfo' => '/detail/' . $this->productInactiveId,
+                'seoPathInfo' => 'foo-bar/prod-inactive',
                 'foreignKey' => $this->productInactiveId,
                 'isValid' => true,
                 'isCanonical' => false,
