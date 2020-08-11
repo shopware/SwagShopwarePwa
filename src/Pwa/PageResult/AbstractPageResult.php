@@ -25,6 +25,11 @@ abstract class AbstractPageResult extends Struct implements \JsonSerializable
     protected $resourceIdentifier;
 
     /**
+     * @var string
+     */
+    protected $canonicalPathInfo;
+
+    /**
      * @return string
      */
     public function getResourceType(): string
@@ -42,9 +47,6 @@ abstract class AbstractPageResult extends Struct implements \JsonSerializable
         $this->resourceType = $resourceType;
     }
 
-    /**
-     * @return string
-     */
     public function getResourceIdentifier(): string
     {
         return $this->resourceIdentifier;
@@ -53,5 +55,15 @@ abstract class AbstractPageResult extends Struct implements \JsonSerializable
     public function setResourceIdentifier(string $resourceIdentifier)
     {
         $this->resourceIdentifier = $resourceIdentifier;
+    }
+
+    public function getCanonicalPathInfo(): string
+    {
+        return $this->canonicalPathInfo;
+    }
+
+    public function setCanonicalPathInfo(string $canonicalPathInfo): void
+    {
+        $this->canonicalPathInfo = $canonicalPathInfo;
     }
 }

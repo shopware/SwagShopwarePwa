@@ -39,7 +39,7 @@ class PageLoaderContextBuilder
     {
         $path = $request->get('path');
 
-        if($path === null) {
+        if ($path === null) {
             throw new NotFoundHttpException('Please provide a path to be resolved.');
         }
 
@@ -48,21 +48,19 @@ class PageLoaderContextBuilder
          */
         $route = $this->pathResolver->resolve($path, $context);
 
-        if($route === null)
-        {
+        if ($route === null) {
             throw new NotFoundHttpException(sprintf('Path `%s` could not be resolved.', $path));
         }
 
         /**
          * Workaround to come up for: platform/src/Core/Content/Product/SalesChannel/Listing/ProductListingGateway.php:66
          */
-         $request->attributes->set('_route_params', [
+        $request->attributes->set('_route_params', [
             'navigationId' => $route->getResourceIdentifier()
         ]);
 
         $pageLoaderContext = new PageLoaderContext();
-        $pageLoaderContext->setResourceType($route->getRouteName());
-        $pageLoaderContext->setResourceIdentifier($route->getResourceIdentifier());
+        $pageLoaderContext->setRoute($route);
         $pageLoaderContext->setContext($context);
         $pageLoaderContext->setRequest($request);
 
