@@ -64,6 +64,10 @@ class NavigationController extends AbstractController
             $depth = 1;
         }
 
+        if($depth === -1) {
+            $depth = PHP_INT_MAX;
+        }
+
         $navigation = $this->navigationRepository->loadNavigation($rootNode, $depth, $context);
 
         return new JsonResponse(
