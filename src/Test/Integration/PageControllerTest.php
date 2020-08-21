@@ -75,6 +75,11 @@ class PageControllerTest extends TestCase
      */
     private $childCategoryId = '4cb685159a9748289cbd6a36f6b33acb';
 
+    /**
+     * @var string
+     */
+    private $child2CategoryId = '4cb685159a9748289cbd6aacbdef3acb';
+
     public function setUp(): void
     {
         parent::setUp();
@@ -138,6 +143,30 @@ class PageControllerTest extends TestCase
         static::assertEquals('frontend.navigation.page', $response->resourceType);
         static::assertObjectHasAttribute('resourceIdentifier', $response);
         static::assertNotNull($response->resourceIdentifier);
+    }
+
+    public function testResolveCategoryBreadcrumbLink(): void
+    {
+        $this->createCmsPage();
+        $this->createCategories();
+        $this->createSeoUrls();
+
+        $content = [
+            'path' => 'Home-Shoes/Children-level-2/'
+        ];
+
+        $this->salesChannelApiBrowser->request(
+            'POST',
+            self::ENDPOINT_PAGE,
+            $content
+        );
+
+        $response = json_decode($this->salesChannelApiBrowser->getResponse()->getContent(), true);
+
+        static::assertArrayHasKey('breadcrumb', $response);
+
+        static::assertEquals('/Home-Shoes/Children-canonical/', $response['breadcrumb'][$this->childCategoryId]['path']);
+        static::assertEquals('/Home-Shoes/Children-level-2/', $response['breadcrumb'][$this->child2CategoryId]['path']);
     }
 
     public function testResolveCategoryPageTechnicalUrl(): void
@@ -445,6 +474,26 @@ class PageControllerTest extends TestCase
             [
                 'salesChannelId' => $this->salesChannelId,
                 'languageId' => Defaults::LANGUAGE_SYSTEM,
+                'routeName' => 'frontend.navigation.page',
+                'pathInfo' => '/navigation/' . $this->childCategoryId,
+                'seoPathInfo' => 'Home-Shoes/Children-canonical/',
+                'foreignKey' => $this->childCategoryId,
+                'isValid' => true,
+                'isCanonical' => true,
+            ],
+            [
+                'salesChannelId' => $this->salesChannelId,
+                'languageId' => Defaults::LANGUAGE_SYSTEM,
+                'routeName' => 'frontend.navigation.page',
+                'pathInfo' => '/navigation/' . $this->child2CategoryId,
+                'seoPathInfo' => 'Home-Shoes/Children-level-2/',
+                'foreignKey' => $this->child2CategoryId,
+                'isValid' => true,
+                'isCanonical' => true,
+            ],
+            [
+                'salesChannelId' => $this->salesChannelId,
+                'languageId' => Defaults::LANGUAGE_SYSTEM,
                 'routeName' => 'frontend.detail.page',
                 'pathInfo' => '/detail/' . $this->productActiveId,
                 'seoPathInfo' => 'foo-bar/prod',
@@ -478,7 +527,13 @@ class PageControllerTest extends TestCase
                 'children' => [
                     [
                         'id' => $this->childCategoryId,
-                        'name' => 'foo'
+                        'name' => 'Child category level 1',
+                        'children' => [
+                            [
+                                'id' => $this->child2CategoryId,
+                                'name' => 'Child category level 2'
+                            ]
+                        ]
                     ]
                 ]
             ]
