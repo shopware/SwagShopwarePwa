@@ -23,7 +23,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  * Class PageLoaderContextBuilder
  * @package SwagShopwarePwa\Pwa\PageLoader\Context
  */
-class PageLoaderContextBuilder
+class PageLoaderContextBuilder implements PageLoaderContextBuilderInterface
 {
     /**
      * @var PathResolver

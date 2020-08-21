@@ -34,6 +34,10 @@
             <argument type="service" id="SwagShopwarePwa\Pwa\PageLoader\Context\PathResolver"/>
         </service>
 
+        <service id="SwagShopwarePwa\Pwa\PageLoader\Context\PageLoaderPreviewContextBuilder" decorates="SwagShopwarePwa\Pwa\PageLoader\Context\PageLoaderContextBuilder">
+            <argument type="service" id="SwagShopwarePwa\Pwa\PageLoader\Context\PageLoaderPreviewContextBuilder.inner"/>
+        </service>
+
         <service id="SwagShopwarePwa\Pwa\PageLoader\Context\PathResolver">
             <argument id="Shopware\Core\Content\Seo\SeoResolver" type="service"/>
         </service>

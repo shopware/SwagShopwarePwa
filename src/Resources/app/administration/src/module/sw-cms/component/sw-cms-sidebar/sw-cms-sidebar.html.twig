@@ -1,0 +1,50 @@
+{% block sw_cms_sidebar_page_settings_content %}
+    {% parent %}
+
+    <sw-sidebar-collapse :expandOnLoading="false">
+
+        <span slot="header">
+            Page Preview
+            <sw-label
+                variant="warning"
+                appearance="pill"
+                size="small">
+                Experimental
+            </sw-label>
+        </span>
+
+        <div slot="content" class="sw-cms-sidebar__settings">
+
+            <sw-alert variant="info" appearance="default" :showIcon="true" :closable="false">
+                Page preview only works in PWA Sales Channels
+            </sw-alert>
+
+            <sw-sales-channel-switch
+                ref="salesChannelSwitch"
+                label="Sales Channel"
+                descriptions="Foo"
+                placeholder="Select Sales Channel"
+                @change-sales-channel-id="onSalesChannelChanged"
+                required>
+            </sw-sales-channel-switch>
+
+            <sw-single-select
+                v-if="previewSalesChannel.domains.length > 0"
+                v-model="previewDomain"
+                required
+                label="Language"
+                placeholder="Select Language"
+                :options="salesChannelDomains">
+            </sw-single-select>
+
+            <sw-button
+                :disabled="!previewEnabled"
+                variant="ghost"
+                @click="previewPage">
+                Preview in new Window
+            </sw-button>
+
+        </div>
+
+    </sw-sidebar-collapse>
+{% endblock %}
