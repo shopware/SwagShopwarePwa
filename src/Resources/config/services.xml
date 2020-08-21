@@ -35,8 +35,7 @@
         </service>
 
         <service id="SwagShopwarePwa\Pwa\PageLoader\Context\PathResolver">
-            <argument id="SwagShopwarePwa\Pwa\Entity\SalesChannelRoute\SalesChannelRouteRepository" type="service"/>
-            <argument id="sales_channel.repository" type="service"/>
+            <argument id="Shopware\Core\Content\Seo\SeoResolver" type="service"/>
         </service>
 
 

@@ -3,20 +3,11 @@
 namespace SwagShopwarePwa\Pwa\PageLoader\Context;
 
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use SwagShopwarePwa\Pwa\Entity\SalesChannelRoute\SalesChannelRouteEntity;
 use Symfony\Component\HttpFoundation\Request;
 
 class PageLoaderContext
 {
-    /**
-     * @var string
-     */
-    private $resourceType;
-
-    /**
-     * @var string
-     */
-    private $resourceIdentifier;
-
     /**
      * @var Request
      */
@@ -26,56 +17,49 @@ class PageLoaderContext
      * @var SalesChannelContext
      */
     private $context;
-
+    
     /**
-     * @return string
+     * @var SalesChannelRouteEntity
      */
-    public function getResourceType(): string
-    {
-        return $this->resourceType;
-    }
+    private $route;
 
-    public function setResourceType(string $resourceType)
-    {
-        $this->resourceType = $resourceType;
-    }
-
-    /**
-     * @return string
-     */
-    public function getResourceIdentifier(): string
-    {
-        return $this->resourceIdentifier;
-    }
-
-    public function setResourceIdentifier(string $resourceIdentifier)
-    {
-        $this->resourceIdentifier = $resourceIdentifier;
-    }
-
-    /**
-     * @return Request
-     */
     public function getRequest(): Request
     {
         return $this->request;
     }
 
-    public function setRequest(Request $request)
+    public function setRequest(Request $request):void
     {
         $this->request = $request;
     }
-
-    /**
-     * @return SalesChannelContext
-     */
+    
     public function getContext(): SalesChannelContext
     {
         return $this->context;
     }
 
-    public function setContext(SalesChannelContext $context)
+    public function setContext(SalesChannelContext $context):void
     {
         $this->context = $context;
+    }
+
+    public function setRoute(SalesChannelRouteEntity $route):void
+    {
+        $this->route = $route;
+    }
+    
+    public function getRoute(): SalesChannelRouteEntity
+    {
+        return $this->route;
+    }
+
+    public function getResourceIdentifier():string
+    {
+        return $this->route->getResourceIdentifier();
+    }
+
+    public function getResourceType():string
+    {
+        return $this->route->getRouteName();
     }
 }
