@@ -12,7 +12,8 @@
     }
   },
   "require": {
-    "shopware/core": "v6.2.*"
+    "shopware/core": "~6.2.0 || ~6.3.0",
+    "shopware/storefront":  "~6.2.0 || ~6.3.0"
   },
   "extra": {
     "shopware-plugin-class": "SwagShopwarePwa\\SwagShopwarePwa",

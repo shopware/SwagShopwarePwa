@@ -2,43 +2,50 @@
 
 This extension provides a collection of helper functions to integrate with the [shopware-pwa](https://github.com/DivanteLtd/shopware-pwa) client library.
 
-**Important Version Notice**: If you want to use the plugin with a **6.1.x** version of Shopware 6, please use the `shopware-6-1-compatibility` branch. There is a [video on how to set up](https://drive.google.com/open?id=1ynpoWw9b7hljzkqzVv2JFDxTtgomyVg4) Shopware 6.1 with this plugin.
+Shopware PWA requires an API version of **6.2.x or higher**, so there's no version of this plugin for Shopware 6.1 anymore.
+There is a [video on how to set up](https://drive.google.com/open?id=1ynpoWw9b7hljzkqzVv2JFDxTtgomyVg4) the plugin correctly (please be aware that this applies to the old 6.1 version).
 
 ## Table of content
 
-* [Documentation](#documentation)
 * [Setup](#setup)
+* [Documentation](#documentation)
 * [Tests](#tests)
-
-## Documentation
-
-### Endpoints
-
-This plugin adds multiple endpoints to both, the store and the admin API. All endpoints below accept `POST` requests.
-
-**/store-api/v1/pwa/page**
-
-Resolves a given path to cms or product page and accepts include parameters to specifiy the fields contained in your response.
-
-**/store-api/v1/pwa/navigation**
-
-Delivers a category along with its child categories down to a desired level.
- 
-**/api/v1/_action/pwa/dump-bundles**
-
-This endpoint is required to connect Shopware plugins with your PWA during the application build. It dumps your bundles metadata and PWA specific source files and delivers via a safe channel.
-
-### API Reference
-
-[![Netlify Status](https://api.netlify.com/api/v1/badges/038a45ea-3e86-4e17-a826-0ab96e0dfba4/deploy-status)](https://app.netlify.com/sites/swag-vsf-docs/deploys)
-
-For more specific documentation, please refer to the [swagger.yaml](_doc/swagger.yaml) included in the plugin or see the [swag-vsf-docs](https://swag-vsf-docs.netlify.com/). It is not fully complete, but provides a good overview of usage and strucutre of the endpoints.
 
 ## Setup
 
+### Require plugin
+
+There are two ways you can require the plugin.
+
+#### Composer
+
+Run
+
+```
+$ composer require shopware-pwa/shopware-pwa
+```
+
+within your Shopware installation directory. This will install a composer managed package of the plugin. To use the latest version run
+
+```
+$ composer require shopware-pwa/shopware-pwa:dev-master
+```
+
+instead. 
+
+#### Manual
+
+Clone the repository into the local plugins directory of your Shopware installation.
+
+```
+$ git clone https://github.com/elkmod/SwagShopwarePwa.git custom/plugins/SwagShopwarePwa
+```
+
+This will allow you to make changes and pull requests to this very repository, since you're using a local copy of the plugin.
+
 ### Install plugin
 
-Clone the repository into the `custom/plugins` directory within your Shopware installation. And run the following commands in your Shopware root directory.
+Run the following commands in your Shopware root directory.
 
 Refresh plugin list
 
@@ -69,6 +76,28 @@ Refresh the index tables (containing the SEO URLs) manually
 ```bash
 $ bin/console dal:refresh:index
 ```
+
+## Documentation
+
+### Endpoints
+
+This plugin adds multiple endpoints to both, the store and the admin API. All endpoints below accept `POST` requests.
+
+**/store-api/v1/pwa/page**
+
+Resolves a given path to cms or product page and accepts include parameters to specifiy the fields contained in your response.
+
+**/store-api/v1/pwa/navigation**
+
+Delivers a category along with its child categories down to a desired level.
+ 
+**/api/v1/_action/pwa/dump-bundles**
+
+This endpoint is required to connect Shopware plugins with your PWA during the application build. It dumps your bundles metadata and PWA specific source files and delivers via a safe channel.
+
+### API Reference
+
+For more specific documentation, please refer to the [swagger.yaml](_doc/swagger.yaml) included in the plugin or see the [swag-vsf-docs](https://swag-vsf-docs.netlify.com/). It is not fully complete, but provides a good overview of usage and structure of the endpoints.
     
 ## Tests
 

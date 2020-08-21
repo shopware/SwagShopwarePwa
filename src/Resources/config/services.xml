@@ -39,8 +39,7 @@
         </service>
 
         <service id="SwagShopwarePwa\Pwa\PageLoader\Context\PathResolver">
-            <argument id="SwagShopwarePwa\Pwa\Entity\SalesChannelRoute\SalesChannelRouteRepository" type="service"/>
-            <argument id="sales_channel.repository" type="service"/>
+            <argument id="Shopware\Core\Content\Seo\SeoResolver" type="service"/>
         </service>
 
 
@@ -69,6 +68,7 @@
 
         <service id="SwagShopwarePwa\Pwa\PageResult\Navigation\NavigationPageResultHydrator">
             <argument type="service" id="Shopware\Storefront\Framework\Routing\Router"/>
+            <argument type="service" id="seo_url.repository"/>
             <argument type="tagged" tag="pwa.page_result.aggregation_result_hydrator"/>
         </service>
 

@@ -60,8 +60,8 @@ class PwaController extends AbstractController
         return new JsonResponse([
             'success' => true,
             'buildArtifact' => [
-                'config' => $this->packages->getUrl($configArtifact),
-                'asset' => $this->packages->getUrl($assetArtifact)
+                'config' => DIRECTORY_SEPARATOR . $configArtifact,
+                'asset' => DIRECTORY_SEPARATOR . $assetArtifact
             ]
         ]);
     }

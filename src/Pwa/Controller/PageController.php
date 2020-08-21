@@ -45,8 +45,7 @@ class PageController extends AbstractController
         $this->pageLoaderContextBuilder = $pageLoaderContextBuilder;
 
         /** @var PageLoaderInterface $pageLoader */
-        foreach($pageLoaders as $pageLoader)
-        {
+        foreach ($pageLoaders as $pageLoader) {
             $this->pageLoaders[$pageLoader->getResourceType()] = $pageLoader;
         }
     }
@@ -63,7 +62,6 @@ class PageController extends AbstractController
      *
      * @deprecated since v0.1.0, use store-api.pwa.page instead
      *
-     * @return JsonResponse
      */
     public function resolveOld(Request $request, SalesChannelContext $context): CmsPageRouteResponse
     {
@@ -87,8 +85,7 @@ class PageController extends AbstractController
 
         $pageLoader = $this->getPageLoader($pageLoaderContext);
 
-        if(!$pageLoader)
-        {
+        if (!$pageLoader) {
             throw new PageNotFoundException($pageLoaderContext->getResourceType() . $pageLoaderContext->getResourceIdentifier());
         }
 
@@ -121,6 +118,7 @@ class PageController extends AbstractController
 
         $pageResult->setResourceType($pageLoaderContext->getResourceType());
         $pageResult->setResourceIdentifier($pageLoaderContext->getResourceIdentifier());
+        $pageResult->setCanonicalPathInfo($pageLoaderContext->getRoute()->getCanonicalPathInfo() ?: $pageLoaderContext->getRoute()->getPathInfo());
 
         return $pageResult;
     }
