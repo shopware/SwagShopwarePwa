@@ -9,7 +9,7 @@ use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\RequestCriteriaBuilder;
-use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepository;
+use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
 use SwagShopwarePwa\Pwa\PageLoader\Context\PageLoaderContext;
 use SwagShopwarePwa\Pwa\PageResult\Product\ProductPageResult;
 use SwagShopwarePwa\Pwa\PageResult\Product\ProductPageResultHydrator;
@@ -27,7 +27,7 @@ class ProductPageLoader implements PageLoaderInterface
     private const RESOURCE_TYPE = 'frontend.detail.page';
 
     /**
-     * @var SalesChannelRepository
+     * @var SalesChannelRepositoryInterface
      */
     private $productRepository;
 
@@ -52,7 +52,7 @@ class ProductPageLoader implements PageLoaderInterface
     }
 
     public function __construct(
-        SalesChannelRepository $productRepository,
+        SalesChannelRepositoryInterface $productRepository,
         ProductPageResultHydrator $resultHydrator,
         RequestCriteriaBuilder $requestCriteriaBuilder,
         SalesChannelProductDefinition $productDefinition
