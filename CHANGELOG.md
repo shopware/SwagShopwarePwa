@@ -3,9 +3,19 @@ CHANGELOG for Shopware PWA
 
 ### v0.2.0
 
+**Added**
+
+* Simple build command `build-package.sh` which creates a .zip package from plugin. Please use with care, not production-ready.
+
 **Removed**
 
 * Field `listingConfiguration` from `store-api/v{version}/pwa/page` endpoint. Use aggregations, filters etc. from `product-listing` slot in `cmsPage` instead.
+* Route `/sales-channel-api/v{version}/vsf/navigation` (`sales-channel-api.vsf.navigation`). Use `/store-api/v{version}/pwa/navigation` instead
+* Route `/sales-channel-api/v{version}/vsf/page` (`sales-channel-api.vsf.page`), use `/store-api/v{version}/pwa/page` instead
+
+**Deprecated**
+
+* Route `/store-api/v{version}/pwa/navigation` (`store-api.pwa.navigation`). Please consider using `/store-api/v{version}/navigation/{requestActiveId}/{requestRootId}` instead.
 
 ### v0.1.5
 
