@@ -69,26 +69,6 @@
         <service id="SwagShopwarePwa\Pwa\PageResult\Navigation\NavigationPageResultHydrator">
             <argument type="service" id="Shopware\Storefront\Framework\Routing\Router"/>
             <argument type="service" id="seo_url.repository"/>
-            <argument type="tagged" tag="pwa.page_result.aggregation_result_hydrator"/>
-        </service>
-
-
-        <!-- Aggregation result hydrators -->
-
-        <service id="SwagShopwarePwa\Pwa\PageResult\Navigation\AggregationResultHydrator\EntityResultHydrator">
-            <tag name="pwa.page_result.aggregation_result_hydrator"/>
-        </service>
-
-        <service id="SwagShopwarePwa\Pwa\PageResult\Navigation\AggregationResultHydrator\TermsResultHydrator">
-            <tag name="pwa.page_result.aggregation_result_hydrator"/>
-        </service>
-
-        <service id="SwagShopwarePwa\Pwa\PageResult\Navigation\AggregationResultHydrator\StatsResultHydrator">
-            <tag name="pwa.page_result.aggregation_result_hydrator"/>
-        </service>
-
-        <service id="SwagShopwarePwa\Pwa\PageResult\Navigation\AggregationResultHydrator\MaxResultHydrator">
-            <tag name="pwa.page_result.aggregation_result_hydrator"/>
         </service>
 
 

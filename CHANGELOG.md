@@ -1,7 +1,19 @@
 CHANGELOG for Shopware PWA
 ===================
 
-### v0.1.2 - [to be scheduled]
+### v0.2.0
+
+**Removed**
+
+* Field `listingConfiguration` from `store-api/v{version}/pwa/page` endpoint. Use aggregations, filters etc. from `product-listing` slot in `cmsPage` instead.
+
+### v0.1.5
+
+### v0.1.4
+
+### v0.1.3
+
+### v0.1.2 - 2020-04-29
 
 **Added**
 

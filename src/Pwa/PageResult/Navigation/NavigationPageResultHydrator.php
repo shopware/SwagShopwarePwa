@@ -38,22 +38,12 @@ class NavigationPageResultHydrator
      */
     private $router;
 
-    /**
-     * @var AggregationResultHydratorInterface[]
-     */
-    private $aggregationResultHydrators;
-
-    public function __construct(Router $router, EntityRepositoryInterface $seoUrlRepository, iterable $aggregationResultHydrators)
+    public function __construct(Router $router, EntityRepositoryInterface $seoUrlRepository)
     {
         $this->router = $router;
         $this->seoUrlRepository = $seoUrlRepository;
 
         $this->pageResult = new NavigationPageResult();
-
-        /** @var AggregationResultHydratorInterface[] $aggregationResultHydrators */
-        foreach ($aggregationResultHydrators as $resultHydrator) {
-            $this->aggregationResultHydrators[$resultHydrator->getSupportedAggregationType()] = $resultHydrator;
-        }
     }
 
     public function hydrate(PageLoaderContext $pageLoaderContext, CategoryEntity $category, ?CmsPageEntity $cmsPageEntity): NavigationPageResult
@@ -68,43 +58,7 @@ class NavigationPageResultHydrator
         $this->pageResult->setResourceType($pageLoaderContext->getResourceType());
         $this->pageResult->setResourceIdentifier($pageLoaderContext->getResourceIdentifier());
 
-        $this->pageResult->setListingConfiguration($this->getAvailableFilters());
-
         return $this->pageResult;
-    }
-
-    private function getAvailableFilters(): array
-    {
-        if ($this->pageResult->getCmsPage() === null) {
-            return [];
-        }
-
-        // Assuming a page only has one listing
-        $listingSlot = $this->pageResult->getCmsPage()->getFirstElementOfType('product-listing');
-
-        if ($listingSlot === null) {
-            return [];
-        }
-
-        /** @var ProductListingResult $listing */
-        $listing = $listingSlot->getData()->getListing();
-        $filters = [];
-
-        $this->preparePropertyAggregations($listing->getAggregations());
-
-        foreach ($listing->getAggregations() as $key => $aggregation) {
-            $filters[$key] = $this->aggregationResultHydrators[get_class($aggregation)]->hydrate($aggregation);
-        }
-
-        $currentFilters = $listing->getCurrentFilters();
-
-        $listingConfig = [
-            'availableSortings' => $listing->getSortings(),
-            'availableFilters' => $filters,
-            'activeFilters' => $currentFilters,
-        ];
-
-        return $listingConfig;
     }
 
     private function setBreadcrumbs(CategoryEntity $category, SalesChannelContext $context): void
@@ -147,35 +101,5 @@ class NavigationPageResultHydrator
         }
 
         return $pathByCategoryId;
-    }
-
-    private function preparePropertyAggregations(AggregationResultCollection $aggregations): AggregationResultCollection
-    {
-        foreach($aggregations as $aggKey => $aggregation)
-        {
-            if($aggKey !== 'properties')
-            {
-                continue;
-            }
-
-            // For categories/listings without products
-            if(!$aggregation instanceof EntityResult)
-            {
-                continue;
-            }
-
-            /** @var $aggregation EntityResult */
-            foreach($aggregation->getEntities() as $key => $propertyGroup)
-            {
-                /** @var PropertyGroupEntity $propertyGroup */
-                $result = new EntityResult($propertyGroup->getName(), $propertyGroup->getOptions());
-                $aggregations->add($result);
-            }
-
-            $aggregations->remove($aggKey);
-
-        }
-
-        return $aggregations;
     }
 }
