@@ -2,7 +2,9 @@
 
 This extension provides a collection of helper functions to integrate with the [shopware-pwa](https://github.com/DivanteLtd/shopware-pwa) client library.
 
-Shopware PWA requires an API version of **6.2.x or higher**, so there's no version of this plugin for Shopware 6.1 anymore.
+The current version of Shopware PWA requires an API version of **6.3.x or higher**. Backwards compatible versions of this plugin are available.
+There's no version of this plugin for Shopware 6.1 anymore.
+
 There is a [video on how to set up](https://drive.google.com/open?id=1ynpoWw9b7hljzkqzVv2JFDxTtgomyVg4) the plugin correctly (please be aware that this applies to the old 6.1 version).
 
 ## Table of content
@@ -31,7 +33,9 @@ within your Shopware installation directory. This will install a composer manage
 $ composer require shopware-pwa/shopware-pwa:dev-master
 ```
 
-instead. 
+instead.
+
+We recommend using this way of installing the plugin, because it reduces the risk of having an outdated/incompatible dependency.
 
 #### Manual
 
@@ -94,11 +98,7 @@ Delivers a category along with its child categories down to a desired level.
 **/api/v1/_action/pwa/dump-bundles**
 
 This endpoint is required to connect Shopware plugins with your PWA during the application build. It dumps your bundles metadata and PWA specific source files and delivers via a safe channel.
-
-### API Reference
-
-For more specific documentation, please refer to the [swagger.yaml](_doc/swagger.yaml) included in the plugin or see the [swag-vsf-docs](https://swag-vsf-docs.netlify.com/). It is not fully complete, but provides a good overview of usage and structure of the endpoints.
-    
+ 
 ## Tests
 
 Tests are located in `src/Test` and configured in `phpunit.xml`.

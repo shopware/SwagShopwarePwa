@@ -12,6 +12,7 @@ CHANGELOG for Shopware PWA
 * Field `listingConfiguration` from `store-api/v{version}/pwa/page` endpoint. Use aggregations, filters etc. from `product-listing` slot in `cmsPage` instead.
 * Route `/sales-channel-api/v{version}/vsf/navigation` (`sales-channel-api.vsf.navigation`). Use `/store-api/v{version}/pwa/navigation` instead
 * Route `/sales-channel-api/v{version}/vsf/page` (`sales-channel-api.vsf.page`), use `/store-api/v{version}/pwa/page` instead
+* Swagger API documentation - barely used. Directly refer to docs instead.
 
 **Deprecated**
 
