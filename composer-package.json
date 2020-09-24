@@ -1,0 +1,22 @@
+{
+  "name": "shopware-pwa/shopware-pwa",
+  "description": "Shopware PWA extension",
+  "type": "shopware-platform-plugin",
+  "license": "MIT",
+  "authors": [{
+      "name": "shopware AG"
+  }],
+  "autoload": {
+    "psr-4": {
+      "SwagShopwarePwa\\": "src/"
+    }
+  },
+  "extra": {
+    "shopware-plugin-class": "SwagShopwarePwa\\SwagShopwarePwa",
+    "plugin-icon": "src/Resources/config/plugin.png",
+    "label": {
+      "de-DE": "PWA Integration",
+      "en-GB": "PWA Integration"
+    }
+  }
+}
