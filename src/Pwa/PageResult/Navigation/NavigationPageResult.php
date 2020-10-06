@@ -18,11 +18,6 @@ class NavigationPageResult extends AbstractPageResult
     protected $breadcrumb;
 
     /**
-     * @var array
-     */
-    protected $listingConfiguration;
-
-    /**
      * @return CmsPageEntity|null
      */
     public function getCmsPage(): ?CmsPageEntity
@@ -46,18 +41,5 @@ class NavigationPageResult extends AbstractPageResult
     public function setBreadcrumb(array $breadcrumb)
     {
         $this->breadcrumb = $breadcrumb;
-    }
-
-    /**
-     * @return array
-     */
-    public function getListingConfiguration(): array
-    {
-        return $this->listingConfiguration;
-    }
-
-    public function setListingConfiguration(array $listingConfiguration)
-    {
-        $this->listingConfiguration = $listingConfiguration;
     }
 }

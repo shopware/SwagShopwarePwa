@@ -11,10 +11,6 @@
       "SwagShopwarePwa\\": "src/"
     }
   },
-  "require": {
-    "shopware/core": "~6.3.0",
-    "shopware/storefront":  "~6.3.0"
-  },
   "extra": {
     "shopware-plugin-class": "SwagShopwarePwa\\SwagShopwarePwa",
     "plugin-icon": "src/Resources/config/plugin.png",

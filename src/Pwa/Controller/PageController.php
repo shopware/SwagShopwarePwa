@@ -51,24 +51,6 @@ class PageController extends AbstractController
     }
 
     /**
-     * @Route("/sales-channel-api/v{version}/vsf/page", name="sales-channel-api.vsf.page", methods={"POST"})
-     *
-     * Resolve a page for a given resource and resource identification or path
-     * First, a PageLoaderContext object is assembled, which includes information about the resource, request and context.
-     * Then, the page is loaded through the page loader only given the page loader context.
-     *
-     * @param Request $request
-     * @param SalesChannelContext $context
-     *
-     * @deprecated since v0.1.0, use store-api.pwa.page instead
-     *
-     */
-    public function resolveOld(Request $request, SalesChannelContext $context): CmsPageRouteResponse
-    {
-        return $this->resolve($request, $context);
-    }
-
-    /**
      * @Route("/store-api/v{version}/pwa/page", name="store-api.pwa.cms-page-resolve", methods={"POST"})
      *
      * Resolve a page for a given resource and resource identification or path

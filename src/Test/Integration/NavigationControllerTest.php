@@ -8,6 +8,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\SalesChannelApiTestBehaviour;
+use Shopware\Core\Framework\Test\TestDataCollection;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\PlatformRequest;
 use SwagShopwarePwa\SwagShopwarePwa;
@@ -20,34 +21,14 @@ class NavigationControllerTest extends TestCase
     const ENDPOINT_NAVIGATION = '/store-api/v' . PlatformRequest::API_VERSION . '/pwa/navigation';
 
     /**
-     * @var string
+     * @var \Symfony\Bundle\FrameworkBundle\KernelBrowser
      */
-    private $salesChannelId;
+    private $browser;
 
     /**
-     * @var string
+     * @var TestDataCollection
      */
-    private $rootId;
-
-    /**
-     * @var string
-     */
-    private $category1Id;
-
-    /**
-     * @var string
-     */
-    private $category2Id;
-
-    /**
-     * @var string
-     */
-    private $category1_1Id;
-
-    /**
-     * @var string
-     */
-    private $category2_1Id;
+    private $ids;
 
     /**
      * @var EntityRepositoryInterface
@@ -61,19 +42,22 @@ class NavigationControllerTest extends TestCase
 
     public function setUp(): void
     {
-        parent::setUp();
+        $this->ids = new TestDataCollection(Context::createDefaultContext());
 
-        $this->browser = $this->getSalesChannelBrowser();
-        $this->salesChannelId = $this->getSalesChannelApiSalesChannelId();
+        $this->browser = $this->createCustomSalesChannelBrowser([
+            'id' => $this->ids->create('sales-channel'),
+        ]);
+
+        $this->salesChannelId = $this->ids->get('sales-channel');
 
         $this->categoryRepository = $this->getContainer()->get('category.repository');
         $this->seoUrlRepository = $this->getContainer()->get('seo_url.repository');
 
-        $this->rootId = Uuid::randomHex();
-        $this->category1Id = Uuid::randomHex();
-        $this->category2Id = Uuid::randomHex();
-        $this->category1_1Id = Uuid::randomHex();
-        $this->category2_1Id = Uuid::randomHex();
+        $this->ids->create('rootId');
+        $this->ids->create('category1Id');
+        $this->ids->create('category2Id');
+        $this->ids->create('category1_1Id');
+        $this->ids->create('category2_1Id');
     }
 
     public function testResolveOneLevel(): void
@@ -81,17 +65,17 @@ class NavigationControllerTest extends TestCase
         $this->createCategories();
 
         $content = [
-            'rootNode' => $this->rootId,
+            'rootNode' => $this->ids->get('rootId'),
             'depth' => 1
         ];
 
-        $this->salesChannelApiBrowser->request(
+        $this->browser->request(
             'POST',
             self::ENDPOINT_NAVIGATION,
             $content
         );
 
-        $result = \GuzzleHttp\json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
+        $result = \GuzzleHttp\json_decode($this->browser->getResponse()->getContent());
 
         static::assertObjectHasAttribute('route', $result);
         static::assertObjectHasAttribute('resourceType', $result->route);
@@ -109,21 +93,21 @@ class NavigationControllerTest extends TestCase
 
         $content = [
             'depth' => -1,
-            'rootNode' => $this->rootId
+            'rootNode' => $this->ids->get('rootId')
         ];
 
-        $this->salesChannelApiBrowser->request(
+        $this->browser->request(
             'POST',
             self::ENDPOINT_NAVIGATION,
             $content
         );
 
-        $result = \GuzzleHttp\json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
+        $result = \GuzzleHttp\json_decode($this->browser->getResponse()->getContent());
 
         static::assertCount(2, $result->children);
         static::assertCount(1, $result->children[0]->children);
     }
-    
+
     public function testResolveSeoUrl(): void
     {
         $this->createCategories();
@@ -131,16 +115,16 @@ class NavigationControllerTest extends TestCase
 
         $content = [
             'depth' => 1,
-            'rootNode' => $this->rootId
+            'rootNode' => $this->ids->get('rootId')
         ];
 
-        $this->salesChannelApiBrowser->request(
+        $this->browser->request(
             'POST',
             self::ENDPOINT_NAVIGATION,
             $content
         );
 
-        $result = \GuzzleHttp\json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
+        $result = \GuzzleHttp\json_decode($this->browser->getResponse()->getContent());
 
         static::assertEquals('/', $result->route->path);
         static::assertCount(2, $result->children);
@@ -157,25 +141,25 @@ class NavigationControllerTest extends TestCase
     {
         $this->categoryRepository->upsert([
             [
-                'id' => $this->rootId,
+                'id' => $this->ids->get('rootId'),
                 'name' => 'root',
                 'children' => [
                     [
-                        'id' => $this->category1Id,
+                        'id' => $this->ids->get('category1Id'),
                         'name' => 'Category 1',
                         'children' => [
                             [
-                                'id' => $this->category1_1Id,
+                                'id' => $this->ids->get('category1_1Id'),
                                 'name' => 'Category 1.1',
                             ],
                         ],
                     ],
                     [
-                        'id' => $this->category2Id,
+                        'id' => $this->ids->get('category2Id'),
                         'name' => 'Category 2',
                         'children' => [
                             [
-                                'id' => $this->category2_1Id,
+                                'id' => $this->ids->get('category2_1Id'),
                                 'name' => 'Category 2.1',
                             ],
                         ],
@@ -189,12 +173,12 @@ class NavigationControllerTest extends TestCase
     {
         $this->seoUrlRepository->create([
             [
-                'salesChannelId' => $this->salesChannelId,
+                'salesChannelId' => $this->ids->get('sales-channel'),
                 'languageId' => Defaults::LANGUAGE_SYSTEM,
                 'routeName' => 'frontend.navigation.page',
                 'pathInfo' => '/navigation/123',
                 'seoPathInfo' => 'Home-Shoes/Children/',
-                'foreignKey' => $this->category1Id,
+                'foreignKey' => $this->ids->get('category1Id'),
                 'isValid' => true,
                 'isCanonical' => false,
             ]

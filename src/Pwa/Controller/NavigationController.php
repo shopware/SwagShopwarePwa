@@ -28,22 +28,9 @@ class NavigationController extends AbstractController
     /**
      * Resolves a navigation tree for a given root node at a given depth
      *
-     * @Route("/sales-channel-api/v{version}/vsf/navigation", name="sales-channel-api.vsf.navigation", methods={"POST"})
-     *
-     * @deprecated since v0.1.0, use store-api.pwa.navigation instead
-     *
-     * @return JsonResponse
-     */
-    public function resolveOld(Request $request, SalesChannelContext $context): JsonResponse
-    {
-        return $this->resolve($request, $context);
-    }
-
-
-    /**
-     * Resolves a navigation tree for a given root node at a given depth
-     *
      * @Route("/store-api/v{version}/pwa/navigation", name="store-api.pwa.navigation", methods={"POST"})
+     *
+     * @deprecated since v0.2.0, use store-api.navigation instead
      *
      * @return JsonResponse
      */
