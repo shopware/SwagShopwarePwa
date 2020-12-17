@@ -3,6 +3,7 @@
 namespace SwagShopwarePwa\Pwa\PageLoader;
 
 use Shopware\Core\Content\Product\Exception\ProductNumberNotFoundException;
+use Shopware\Core\Content\Product\SalesChannel\Detail\ProductDetailRoute;
 use Shopware\Core\Content\Product\SalesChannel\ProductAvailableFilter;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductDefinition;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
@@ -27,9 +28,9 @@ class ProductPageLoader implements PageLoaderInterface
     private const RESOURCE_TYPE = 'frontend.detail.page';
 
     /**
-     * @var SalesChannelRepositoryInterface
+     * @var ProductDetailRoute
      */
-    private $productRepository;
+    private $productRoute;
 
     /**
      * @var ProductPageResultHydrator
@@ -52,13 +53,13 @@ class ProductPageLoader implements PageLoaderInterface
     }
 
     public function __construct(
-        SalesChannelRepositoryInterface $productRepository,
+        ProductDetailRoute $productDetailRoute,
         ProductPageResultHydrator $resultHydrator,
         RequestCriteriaBuilder $requestCriteriaBuilder,
         SalesChannelProductDefinition $productDefinition
     )
     {
-        $this->productRepository = $productRepository;
+        $this->productRoute = $productDetailRoute;
         $this->resultHydrator = $resultHydrator;
         $this->requestCriteriaBuilder = $requestCriteriaBuilder;
         $this->productDefinition = $productDefinition;
@@ -88,17 +89,13 @@ class ProductPageLoader implements PageLoaderInterface
             new EqualsFilter('active', 1)
         );
 
-        $searchResult = $this->productRepository->search($criteria, $pageLoaderContext->getContext());
+        $result = $this->productRoute->load(
+            $pageLoaderContext->getResourceIdentifier(),
+            $pageLoaderContext->getRequest(),
+            $pageLoaderContext->getContext(),
+            $criteria
+        );
 
-        if($searchResult->count() < 1)
-        {
-            throw new ProductNumberNotFoundException($pageLoaderContext->getResourceIdentifier());
-        }
-
-        /** @var SalesChannelProductEntity $product */
-        $product = $searchResult->first();
-        $aggregations = $searchResult->getAggregations();
-
-        return $this->resultHydrator->hydrate($pageLoaderContext, $product, $aggregations);
+        return $this->resultHydrator->hydrate($pageLoaderContext, $result->getProduct(), $result->getConfigurator());
     }
 }

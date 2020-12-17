@@ -1,6 +1,16 @@
 CHANGELOG for Shopware PWA
 ===================
 
+### Unreleased
+
+**Added**
+
+* Field `configurator` to product detail page responses from `store-api/v{version}/pwa/page` endpoint.
+
+**Removed**
+
+* Field `aggregations` from product detail page responses from `store-api/v{version}/pwa/page` endpoint.
+
 ### v0.2.0
 
 **Added**

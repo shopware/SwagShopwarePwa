@@ -3,7 +3,7 @@
 namespace SwagShopwarePwa\Pwa\PageResult\Product;
 
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationResultCollection;
+use Shopware\Core\Content\Property\PropertyGroupCollection;
 use SwagShopwarePwa\Pwa\PageLoader\Context\PageLoaderContext;
 
 /**
@@ -17,13 +17,13 @@ use SwagShopwarePwa\Pwa\PageLoader\Context\PageLoaderContext;
  */
 class ProductPageResultHydrator
 {
-    public function hydrate(PageLoaderContext $pageLoaderContext, SalesChannelProductEntity $product, AggregationResultCollection $aggregations): ProductPageResult
+    public function hydrate(PageLoaderContext $pageLoaderContext, SalesChannelProductEntity $product, ?PropertyGroupCollection $configurator): ProductPageResult
     {
         $pageResult = new ProductPageResult();
 
         $pageResult->setProduct($product);
 
-        $pageResult->setAggregations($aggregations);
+        $pageResult->setConfigurator($configurator);
 
         $pageResult->setResourceType($pageLoaderContext->getResourceType());
         $pageResult->setResourceIdentifier($pageLoaderContext->getResourceIdentifier());

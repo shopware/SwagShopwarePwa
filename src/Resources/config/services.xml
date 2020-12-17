@@ -46,7 +46,7 @@
         <!-- Page loaders -->
 
         <service id="SwagShopwarePwa\Pwa\PageLoader\ProductPageLoader">
-            <argument id="sales_channel.product.repository" type="service"/>
+            <argument id="Shopware\Core\Content\Product\SalesChannel\Detail\ProductDetailRoute" type="service"/>
             <argument type="service" id="SwagShopwarePwa\Pwa\PageResult\Product\ProductPageResultHydrator"/>
             <argument id="Shopware\Core\Framework\DataAbstractionLayer\Search\RequestCriteriaBuilder" type="service"/>
             <argument id="Shopware\Core\Content\Product\SalesChannel\SalesChannelProductDefinition" type="service"/>

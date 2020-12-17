@@ -3,6 +3,7 @@
 namespace SwagShopwarePwa\Pwa\PageResult\Product;
 
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
+use Shopware\Core\Content\Property\PropertyGroupCollection;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationResultCollection;
 use SwagShopwarePwa\Pwa\PageResult\AbstractPageResult;
 
@@ -14,9 +15,9 @@ class ProductPageResult extends AbstractPageResult
     protected $product;
 
     /**
-     * @var AggregationResultCollection
+     * @var PropertyGroupCollection
      */
-    protected $aggregations;
+    protected $configurator;
 
     /**
      * @return SalesChannelProductEntity
@@ -35,16 +36,18 @@ class ProductPageResult extends AbstractPageResult
     }
 
     /**
-     * @param AggregationResultCollection $aggregations
+     * @return PropertyGroupCollection
      */
-    public function setAggregations(AggregationResultCollection $aggregations) {
-        $this->aggregations = $aggregations;
+    public function getConfigurator(): PropertyGroupCollection
+    {
+        return $this->configurator;
     }
 
     /**
-     * @return AggregationResultCollection
+     * @param PropertyGroupCollection $configurator
      */
-    public function getAggregations() {
-        return $this->aggregations;
+    public function setConfigurator(PropertyGroupCollection $configurator)
+    {
+        $this->configurator = $configurator;
     }
 }
