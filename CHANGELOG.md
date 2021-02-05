@@ -1,7 +1,38 @@
 CHANGELOG for Shopware PWA
 ===================
 
-### v0.1.2 - [to be scheduled]
+### Unreleased
+
+**Fixed**
+
+* Breadcrumbs paths with translated URLs
+
+### v0.2.0
+
+**Added**
+
+* Field `configurator` to product detail page responses from `store-api/v{version}/pwa/page` endpoint.
+* Simple build command `build-package.sh` which creates a .zip package from plugin. Please use with care, not production-ready.
+
+**Deprecated**
+
+* Route `/store-api/v{version}/pwa/navigation` (`store-api.pwa.navigation`). Please consider using `/store-api/v{version}/navigation/{requestActiveId}/{requestRootId}` instead.
+
+**Removed**
+
+* Field `listingConfiguration` from `store-api/v{version}/pwa/page` endpoint. Use aggregations, filters etc. from `product-listing` slot in `cmsPage` instead.
+* Route `/sales-channel-api/v{version}/vsf/navigation` (`sales-channel-api.vsf.navigation`). Use `/store-api/v{version}/pwa/navigation` instead
+* Route `/sales-channel-api/v{version}/vsf/page` (`sales-channel-api.vsf.page`), use `/store-api/v{version}/pwa/page` instead
+* Swagger API documentation - barely used. Directly refer to docs instead.
+* Field `aggregations` from product detail page responses from `store-api/v{version}/pwa/page` endpoint.
+
+### v0.1.5
+
+### v0.1.4
+
+### v0.1.3
+
+### v0.1.2 - 2020-04-29
 
 **Added**
 

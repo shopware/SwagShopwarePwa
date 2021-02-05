@@ -10,6 +10,7 @@ use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\SalesChannelApiTestBehaviour;
+use Shopware\Core\Framework\Test\TestDataCollection;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\PlatformRequest;
 
@@ -19,6 +20,16 @@ class PageControllerTest extends TestCase
     use SalesChannelApiTestBehaviour;
 
     const ENDPOINT_PAGE = '/store-api/v' . PlatformRequest::API_VERSION . '/pwa/page';
+
+    /**
+     * @var \Symfony\Bundle\FrameworkBundle\KernelBrowser
+     */
+    private $browser;
+
+    /**
+     * @var TestDataCollection
+     */
+    private $ids;
 
     /**
      * @var EntityRepositoryInterface
@@ -45,42 +56,24 @@ class PageControllerTest extends TestCase
      */
     private $salesChannelRepository;
 
-    /**
-     * @var string
-     */
-    private $salesChannelId;
-
-    /**
-     * @var string
-     */
-    private $categoryId;
-
-    /**
-     * @var string
-     */
-    private $cmsPageId;
-
-    /**
-     * @var string
-     */
-    private $productActiveId;
-
-    /**
-     * @var string
-     */
-    private $productInactiveId;
-
-    /**
-     * @var string
-     */
-    private $childCategoryId = '4cb685159a9748289cbd6a36f6b33acb';
-
     public function setUp(): void
     {
-        parent::setUp();
+        $this->ids = new TestDataCollection(Context::createDefaultContext());
 
-        $this->browser = $this->getSalesChannelBrowser();
-        $this->salesChannelId = $this->getSalesChannelApiSalesChannelId();
+        $this->browser = $this->createCustomSalesChannelBrowser([
+            'id' => $this->ids->create('salesChannelId'),
+        ]);
+
+        $this->ids->get('salesChannelId');
+
+        $this->ids->create('categoryId');
+        $this->ids->create('cmsPageId');
+
+        $this->ids->create('productActiveId');
+        $this->ids->create('productInActiveId');
+
+        $this->ids->create('childCategoryId');
+        $this->ids->create('child2CategoryId');
 
         $this->seoUrlRepository = $this->getContainer()->get('seo_url.repository');
         $this->categoryRepository = $this->getContainer()->get('category.repository');
@@ -98,19 +91,19 @@ class PageControllerTest extends TestCase
             'path' => ''
         ];
 
-        $this->salesChannelApiBrowser->request(
+        $this->browser->request(
             'POST',
             self::ENDPOINT_PAGE,
             $content
         );
 
-        $response = json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
+        $response = json_decode($this->browser->getResponse()->getContent());
 
         static::assertObjectHasAttribute('cmsPage', $response);
 
         static::assertEquals('frontend.navigation.page', $response->resourceType);
         static::assertObjectHasAttribute('resourceIdentifier', $response);
-        static::assertEquals($this->categoryId, $response->resourceIdentifier);
+        static::assertEquals($this->ids->get('categoryId'), $response->resourceIdentifier);
     }
 
     public function testResolveCategoryPage(): void
@@ -123,13 +116,14 @@ class PageControllerTest extends TestCase
             'path' => 'Home-Shoes/'
         ];
 
-        $this->salesChannelApiBrowser->request(
+        $this->browser->request(
             'POST',
             self::ENDPOINT_PAGE,
             $content
         );
 
-        $response = json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
+        $response = json_decode($this->browser->getResponse()->getContent());
+
 
         static::assertObjectHasAttribute('cmsPage', $response);
         static::assertObjectHasAttribute('breadcrumb', $response);
@@ -139,22 +133,46 @@ class PageControllerTest extends TestCase
         static::assertNotNull($response->resourceIdentifier);
     }
 
+    public function testResolveCategoryBreadcrumbLink(): void
+    {
+        $this->createCmsPage();
+        $this->createCategories();
+        $this->createSeoUrls();
+
+        $content = [
+            'path' => 'Home-Shoes/Children-level-2/'
+        ];
+
+        $this->browser->request(
+            'POST',
+            self::ENDPOINT_PAGE,
+            $content
+        );
+
+        $response = json_decode($this->browser->getResponse()->getContent(), true);
+
+        static::assertArrayHasKey('breadcrumb', $response);
+
+        static::assertEquals('/Home-Shoes/Children-canonical/', $response['breadcrumb'][$this->ids->get('childCategoryId')]['path']);
+        static::assertEquals('/Home-Shoes/Children-level-2/', $response['breadcrumb'][$this->ids->get('child2CategoryId')]['path']);
+    }
+
     public function testResolveCategoryPageTechnicalUrl(): void
     {
         $this->createCmsPage();
         $this->createCategories();
 
         $content = [
-            'path' => '/navigation/' . $this->categoryId
+            'path' => '/navigation/' . $this->ids->get('categoryId')
         ];
 
-        $this->salesChannelApiBrowser->request(
+        $this->browser->request(
             'POST',
             self::ENDPOINT_PAGE,
             $content
         );
 
-        $response = json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
+        $response = json_decode($this->browser->getResponse()->getContent());
 
         static::assertObjectHasAttribute('cmsPage', $response);
         static::assertObjectHasAttribute('breadcrumb', $response);
@@ -166,20 +184,20 @@ class PageControllerTest extends TestCase
 
     public function testResolveCategoryWithoutCmsPage(): void
     {
-        $this->createCategories();
+        $this->createCategories(false);
         $this->createSeoUrls();
 
         $content = [
             'path' => 'Home-Shoes/'
         ];
 
-        $this->salesChannelApiBrowser->request(
+        $this->browser->request(
             'POST',
             self::ENDPOINT_PAGE,
             $content
         );
 
-        $response = json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
+        $response = json_decode($this->browser->getResponse()->getContent());
 
         static::assertObjectHasAttribute('cmsPage', $response);
         static::assertNull($response->cmsPage);
@@ -199,13 +217,13 @@ class PageControllerTest extends TestCase
             'path' => '/foo-bar/prod'
         ];
 
-        $this->salesChannelApiBrowser->request(
+        $this->browser->request(
             'POST',
             self::ENDPOINT_PAGE,
             $content
         );
 
-        $response = json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
+        $response = json_decode($this->browser->getResponse()->getContent());
 
         static::assertObjectHasAttribute('product', $response);
 
@@ -220,20 +238,20 @@ class PageControllerTest extends TestCase
         $this->createSalesChannelDomain();
 
         $content = [
-            'path' => '/detail/' . $this->productActiveId,
+            'path' => '/detail/' . $this->ids->get('productActiveId'),
             'associations' => [
                 'manufacturer' => [],
                 'categories' => []
             ]
         ];
 
-        $this->salesChannelApiBrowser->request(
+        $this->browser->request(
             'POST',
             self::ENDPOINT_PAGE,
             $content
         );
 
-        $response = json_decode($this->salesChannelApiBrowser->getResponse()->getContent(), true);
+        $response = json_decode($this->browser->getResponse()->getContent(), true);
 
         static::assertArrayHasKey('product', $response);
         static::assertArrayHasKey('manufacturer', $response['product']);
@@ -248,16 +266,16 @@ class PageControllerTest extends TestCase
         $this->createSalesChannelDomain();
 
         $content = [
-            'path' => '/detail/' . $this->productActiveId
+            'path' => '/detail/' . $this->ids->get('productActiveId')
         ];
 
-        $this->salesChannelApiBrowser->request(
+        $this->browser->request(
             'POST',
             self::ENDPOINT_PAGE,
             $content
         );
 
-        $response = json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
+        $response = json_decode($this->browser->getResponse()->getContent());
 
         static::assertObjectHasAttribute('product', $response);
 
@@ -276,13 +294,13 @@ class PageControllerTest extends TestCase
             'path' => '/foo-bar/prod-inactive'
         ];
 
-        $this->salesChannelApiBrowser->request(
+        $this->browser->request(
             'POST',
             self::ENDPOINT_PAGE,
             $content
         );
 
-        $response = json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
+        $response = json_decode($this->browser->getResponse()->getContent());
 
         static::assertObjectHasAttribute('errors', $response);
         static::assertIsArray($response->errors);
@@ -306,13 +324,13 @@ class PageControllerTest extends TestCase
             ]
         ];
 
-        $this->salesChannelApiBrowser->request(
+        $this->browser->request(
             'POST',
             self::ENDPOINT_PAGE,
             $content
         );
 
-        $response = json_decode($this->salesChannelApiBrowser->getResponse()->getContent());
+        $response = json_decode($this->browser->getResponse()->getContent());
 
         static::assertObjectHasAttribute('cmsPage', $response);
         static::assertNotNull($response->cmsPage);
@@ -321,12 +339,37 @@ class PageControllerTest extends TestCase
         static::assertObjectNotHasAttribute('breadcrumb', $response);
     }
 
+    public function testResolveCanonicalUrl(): void
+    {
+        $this->createCmsPage();
+        $this->createCategories();
+        $this->createSeoUrls();
+
+        $content = [
+            'path' => 'Home-Shoes/',
+            'includes' => [
+                'pwa_page_result' => ['canonicalPathInfo']
+            ]
+        ];
+
+        $this->browser->request(
+            'POST',
+            self::ENDPOINT_PAGE,
+            $content
+        );
+
+        $response = json_decode($this->browser->getResponse()->getContent());
+
+        static::assertObjectHasAttribute('canonicalPathInfo', $response);
+        static::assertEquals('/Home-Shoes/canonical/', $response->canonicalPathInfo);
+    }
+
     private function createSalesChannelDomain()
     {
         $this->salesChannelDomainRepository->create([
             [
                 'url' => '/',
-                'salesChannelId' => $this->salesChannelId,
+                'salesChannelId' => $this->ids->get('salesChannelId'),
                 'languageId' => Defaults::LANGUAGE_SYSTEM,
                 'currencyId' => Defaults::CURRENCY,
                 'snippetSetId' => $this->getSnippetSetIdForLocale('en-GB')
@@ -336,12 +379,10 @@ class PageControllerTest extends TestCase
 
     private function createProduct()
     {
-        $this->productActiveId = Uuid::randomHex();
-        $this->productInactiveId = Uuid::randomHex();
         $categoryId = Uuid::randomHex();
         $data = [
             [
-                'id' => $this->productActiveId,
+                'id' => $this->ids->get('productActiveId'),
                 'productNumber' => Uuid::randomHex(),
                 'stock' => 10,
                 'active' => true,
@@ -354,13 +395,13 @@ class PageControllerTest extends TestCase
                 ],
                 'visibilities' => [
                     [
-                        'salesChannelId' => $this->salesChannelId,
+                        'salesChannelId' => $this->ids->get('salesChannelId'),
                         'visibility' => ProductVisibilityDefinition::VISIBILITY_ALL,
                     ],
                 ],
             ],
             [
-                'id' => $this->productInactiveId,
+                'id' => $this->ids->get('productInactiveId'),
                 'productNumber' => Uuid::randomHex(),
                 'stock' => 10,
                 'active' => false,
@@ -373,7 +414,7 @@ class PageControllerTest extends TestCase
                 ],
                 'visibilities' => [
                     [
-                        'salesChannelId' => $this->salesChannelId,
+                        'salesChannelId' => $this->ids->get('salesChannelId'),
                         'visibility' => ProductVisibilityDefinition::VISIBILITY_ALL,
                     ],
                 ]
@@ -387,62 +428,96 @@ class PageControllerTest extends TestCase
     {
         $this->seoUrlRepository->create([
             [
-                'salesChannelId' => $this->salesChannelId,
+                'salesChannelId' => $this->ids->get('salesChannelId'),
                 'languageId' => Defaults::LANGUAGE_SYSTEM,
                 'routeName' => 'frontend.navigation.page',
-                'pathInfo' => '/navigation/1234',
+                'pathInfo' => '/navigation/' . $this->ids->get('categoryId'),
                 'seoPathInfo' => 'Home-Shoes/',
-                'foreignKey' => $this->categoryId,
+                'foreignKey' => $this->ids->get('categoryId'),
                 'isValid' => true,
                 'isCanonical' => false,
             ],
             [
-                'salesChannelId' => $this->salesChannelId,
+                'salesChannelId' => $this->ids->get('salesChannelId'),
                 'languageId' => Defaults::LANGUAGE_SYSTEM,
                 'routeName' => 'frontend.navigation.page',
-                'pathInfo' => '/navigation/123',
+                'pathInfo' => '/navigation/' . $this->ids->get('categoryId'),
+                'seoPathInfo' => 'Home-Shoes/canonical/',
+                'foreignKey' => $this->ids->get('categoryId'),
+                'isValid' => true,
+                'isCanonical' => true,
+            ],
+            [
+                'salesChannelId' => $this->ids->get('salesChannelId'),
+                'languageId' => Defaults::LANGUAGE_SYSTEM,
+                'routeName' => 'frontend.navigation.page',
+                'pathInfo' => '/navigation/' . $this->ids->get('childCategoryId'),
                 'seoPathInfo' => 'Home-Shoes/Children/',
-                'foreignKey' => $this->childCategoryId,
+                'foreignKey' => $this->ids->get('childCategoryId'),
                 'isValid' => true,
                 'isCanonical' => false,
             ],
             [
-                'salesChannelId' => $this->salesChannelId,
+                'salesChannelId' => $this->ids->get('salesChannelId'),
+                'languageId' => Defaults::LANGUAGE_SYSTEM,
+                'routeName' => 'frontend.navigation.page',
+                'pathInfo' => '/navigation/' . $this->ids->get('childCategoryId'),
+                'seoPathInfo' => 'Home-Shoes/Children-canonical/',
+                'foreignKey' => $this->ids->get('childCategoryId'),
+                'isValid' => true,
+                'isCanonical' => true,
+            ],
+            [
+                'salesChannelId' => $this->ids->get('salesChannelId'),
+                'languageId' => Defaults::LANGUAGE_SYSTEM,
+                'routeName' => 'frontend.navigation.page',
+                'pathInfo' => '/navigation/' . $this->ids->get('child2CategoryId'),
+                'seoPathInfo' => 'Home-Shoes/Children-level-2/',
+                'foreignKey' => $this->ids->get('child2CategoryId'),
+                'isValid' => true,
+                'isCanonical' => true,
+            ],
+            [
+                'salesChannelId' => $this->ids->get('salesChannelId'),
                 'languageId' => Defaults::LANGUAGE_SYSTEM,
                 'routeName' => 'frontend.detail.page',
-                'pathInfo' => '/detail/1234',
-                'seoPathInfo' => '/foo-bar/prod',
-                'foreignKey' => $this->productActiveId,
+                'pathInfo' => '/detail/' . $this->ids->get('productActiveId'),
+                'seoPathInfo' => 'foo-bar/prod',
+                'foreignKey' => $this->ids->get('productActiveId'),
                 'isValid' => true,
                 'isCanonical' => false,
             ],
             [
-                'salesChannelId' => $this->salesChannelId,
+                'salesChannelId' => $this->ids->get('salesChannelId'),
                 'languageId' => Defaults::LANGUAGE_SYSTEM,
                 'routeName' => 'frontend.detail.page',
-                'pathInfo' => '/detail/12345',
-                'seoPathInfo' => '/foo-bar/prod-inactive',
-                'foreignKey' => $this->productInactiveId,
+                'pathInfo' => '/detail/' . $this->ids->get('productInactiveId'),
+                'seoPathInfo' => 'foo-bar/prod-inactive',
+                'foreignKey' => $this->ids->get('productInactiveId'),
                 'isValid' => true,
                 'isCanonical' => false,
             ],
         ], Context::createDefaultContext());
     }
 
-    private function createCategories()
+    private function createCategories(bool $withCmsPage = true)
     {
-        $this->categoryId = UUid::randomHex();
-
-        $resultEvent = $this->categoryRepository->create([
+        $this->categoryRepository->create([
             [
-                'id' => $this->categoryId,
-                'salesChannelId' => $this->salesChannelId,
+                'id' => $this->ids->get('categoryId'),
+                'salesChannelId' => $this->ids->get('salesChannelId'),
                 'name' => 'My test category',
-                'cmsPageId' => $this->cmsPageId,
+                'cmsPageId' => $withCmsPage ? $this->ids->get('cmsPageId') : null,
                 'children' => [
                     [
-                        'id' => $this->childCategoryId,
-                        'name' => 'foo'
+                        'id' => $this->ids->get('childCategoryId'),
+                        'name' => 'Child category level 1',
+                        'children' => [
+                            [
+                                'id' => $this->ids->get('child2CategoryId'),
+                                'name' => 'Child category level 2'
+                            ]
+                        ]
                     ]
                 ]
             ]
@@ -450,8 +525,8 @@ class PageControllerTest extends TestCase
 
         $this->salesChannelRepository->upsert([
             [
-                'id' => $this->salesChannelId,
-                'navigationCategoryId' => $this->categoryId
+                'id' => $this->ids->get('salesChannelId'),
+                'navigationCategoryId' => $this->ids->get('categoryId')
             ]
         ], Context::createDefaultContext());
     }
@@ -459,7 +534,7 @@ class PageControllerTest extends TestCase
     private function createCmsPage()
     {
         $page = [
-            'id' => Uuid::randomHex(),
+            'id' => $this->ids->get('cmsPageId'),
             'name' => 'shopware AG',
             'type' => 'landing_page',
             'sections' => [
@@ -481,8 +556,6 @@ class PageControllerTest extends TestCase
             ],
         ];
 
-        $resultEvent = $this->cmsPageRepository->create([$page], Context::createDefaultContext());
-
-        $this->cmsPageId = $resultEvent->getEventByEntityName('cms_page')->getIds()[0];
+        $this->cmsPageRepository->upsert([$page], Context::createDefaultContext());
     }
 }

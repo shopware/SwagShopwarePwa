@@ -34,16 +34,19 @@
             <argument type="service" id="SwagShopwarePwa\Pwa\PageLoader\Context\PathResolver"/>
         </service>
 
+        <service id="SwagShopwarePwa\Pwa\PageLoader\Context\PageLoaderPreviewContextBuilder" decorates="SwagShopwarePwa\Pwa\PageLoader\Context\PageLoaderContextBuilder">
+            <argument type="service" id="SwagShopwarePwa\Pwa\PageLoader\Context\PageLoaderPreviewContextBuilder.inner"/>
+        </service>
+
         <service id="SwagShopwarePwa\Pwa\PageLoader\Context\PathResolver">
-            <argument id="SwagShopwarePwa\Pwa\Entity\SalesChannelRoute\SalesChannelRouteRepository" type="service"/>
-            <argument id="sales_channel.repository" type="service"/>
+            <argument id="Shopware\Core\Content\Seo\SeoResolver" type="service"/>
         </service>
 
 
         <!-- Page loaders -->
 
         <service id="SwagShopwarePwa\Pwa\PageLoader\ProductPageLoader">
-            <argument id="sales_channel.product.repository" type="service"/>
+            <argument id="Shopware\Core\Content\Product\SalesChannel\Detail\ProductDetailRoute" type="service"/>
             <argument type="service" id="SwagShopwarePwa\Pwa\PageResult\Product\ProductPageResultHydrator"/>
             <argument id="Shopware\Core\Framework\DataAbstractionLayer\Search\RequestCriteriaBuilder" type="service"/>
             <argument id="Shopware\Core\Content\Product\SalesChannel\SalesChannelProductDefinition" type="service"/>
@@ -65,26 +68,7 @@
 
         <service id="SwagShopwarePwa\Pwa\PageResult\Navigation\NavigationPageResultHydrator">
             <argument type="service" id="Shopware\Storefront\Framework\Routing\Router"/>
-            <argument type="tagged" tag="pwa.page_result.aggregation_result_hydrator"/>
-        </service>
-
-
-        <!-- Aggregation result hydrators -->
-
-        <service id="SwagShopwarePwa\Pwa\PageResult\Navigation\AggregationResultHydrator\EntityResultHydrator">
-            <tag name="pwa.page_result.aggregation_result_hydrator"/>
-        </service>
-
-        <service id="SwagShopwarePwa\Pwa\PageResult\Navigation\AggregationResultHydrator\TermsResultHydrator">
-            <tag name="pwa.page_result.aggregation_result_hydrator"/>
-        </service>
-
-        <service id="SwagShopwarePwa\Pwa\PageResult\Navigation\AggregationResultHydrator\StatsResultHydrator">
-            <tag name="pwa.page_result.aggregation_result_hydrator"/>
-        </service>
-
-        <service id="SwagShopwarePwa\Pwa\PageResult\Navigation\AggregationResultHydrator\MaxResultHydrator">
-            <tag name="pwa.page_result.aggregation_result_hydrator"/>
+            <argument type="service" id="seo_url.repository"/>
         </service>
 
 

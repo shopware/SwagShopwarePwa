@@ -46,7 +46,7 @@ class SalesChannelNavigationRepository
         );
     }
 
-    private function createSalesChannelNavigation(Context $context, TreeItem $treeItem, int $depth = PHP_INT_MAX, $currentLevel = 0): SalesChannelNavigationEntity
+    private function createSalesChannelNavigation(Context $context, TreeItem $treeItem, int $depth, $currentLevel = 0): SalesChannelNavigationEntity
     {
         $navigationEntity = SalesChannelNavigationEntity::createFromTreeItem($treeItem);
         $navigationEntity->setLevel($currentLevel);

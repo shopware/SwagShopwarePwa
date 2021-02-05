@@ -7,6 +7,7 @@ use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use SwagShopwarePwa\Pwa\PageLoader\Context\PageLoaderContextBuilder;
 use SwagShopwarePwa\Pwa\PageLoader\Context\PageLoaderContext;
+use SwagShopwarePwa\Pwa\PageLoader\Context\PageLoaderContextBuilderInterface;
 use SwagShopwarePwa\Pwa\PageLoader\PageLoaderInterface;
 use SwagShopwarePwa\Pwa\PageResult\AbstractPageResult;
 use SwagShopwarePwa\Pwa\Response\CmsPageRouteResponse;
@@ -30,7 +31,7 @@ class PageController extends AbstractController
     const NAVIGATION_PAGE_ROUTE = 'frontend.navigation.page';
 
     /**
-     * @var PageLoaderContextBuilder
+     * @var PageLoaderContextBuilderInterface
      */
     private $pageLoaderContextBuilder;
 
@@ -39,34 +40,14 @@ class PageController extends AbstractController
      */
     private $pageLoaders;
 
-    public function __construct(PageLoaderContextBuilder $pageLoaderContextBuilder, iterable $pageLoaders)
+    public function __construct(PageLoaderContextBuilderInterface $pageLoaderContextBuilder, iterable $pageLoaders)
     {
         $this->pageLoaderContextBuilder = $pageLoaderContextBuilder;
 
         /** @var PageLoaderInterface $pageLoader */
-        foreach($pageLoaders as $pageLoader)
-        {
+        foreach ($pageLoaders as $pageLoader) {
             $this->pageLoaders[$pageLoader->getResourceType()] = $pageLoader;
         }
-    }
-
-    /**
-     * @Route("/sales-channel-api/v{version}/vsf/page", name="sales-channel-api.vsf.page", methods={"POST"})
-     *
-     * Resolve a page for a given resource and resource identification or path
-     * First, a PageLoaderContext object is assembled, which includes information about the resource, request and context.
-     * Then, the page is loaded through the page loader only given the page loader context.
-     *
-     * @param Request $request
-     * @param SalesChannelContext $context
-     *
-     * @deprecated since v0.1.0, use store-api.pwa.page instead
-     *
-     * @return JsonResponse
-     */
-    public function resolveOld(Request $request, SalesChannelContext $context): CmsPageRouteResponse
-    {
-        return $this->resolve($request, $context);
     }
 
     /**
@@ -86,8 +67,7 @@ class PageController extends AbstractController
 
         $pageLoader = $this->getPageLoader($pageLoaderContext);
 
-        if(!$pageLoader)
-        {
+        if (!$pageLoader) {
             throw new PageNotFoundException($pageLoaderContext->getResourceType() . $pageLoaderContext->getResourceIdentifier());
         }
 
@@ -120,6 +100,7 @@ class PageController extends AbstractController
 
         $pageResult->setResourceType($pageLoaderContext->getResourceType());
         $pageResult->setResourceIdentifier($pageLoaderContext->getResourceIdentifier());
+        $pageResult->setCanonicalPathInfo($pageLoaderContext->getRoute()->getCanonicalPathInfo() ?: $pageLoaderContext->getRoute()->getPathInfo());
 
         return $pageResult;
     }

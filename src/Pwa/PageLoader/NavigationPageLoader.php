@@ -11,6 +11,7 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
 use SwagShopwarePwa\Pwa\PageLoader\Context\PageLoaderContext;
+use SwagShopwarePwa\Pwa\PageLoader\Context\PageLoaderPreviewContext;
 use SwagShopwarePwa\Pwa\PageResult\Navigation\NavigationPageResult;
 use SwagShopwarePwa\Pwa\PageResult\Navigation\NavigationPageResultHydrator;
 
@@ -79,8 +80,15 @@ class NavigationPageLoader implements PageLoaderInterface
         /** @var $category CategoryEntity */
         $category = $categoryResult->get($pageLoaderContext->getResourceIdentifier());
 
+        if($pageLoaderContext instanceof PageLoaderPreviewContext)
+        {
+            $cmsPageId = $pageLoaderContext->getPreviewPageIdentifier();
+        } else {
+            $cmsPageId = $category->getCmsPageId();
+        }
+
         // The cms page might be empty or non-existent
-        if($category->getCmsPageId() !== null)
+        if($cmsPageId !== null)
         {
             $resolverContext = new EntityResolverContext(
                 $pageLoaderContext->getContext(),
@@ -91,13 +99,13 @@ class NavigationPageLoader implements PageLoaderInterface
 
             $cmsPages = $this->cmsPageLoader->load(
                 $pageLoaderContext->getRequest(),
-                new Criteria([$category->getCmsPageId()]),
+                new Criteria([$cmsPageId]),
                 $pageLoaderContext->getContext(),
                 $category->getSlotConfig(),
                 $resolverContext
             );
 
-            $cmsPage = $cmsPages->get($category->getCmsPageId()) ?? null;
+            $cmsPage = $cmsPages->get($cmsPageId) ?? null;
         }
 
         $pageResult = $this->resultHydrator->hydrate($pageLoaderContext, $category, $cmsPage ?? null);
