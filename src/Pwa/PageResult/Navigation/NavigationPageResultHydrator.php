@@ -69,7 +69,7 @@ class NavigationPageResultHydrator
 
         $categoryBreadcrumbs = $category->buildSeoBreadcrumb($rootCategoryId) ?? [];
 
-        $canonicalUrls = $this->getCanonicalUrls(array_keys($categoryBreadcrumbs), $context->getContext());
+        $canonicalUrls = $this->getCanonicalUrls(array_keys($categoryBreadcrumbs), $context);
 
         foreach ($categoryBreadcrumbs as $id => $name) {
             $breadcrumbs[$id] = [
@@ -81,16 +81,17 @@ class NavigationPageResultHydrator
         $this->pageResult->setBreadcrumb($breadcrumbs);
     }
 
-    private function getCanonicalUrls(array $categoryIds, Context $context): array
+    private function getCanonicalUrls(array $categoryIds, SalesChannelContext $context): array
     {
         $criteria = new Criteria();
 
         $criteria->addFilter(new EqualsFilter('routeName', PageController::NAVIGATION_PAGE_ROUTE));
         $criteria->addFilter(new EqualsFilter('isCanonical', true));
         $criteria->addFilter(new EqualsAnyFilter('foreignKey', $categoryIds));
+        $criteria->addFilter(new EqualsFilter('salesChannelId', $context->getSalesChannelId()));
+        $criteria->addFilter(new EqualsFilter('languageId', $context->getContext()->getLanguageId()));
 
-
-        $result = $this->seoUrlRepository->search($criteria, $context);
+        $result = $this->seoUrlRepository->search($criteria, $context->getContext());
 
         $pathByCategoryId = [];
 
