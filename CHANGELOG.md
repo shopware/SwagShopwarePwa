@@ -3,6 +3,10 @@ CHANGELOG for Shopware PWA
 
 ### Unreleased
 
+**Added**
+
+* Field `category` to `store-api/v{version}/pwa/page` endpoint. 
+
 **Fixed**
 
 * Breadcrumbs paths with translated URLs
