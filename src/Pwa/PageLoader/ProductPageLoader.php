@@ -66,10 +66,6 @@ class ProductPageLoader implements PageLoaderInterface
     }
 
     /**
-     * @param PageLoaderContext $pageLoaderContext
-     *
-     * @return ProductPageResult
-     *
      * @throws ProductNumberNotFoundException
      */
     public function load(PageLoaderContext $pageLoaderContext): ProductPageResult
@@ -88,7 +84,7 @@ class ProductPageLoader implements PageLoaderInterface
             new ProductAvailableFilter($pageLoaderContext->getContext()->getSalesChannel()->getId()),
             new EqualsFilter('active', 1)
         );
-
+      
         $result = $this->productRoute->load(
             $pageLoaderContext->getResourceIdentifier(),
             $pageLoaderContext->getRequest(),
