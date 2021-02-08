@@ -14,7 +14,7 @@ jobs:
 
     steps:
     - name: Plugins directory
-      uses: actions/checkout@latest
+      uses: actions/checkout@v2
       with:
         path: '/var/www/html/custom/plugins'
 
