@@ -13,9 +13,11 @@ jobs:
     container: dockware/play:6.3.5.0
 
     steps:
+      - name: Where Are we?
+        run: 'pwd && ls -la'
 
-    - name: List plugins
-      run: 'php bin/console plugin:refresh'
+      - name: List plugins
+        run: 'php bin/console plugin:refresh'
       
     # - name: Install dependencies
     #  if: steps.composer-cache.outputs.cache-hit != 'true'
