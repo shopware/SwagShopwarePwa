@@ -10,13 +10,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    container: dockware/play:6.3.2
+    container: dockware/play:6.3.5
 
     steps:
-    - name: Plugins directory
-      uses: actions/checkout@v2
-      with:
-        path: '/var/www/html/custom/plugins'
 
     - name: List plugins
       run: 'php bin/console plugin:refresh'
