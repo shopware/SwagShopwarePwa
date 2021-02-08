@@ -9,15 +9,14 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    container: dockware/play:6.3.5.0
-
+    container:
+      image: dockware/play:6.3.5.0
     steps:
       - name: Where Are we?
-        run: 'pwd && ls -la'
+        run: 'docker ps'
       
       - name: Workspace
-        run: echo $GITHUB_WORKSPACE"
+        run: echo $GITHUB_WORKSPACE
       
       - name: Show Workspace
         run: cd $GITHUB_WORKSPACE && ls -la 
