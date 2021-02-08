@@ -15,6 +15,12 @@ jobs:
     steps:
       - name: Where Are we?
         run: 'pwd && ls -la'
+      
+      - name: Workspace
+        run: echo $GITHUB_WORKSPACE"
+      
+      - name: Show Workspace
+        run: cd ${{ GITHUB_WORKSPACE }} && ls -la 
 
       - name: List plugins
         run: 'php bin/console plugin:refresh'
