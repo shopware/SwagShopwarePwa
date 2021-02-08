@@ -8,8 +8,9 @@ on:
 
 jobs:
   build:
+    runs-on: ubuntu/latest
 
-    runs-on: dockware/play:6.3.2
+    container: dockware/play:6.3.2
 
     steps:
     - name: Plugins directory
@@ -18,7 +19,7 @@ jobs:
         path: '/var/www/html/custom/plugins'
 
     - name: List plugins
-      run: 'composer install'
+      run: 'php bin/console plugin:refresh'
       
     # - name: Install dependencies
     #  if: steps.composer-cache.outputs.cache-hit != 'true'
@@ -29,3 +30,4 @@ jobs:
 
     # - name: Run test suite
     #   run: composer run-script test
+
