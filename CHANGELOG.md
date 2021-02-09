@@ -1,7 +1,7 @@
 CHANGELOG for Shopware PWA
 ===================
 
-### Unreleased
+### 0.2.1
 
 **Added**
 

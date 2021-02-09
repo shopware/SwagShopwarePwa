@@ -89,7 +89,7 @@ class NavigationPageResultHydrator
         $criteria->addFilter(new EqualsFilter('routeName', PageController::NAVIGATION_PAGE_ROUTE));
         $criteria->addFilter(new EqualsFilter('isCanonical', true));
         $criteria->addFilter(new EqualsAnyFilter('foreignKey', $categoryIds));
-        $criteria->addFilter(new EqualsFilter('salesChannelId', $context->getSalesChannelId()));
+        $criteria->addFilter(new EqualsFilter('salesChannelId', $context->getSalesChannel()->getId()));
         $criteria->addFilter(new EqualsFilter('languageId', $context->getContext()->getLanguageId()));
 
         $result = $this->seoUrlRepository->search($criteria, $context->getContext());
