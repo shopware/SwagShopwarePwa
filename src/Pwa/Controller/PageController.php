@@ -3,6 +3,7 @@
 namespace SwagShopwarePwa\Pwa\Controller;
 
 use Shopware\Core\Content\Cms\Exception\PageNotFoundException;
+use Shopware\Core\Framework\Plugin\Exception\DecorationPatternException;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use SwagShopwarePwa\Pwa\PageLoader\Context\PageLoaderContextBuilder;
@@ -19,7 +20,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @RouteScope(scopes={"sales-channel-api", "store-api"})
  */
-class PageController extends AbstractController
+class PageController extends AbstractPageRoute
 {
     /**
      * Placeholder, because these routes names may change during implementation
@@ -48,6 +49,11 @@ class PageController extends AbstractController
         foreach ($pageLoaders as $pageLoader) {
             $this->pageLoaders[$pageLoader->getResourceType()] = $pageLoader;
         }
+    }
+
+    public function getDecorated(): AbstractPageRoute
+    {
+        throw new DecorationPatternException(self::class);
     }
 
     /**

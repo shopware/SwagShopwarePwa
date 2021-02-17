@@ -15,9 +15,6 @@
         <service id="SwagShopwarePwa\Pwa\Controller\PageController" public="true">
             <argument type="service" id="SwagShopwarePwa\Pwa\PageLoader\Context\PageLoaderContextBuilder"/>
             <argument type="tagged" tag="pwa.page_loader"/>
-            <call method="setContainer">
-                <argument type="service" id="service_container"/>
-            </call>
         </service>
 
         <service id="SwagShopwarePwa\Pwa\Controller\NavigationController" public="true">
@@ -25,6 +22,14 @@
             <call method="setContainer">
                 <argument id="service_container" type="service"/>
             </call>
+        </service>
+
+        <service id="SwagShopwarePwa\Pwa\Controller\CachedPageController"
+                 decorates="SwagShopwarePwa\Pwa\Controller\PageController"
+                 decoration-priority="-1000">
+            <argument type="service" id="SwagShopwarePwa\Pwa\Controller\CachedPageController.inner"/>
+            <argument type="service" id="cache.object"/>
+            <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\Cache\EntityCacheKeyGenerator"/>
         </service>
 
 
