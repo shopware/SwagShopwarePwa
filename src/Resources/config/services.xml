@@ -30,6 +30,7 @@
             <argument type="service" id="SwagShopwarePwa\Pwa\Controller\CachedPageController.inner"/>
             <argument type="service" id="cache.object"/>
             <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\Cache\EntityCacheKeyGenerator"/>
+            <argument type="service" id="Shopware\Storefront\Framework\Cache\ObjectCacheKeyFinder"/>
         </service>
 
 

@@ -7,6 +7,8 @@ use SwagShopwarePwa\Pwa\Response\CmsPageRouteResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 abstract class AbstractPageRoute {
+    const NAME = 'pwa-page-route';
+
     abstract public function getDecorated(): AbstractPageRoute;
 
     /**
