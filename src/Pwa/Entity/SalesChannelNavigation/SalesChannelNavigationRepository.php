@@ -2,7 +2,7 @@
 
 namespace SwagShopwarePwa\Pwa\Entity\SalesChannelNavigation;
 
-use Shopware\Core\Content\Category\Service\NavigationLoader;
+use Shopware\Core\Content\Category\Service\NavigationLoaderInterface;
 use Shopware\Core\Content\Category\Tree\TreeItem;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -15,7 +15,7 @@ use SwagShopwarePwa\Pwa\Entity\SalesChannelRoute\SalesChannelRouteRepository;
 class SalesChannelNavigationRepository
 {
     /**
-     * @var NavigationLoader
+     * @var NavigationLoaderInterface
      */
     private $navigationLoader;
 
@@ -24,7 +24,7 @@ class SalesChannelNavigationRepository
      */
     private $routeRepository;
 
-    public function __construct(NavigationLoader $navigationLoader, SalesChannelRouteRepository $routeRepository)
+    public function __construct(NavigationLoaderInterface $navigationLoader, SalesChannelRouteRepository $routeRepository)
     {
         $this->navigationLoader = $navigationLoader;
         $this->routeRepository = $routeRepository;

@@ -1,6 +1,12 @@
 CHANGELOG for Shopware PWA
 ===================
 
+### 0.2.2
+
+**Fixed**
+
+* Changed parameter type from NavigationLoader to NavigationLoaderInterface in SalesChannelNavigationRepository::__construct()
+
 ### 0.2.1
 
 **Added**
