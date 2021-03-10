@@ -84,7 +84,7 @@ class ProductPageLoader implements PageLoaderInterface
             new ProductAvailableFilter($pageLoaderContext->getContext()->getSalesChannel()->getId()),
             new EqualsFilter('active', 1)
         );
-      
+
         $result = $this->productRoute->load(
             $pageLoaderContext->getResourceIdentifier(),
             $pageLoaderContext->getRequest(),
