@@ -3,7 +3,7 @@
 namespace SwagShopwarePwa\Pwa\PageLoader;
 
 use Shopware\Core\Content\Product\Exception\ProductNumberNotFoundException;
-use Shopware\Core\Content\Product\SalesChannel\Detail\ProductDetailRoute;
+use Shopware\Core\Content\Product\SalesChannel\Detail\AbstractProductDetailRoute;
 use Shopware\Core\Content\Product\SalesChannel\ProductAvailableFilter;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductDefinition;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
@@ -28,7 +28,7 @@ class ProductPageLoader implements PageLoaderInterface
     private const RESOURCE_TYPE = 'frontend.detail.page';
 
     /**
-     * @var ProductDetailRoute
+     * @var AbstractProductDetailRoute
      */
     private $productRoute;
 
@@ -53,7 +53,7 @@ class ProductPageLoader implements PageLoaderInterface
     }
 
     public function __construct(
-        ProductDetailRoute $productDetailRoute,
+        AbstractProductDetailRoute $productDetailRoute,
         ProductPageResultHydrator $resultHydrator,
         RequestCriteriaBuilder $requestCriteriaBuilder,
         SalesChannelProductDefinition $productDefinition
