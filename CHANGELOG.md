@@ -6,6 +6,7 @@ CHANGELOG for Shopware PWA
 **Fixed**
 
 * Changed parameter type from NavigationLoader to NavigationLoaderInterface in SalesChannelNavigationRepository::__construct()
+* Changed parameter type from ProductDetailRoute to AbstractProductDetailRoute in ProductPageLoader::__construct()
 
 ### 0.2.1
 
