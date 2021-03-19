@@ -75,6 +75,7 @@ class PageControllerTest extends TestCase
 
         $this->ids->create('childCategoryId');
         $this->ids->create('child2CategoryId');
+        $this->ids->create('child3CategoryId');
 
         $this->seoUrlRepository = $this->getContainer()->get('seo_url.repository');
         $this->categoryRepository = $this->getContainer()->get('category.repository');
@@ -338,6 +339,7 @@ class PageControllerTest extends TestCase
 
         static::assertEquals('/Home-Shoes/Children-canonical/', $response['breadcrumb'][$this->ids->get('childCategoryId')]['path']);
         static::assertEquals('/Home-Shoes/Children-level-2/', $response['breadcrumb'][$this->ids->get('child2CategoryId')]['path']);
+        static::assertEquals('/navigation/' . $this->ids->get('child3CategoryId'), $response['breadcrumb'][$this->ids->get('child3CategoryId')]['path']);
     }
 
     public function testProductHasNoBreadcrumbsLinks(): void
@@ -466,7 +468,7 @@ class PageControllerTest extends TestCase
                     ['id' => $categoryId, 'name' => 'sampleCategory'],
                 ],
                 'mainCategories' => [[
-                    'categoryId' => $this->ids->get('child2CategoryId'),
+                    'categoryId' => $this->ids->get('child3CategoryId'),
                     'id' => Uuid::randomHex(),
                     'salesChannelId' => $this->ids->get('salesChannelId'),
                 ]],
@@ -602,7 +604,13 @@ class PageControllerTest extends TestCase
                         'children' => [
                             [
                                 'id' => $this->ids->get('child2CategoryId'),
-                                'name' => 'Child category level 2'
+                                'name' => 'Child category level 2',
+                                'children' => [
+                                    [
+                                        'id' => $this->ids->get('child3CategoryId'),
+                                        'name' => 'Child category level 3 (without seoUrl)'
+                                    ]
+                                ]
                             ]
                         ]
                     ]
