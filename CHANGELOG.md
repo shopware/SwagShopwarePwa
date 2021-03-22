@@ -1,6 +1,12 @@
 CHANGELOG for Shopware PWA
 ===================
 
+### Unreleased
+
+**Added**
+
+* Field `breadcrumb` to product detail page responses from `store-api/v{version}/pwa/page` endpoint.
+
 ### 0.2.2
 
 **Fixed**

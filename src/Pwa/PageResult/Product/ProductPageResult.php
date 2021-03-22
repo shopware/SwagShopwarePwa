@@ -20,6 +20,11 @@ class ProductPageResult extends AbstractPageResult
     protected $configurator;
 
     /**
+     * @var array
+     */
+    protected $breadcrumb;
+
+    /**
      * @return SalesChannelProductEntity
      */
     public function getProduct(): SalesChannelProductEntity
@@ -49,5 +54,18 @@ class ProductPageResult extends AbstractPageResult
     public function setConfigurator(PropertyGroupCollection $configurator)
     {
         $this->configurator = $configurator;
+    }
+
+    /**
+     * @return array
+     */
+    public function getBreadcrumb(): ?array
+    {
+        return $this->breadcrumb;
+    }
+
+    public function setBreadcrumb(?array $breadcrumb)
+    {
+        $this->breadcrumb = $breadcrumb;
     }
 }

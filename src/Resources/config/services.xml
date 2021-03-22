@@ -64,12 +64,17 @@
 
         <!-- Page hydrators -->
 
-        <service id="SwagShopwarePwa\Pwa\PageResult\Product\ProductPageResultHydrator"/>
-
-        <service id="SwagShopwarePwa\Pwa\PageResult\Navigation\NavigationPageResultHydrator">
+        <service id="SwagShopwarePwa\Pwa\PageResult\AbstractPageResultHydrator" abstract="true">
             <argument type="service" id="Shopware\Storefront\Framework\Routing\Router"/>
             <argument type="service" id="seo_url.repository"/>
+            <argument type="service" id="Shopware\Core\Content\Category\Service\CategoryBreadcrumbBuilder"/>
         </service>
+
+        <service id="SwagShopwarePwa\Pwa\PageResult\Product\ProductPageResultHydrator"
+                 parent="SwagShopwarePwa\Pwa\PageResult\AbstractPageResultHydrator"/>
+
+        <service id="SwagShopwarePwa\Pwa\PageResult\Navigation\NavigationPageResultHydrator"
+                 parent="SwagShopwarePwa\Pwa\PageResult\AbstractPageResultHydrator"/>
 
 
         <!-- Repositories -->

@@ -70,10 +70,12 @@ class PageControllerTest extends TestCase
         $this->ids->create('cmsPageId');
 
         $this->ids->create('productActiveId');
+        $this->ids->create('productActiveWithMainCategoriesId');
         $this->ids->create('productInActiveId');
 
         $this->ids->create('childCategoryId');
         $this->ids->create('child2CategoryId');
+        $this->ids->create('child3CategoryId');
 
         $this->seoUrlRepository = $this->getContainer()->get('seo_url.repository');
         $this->categoryRepository = $this->getContainer()->get('category.repository');
@@ -209,6 +211,7 @@ class PageControllerTest extends TestCase
 
     public function testProductPage(): void
     {
+        $this->createCategories(false);
         $this->createProduct();
         $this->createSalesChannelDomain();
         $this->createSeoUrls();
@@ -234,6 +237,7 @@ class PageControllerTest extends TestCase
 
     public function testProductPageWithAssociation(): void
     {
+        $this->createCategories(false);
         $this->createProduct();
         $this->createSalesChannelDomain();
 
@@ -262,6 +266,7 @@ class PageControllerTest extends TestCase
 
     public function testProductPageTechnicalUrl(): void
     {
+        $this->createCategories(false);
         $this->createProduct();
         $this->createSalesChannelDomain();
 
@@ -286,6 +291,7 @@ class PageControllerTest extends TestCase
 
     public function testProductPageForInactive(): void
     {
+        $this->createCategories(false);
         $this->createProduct();
         $this->createSalesChannelDomain();
         $this->createSeoUrls();
@@ -308,6 +314,55 @@ class PageControllerTest extends TestCase
         static::assertEquals(404, $response->errors[0]->status);
         static::assertEquals('CONTENT__PRODUCT_NOT_FOUND', $response->errors[0]->code);
 
+    }
+
+    public function testProductHasBreadcrumbsLinks(): void
+    {
+        $this->createCategories(false);
+        $this->createProduct();
+        $this->createSalesChannelDomain();
+        $this->createSeoUrls();
+
+        $content = [
+            'path' => '/foo-bar/prod-has-breadcrumb'
+        ];
+
+        $this->browser->request(
+            'POST',
+            self::ENDPOINT_PAGE,
+            $content
+        );
+
+        $response = json_decode($this->browser->getResponse()->getContent(), true);
+
+        static::assertArrayHasKey('breadcrumb', $response);
+
+        static::assertEquals('/Home-Shoes/Children-canonical/', $response['breadcrumb'][$this->ids->get('childCategoryId')]['path']);
+        static::assertEquals('/Home-Shoes/Children-level-2/', $response['breadcrumb'][$this->ids->get('child2CategoryId')]['path']);
+        static::assertEquals('/navigation/' . $this->ids->get('child3CategoryId'), $response['breadcrumb'][$this->ids->get('child3CategoryId')]['path']);
+    }
+
+    public function testProductHasNoBreadcrumbsLinks(): void
+    {
+        $this->createCategories(false);
+        $this->createProduct();
+        $this->createSalesChannelDomain();
+        $this->createSeoUrls();
+
+        $content = [
+            'path' => '/detail/' . $this->ids->get('productActiveId')
+        ];
+
+        $this->browser->request(
+            'POST',
+            self::ENDPOINT_PAGE,
+            $content
+        );
+
+        $response = json_decode($this->browser->getResponse()->getContent(), true);
+
+        static::assertArrayHasKey('breadcrumb', $response);
+        static::assertNull($response['breadcrumb']);
     }
 
     public function testResolveCategoryPageWithIncludes(): void
@@ -393,6 +448,30 @@ class PageControllerTest extends TestCase
                 'categories' => [
                     ['id' => $categoryId, 'name' => 'sampleCategory'],
                 ],
+                'visibilities' => [
+                    [
+                        'salesChannelId' => $this->ids->get('salesChannelId'),
+                        'visibility' => ProductVisibilityDefinition::VISIBILITY_ALL,
+                    ],
+                ],
+            ],
+            [
+                'id' => $this->ids->get('productActiveWithMainCategoriesId'),
+                'productNumber' => Uuid::randomHex(),
+                'stock' => 10,
+                'active' => true,
+                'name' => 'test',
+                'price' => [['currencyId' => Defaults::CURRENCY, 'gross' => 99, 'net' => 99, 'linked' => false]],
+                'manufacturer' => ['name' => 'test'],
+                'tax' => ['name' => 'test', 'taxRate' => 99],
+                'categories' => [
+                    ['id' => $categoryId, 'name' => 'sampleCategory'],
+                ],
+                'mainCategories' => [[
+                    'categoryId' => $this->ids->get('child3CategoryId'),
+                    'id' => Uuid::randomHex(),
+                    'salesChannelId' => $this->ids->get('salesChannelId'),
+                ]],
                 'visibilities' => [
                     [
                         'salesChannelId' => $this->ids->get('salesChannelId'),
@@ -497,6 +576,16 @@ class PageControllerTest extends TestCase
                 'isValid' => true,
                 'isCanonical' => false,
             ],
+            [
+                'salesChannelId' => $this->ids->get('salesChannelId'),
+                'languageId' => Defaults::LANGUAGE_SYSTEM,
+                'routeName' => 'frontend.detail.page',
+                'pathInfo' => '/detail/' . $this->ids->get('productActiveWithMainCategoriesId'),
+                'seoPathInfo' => 'foo-bar/prod-has-breadcrumb',
+                'foreignKey' => $this->ids->get('productActiveWithMainCategoriesId'),
+                'isValid' => true,
+                'isCanonical' => false,
+            ],
         ], Context::createDefaultContext());
     }
 
@@ -515,7 +604,13 @@ class PageControllerTest extends TestCase
                         'children' => [
                             [
                                 'id' => $this->ids->get('child2CategoryId'),
-                                'name' => 'Child category level 2'
+                                'name' => 'Child category level 2',
+                                'children' => [
+                                    [
+                                        'id' => $this->ids->get('child3CategoryId'),
+                                        'name' => 'Child category level 3 (without seoUrl)'
+                                    ]
+                                ]
                             ]
                         ]
                     ]
