@@ -20,16 +20,6 @@ class ProductPageResult extends AbstractPageResult
     protected $configurator;
 
     /**
-     * @var array
-     */
-    protected $breadcrumb;
-
-    /**
-     * @var CmsPageEntity|null
-     */
-    protected $cmsPage;
-
-    /**
      * @return SalesChannelProductEntity
      */
     public function getProduct(): SalesChannelProductEntity
@@ -59,31 +49,5 @@ class ProductPageResult extends AbstractPageResult
     public function setConfigurator(PropertyGroupCollection $configurator)
     {
         $this->configurator = $configurator;
-    }
-
-    /**
-     * @return array
-     */
-    public function getBreadcrumb(): ?array
-    {
-        return $this->breadcrumb;
-    }
-
-    public function setBreadcrumb(?array $breadcrumb)
-    {
-        $this->breadcrumb = $breadcrumb;
-    }
-
-    /**
-     * @return CmsPageEntity|null
-     */
-    public function getCmsPage(): ?CmsPageEntity
-    {
-        return $this->cmsPage;
-    }
-
-    public function setCmsPage(?CmsPageEntity $cmsPage)
-    {
-        $this->cmsPage = $cmsPage;
     }
 }

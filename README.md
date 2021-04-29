@@ -94,15 +94,11 @@ $ bin/console dal:refresh:index
 
 This plugin adds multiple endpoints to both, the store and the admin API. All endpoints below accept `POST` requests.
 
-**/store-api/v1/pwa/page**
+**/store-api/pwa/page**
 
 Resolves a given path to cms or product page and accepts include parameters to specifiy the fields contained in your response.
-
-**/store-api/v1/pwa/navigation**
-
-Delivers a category along with its child categories down to a desired level.
  
-**/api/v1/_action/pwa/dump-bundles**
+**/api/_action/pwa/dump-bundles**
 
 This endpoint is required to connect Shopware plugins with your PWA during the application build. It dumps your bundles metadata and PWA specific source files and delivers via a safe channel.
  
