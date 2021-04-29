@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @RouteScope(scopes={"sales-channel-api", "store-api"})
+ * @RouteScope(scopes={"store-api"})
  */
 class NavigationController extends AbstractController
 {
@@ -28,7 +28,7 @@ class NavigationController extends AbstractController
     /**
      * Resolves a navigation tree for a given root node at a given depth
      *
-     * @Route("/store-api/v{version}/pwa/navigation", name="store-api.pwa.navigation", methods={"POST"})
+     * @Route("/store-api/pwa/navigation", name="store-api.pwa.navigation", methods={"POST"})
      *
      * @deprecated since v0.2.0, use store-api.navigation instead
      *

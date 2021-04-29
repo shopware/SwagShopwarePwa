@@ -2,14 +2,8 @@
 
 namespace SwagShopwarePwa\Pwa\PageLoader\Context;
 
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\Seo\SeoResolver;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use Shopware\Storefront\Framework\Routing\Router;
 use SwagShopwarePwa\Pwa\Entity\SalesChannelRoute\SalesChannelRouteEntity;
-use SwagShopwarePwa\Pwa\Entity\SalesChannelRoute\SalesChannelRouteRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -26,11 +20,11 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class PageLoaderContextBuilder implements PageLoaderContextBuilderInterface
 {
     /**
-     * @var PathResolver
+     * @var PathResolverInterface
      */
     private $pathResolver;
 
-    public function __construct(PathResolver $pathResolver)
+    public function __construct(PathResolverInterface $pathResolver)
     {
         $this->pathResolver = $pathResolver;
     }

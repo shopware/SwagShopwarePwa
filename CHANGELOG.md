@@ -1,18 +1,28 @@
 CHANGELOG for Shopware PWA
 ===================
 
-### Unreleased
+### 0.3.0
+
+> Minimum Stability has been increased to PHP 7.4
 
 **Added**
-
-* Field `breadcrumb` to product detail page responses from `store-api/v{version}/pwa/page` endpoint.
-
-### 0.2.2
+* Field `breadcrumb` to product detail page responses from `store-api/pwa/page` endpoint.
+* Field `cmsPage` to product detail page responses from `store-api/pwa/page` endpoint.
 
 **Fixed**
 
-* Changed parameter type from NavigationLoader to NavigationLoaderInterface in SalesChannelNavigationRepository::__construct()
-* Changed parameter type from ProductDetailRoute to AbstractProductDetailRoute in ProductPageLoader::__construct()
+* Changed parameter type from `NavigationLoader` to `NavigationLoaderInterface` in `SalesChannelNavigationRepository::__construct()`
+* Changed parameter type from `ProductDetailRoute` to `AbstractProductDetailRoute` in `ProductPageLoader::__construct()`
+* Changed parameter type from `PathResolver` to `PathResolverInterface` in `PageLoaderContextBuilder::__construct()` 
+* Changed parameter type from `SeoResolverInterface` to `AbstractSeoResolver` in `PathResolver::__construct()`
+
+**Changed**
+
+* Changed routes from `/store-api/v{version}/pwa/*` to `/store-api/pwa/*` to reflect changes in Shopware 6
+
+**Removed**
+
+* Route Scope `sales-channel-api` from every endpoint
 
 ### 0.2.1
 

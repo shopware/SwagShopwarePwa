@@ -2,6 +2,7 @@
 
 namespace SwagShopwarePwa\Pwa\PageResult\Product;
 
+use Shopware\Core\Content\Cms\CmsPageEntity;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Content\Property\PropertyGroupCollection;
 use SwagShopwarePwa\Pwa\PageLoader\Context\PageLoaderContext;
@@ -32,6 +33,11 @@ class ProductPageResultHydrator extends AbstractPageResultHydrator
 
         $pageResult->setResourceType($pageLoaderContext->getResourceType());
         $pageResult->setResourceIdentifier($pageLoaderContext->getResourceIdentifier());
+
+        $pageResult->setCmsPage($product->getCmsPage());
+
+        // As cmsPage is already part of the response, reset the one attached to the product.
+        $pageResult->getProduct()->setCmsPage(new CmsPageEntity());
 
         return $pageResult;
     }

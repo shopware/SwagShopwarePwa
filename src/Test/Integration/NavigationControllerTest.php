@@ -18,7 +18,7 @@ class NavigationControllerTest extends TestCase
     use IntegrationTestBehaviour;
     use SalesChannelApiTestBehaviour;
 
-    const ENDPOINT_NAVIGATION = '/store-api/v' . PlatformRequest::API_VERSION . '/pwa/navigation';
+    const ENDPOINT_NAVIGATION = '/store-api/pwa/navigation';
 
     /**
      * @var \Symfony\Bundle\FrameworkBundle\KernelBrowser
