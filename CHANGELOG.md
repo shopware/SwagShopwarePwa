@@ -3,7 +3,7 @@ CHANGELOG for Shopware PWA
 
 ### 0.3.0
 
-> Minimum Stability has been increased to PHP 7.4
+> PHP level has been increased to PHP 7.4
 
 **Added**
 * Field `breadcrumb` to product detail page responses from `store-api/pwa/page` endpoint.
@@ -18,7 +18,8 @@ CHANGELOG for Shopware PWA
 
 **Changed**
 
-* Changed routes from `/store-api/v{version}/pwa/*` to `/store-api/pwa/*` to reflect changes in Shopware 6
+* Changed routes from `/store-api/v{version}/pwa/*` to `/store-api/pwa/*` to reflect changes in Shopware 6.4
+* Changed route `/api/v{version}/_action/pwa/dump-bundles` to `/api/_action/pwa/dump-bundles` to reflect changes in Shopware 6.4
 
 **Removed**
 

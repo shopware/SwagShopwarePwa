@@ -2,16 +2,23 @@
 
 This extension provides a collection of helper functions to integrate with the [shopware-pwa](https://github.com/DivanteLtd/shopware-pwa) client library.
 
-The current version of Shopware PWA requires an API version of **6.3.x or higher**. Backwards compatible versions of this plugin are available.
-There's no version of this plugin for Shopware 6.1 anymore.
+In order to use this plugin with Shopware 6, make sure you install the latest [available version](#versions) compatible with your Shopware version.
 
 There is a [video on how to set up](https://drive.google.com/open?id=1ynpoWw9b7hljzkqzVv2JFDxTtgomyVg4) the plugin correctly (please be aware that this applies to the old 6.1 version).
 
 ## Table of content
 
+* [Versions](#versions)
 * [Setup](#setup)
 * [Documentation](#documentation)
 * [Tests](#tests)
+
+## Versions
+
+| Shopware Version | Plugin Version | PWA Version |
+| --- | --- | --- |
+| 6.3.* | 0.2.* | 0.8.* |
+| 6.4.* | 0.3.* | unreleased |
 
 ## Setup
 
