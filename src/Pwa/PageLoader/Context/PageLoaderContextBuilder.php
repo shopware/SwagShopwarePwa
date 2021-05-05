@@ -30,7 +30,7 @@ class PageLoaderContextBuilder implements PageLoaderContextBuilderInterface
      */
     private $pathResolver;
 
-    public function __construct(PathResolver $pathResolver)
+    public function __construct(PathResolverInterface $pathResolver)
     {
         $this->pathResolver = $pathResolver;
     }
