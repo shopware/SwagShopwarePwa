@@ -15,6 +15,7 @@
         <service id="SwagShopwarePwa\Pwa\Controller\PageController" public="true">
             <argument type="service" id="SwagShopwarePwa\Pwa\PageLoader\Context\PageLoaderContextBuilder"/>
             <argument type="tagged" tag="pwa.page_loader"/>
+            <argument type="service" id="event_dispatcher"/>
             <call method="setContainer">
                 <argument type="service" id="service_container"/>
             </call>
@@ -40,6 +41,8 @@
 
         <service id="SwagShopwarePwa\Pwa\PageLoader\Context\PathResolver">
             <argument id="Shopware\Core\Content\Seo\SeoResolver" type="service"/>
+            <argument type="service" id="event_dispatcher"/>
+
         </service>
 
 

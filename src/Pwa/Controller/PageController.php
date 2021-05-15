@@ -5,6 +5,7 @@ namespace SwagShopwarePwa\Pwa\Controller;
 use Shopware\Core\Content\Cms\Exception\PageNotFoundException;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use SwagShopwarePwa\Pwa\Event\PageLoaderLoadedEvent;
 use SwagShopwarePwa\Pwa\PageLoader\Context\PageLoaderContextBuilder;
 use SwagShopwarePwa\Pwa\PageLoader\Context\PageLoaderContext;
 use SwagShopwarePwa\Pwa\PageLoader\Context\PageLoaderContextBuilderInterface;
@@ -15,6 +16,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * @RouteScope(scopes={"sales-channel-api", "store-api"})
@@ -40,7 +42,13 @@ class PageController extends AbstractController
      */
     private $pageLoaders;
 
-    public function __construct(PageLoaderContextBuilderInterface $pageLoaderContextBuilder, iterable $pageLoaders)
+
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
+
+    public function __construct(PageLoaderContextBuilderInterface $pageLoaderContextBuilder, iterable $pageLoaders, EventDispatcherInterface $eventDispatcher)
     {
         $this->pageLoaderContextBuilder = $pageLoaderContextBuilder;
 
@@ -48,6 +56,7 @@ class PageController extends AbstractController
         foreach ($pageLoaders as $pageLoader) {
             $this->pageLoaders[$pageLoader->getResourceType()] = $pageLoader;
         }
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -71,7 +80,7 @@ class PageController extends AbstractController
             throw new PageNotFoundException($pageLoaderContext->getResourceType() . $pageLoaderContext->getResourceIdentifier());
         }
 
-        return new CmsPageRouteResponse($this->getPageResult($pageLoader, $pageLoaderContext));
+        return new CmsPageRouteResponse($this->getPageResult($pageLoader, $pageLoaderContext, $request));
     }
 
     /**
@@ -92,7 +101,7 @@ class PageController extends AbstractController
      * @param PageLoaderContext $pageLoaderContext
      * @return AbstractPageResult
      */
-    private function getPageResult(PageLoaderInterface $pageLoader, PageLoaderContext $pageLoaderContext): AbstractPageResult
+    private function getPageResult(PageLoaderInterface $pageLoader, PageLoaderContext $pageLoaderContext, Request $request): AbstractPageResult
     {
 
         /** @var AbstractPageResult $pageResult */
@@ -101,6 +110,10 @@ class PageController extends AbstractController
         $pageResult->setResourceType($pageLoaderContext->getResourceType());
         $pageResult->setResourceIdentifier($pageLoaderContext->getResourceIdentifier());
         $pageResult->setCanonicalPathInfo($pageLoaderContext->getRoute()->getCanonicalPathInfo() ?: $pageLoaderContext->getRoute()->getPathInfo());
+
+        $canonicalPathInfo = $pageLoaderContext->getRoute()->getCanonicalPathInfo();
+        $ressourceIdentifier = $pageLoaderContext->getResourceIdentifier();
+        $this->eventDispatcher->dispatch(new PageLoaderLoadedEvent($pageResult, $pageLoaderContext, $request, $canonicalPathInfo, $ressourceIdentifier));
 
         return $pageResult;
     }
