@@ -5,6 +5,7 @@ namespace SwagShopwarePwa\Pwa\Controller;
 use Shopware\Core\Content\Cms\Exception\PageNotFoundException;
 use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use SwagShopwarePwa\Pwa\Event\PageLoaderLoadedEvent;
 use SwagShopwarePwa\Pwa\PageLoader\Context\PageLoaderContext;
 use SwagShopwarePwa\Pwa\PageLoader\Context\PageLoaderContextBuilderInterface;
 use SwagShopwarePwa\Pwa\PageLoader\PageLoaderInterface;
@@ -14,6 +15,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use OpenApi\Annotations as OA;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * @RouteScope(scopes={"store-api"})
@@ -41,7 +43,12 @@ class PageController extends AbstractController
      */
     private $pageLoaders;
 
-    public function __construct(PageLoaderContextBuilderInterface $pageLoaderContextBuilder, iterable $pageLoaders)
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
+
+    public function __construct(PageLoaderContextBuilderInterface $pageLoaderContextBuilder, iterable $pageLoaders, EventDispatcherInterface $eventDispatcher)
     {
         $this->pageLoaderContextBuilder = $pageLoaderContextBuilder;
 
@@ -49,6 +56,7 @@ class PageController extends AbstractController
         foreach ($pageLoaders as $pageLoader) {
             $this->pageLoaders[$pageLoader->getResourceType()] = $pageLoader;
         }
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -172,7 +180,7 @@ Each element has the category identifier as its key and contains a `path` as wel
             throw new PageNotFoundException($pageLoaderContext->getResourceType() . $pageLoaderContext->getResourceIdentifier());
         }
 
-        return new CmsPageRouteResponse($this->getPageResult($pageLoader, $pageLoaderContext));
+        return new CmsPageRouteResponse($this->getPageResult($pageLoader, $pageLoaderContext, $request));
     }
 
     /**
@@ -193,7 +201,7 @@ Each element has the category identifier as its key and contains a `path` as wel
      * @param PageLoaderContext $pageLoaderContext
      * @return AbstractPageResult
      */
-    private function getPageResult(PageLoaderInterface $pageLoader, PageLoaderContext $pageLoaderContext): AbstractPageResult
+    private function getPageResult(PageLoaderInterface $pageLoader, PageLoaderContext $pageLoaderContext, Request $request): AbstractPageResult
     {
         /** @var AbstractPageResult $pageResult */
         $pageResult = $pageLoader->load($pageLoaderContext);
@@ -201,6 +209,10 @@ Each element has the category identifier as its key and contains a `path` as wel
         $pageResult->setResourceType($pageLoaderContext->getResourceType());
         $pageResult->setResourceIdentifier($pageLoaderContext->getResourceIdentifier());
         $pageResult->setCanonicalPathInfo($pageLoaderContext->getRoute()->getCanonicalPathInfo() ?: $pageLoaderContext->getRoute()->getPathInfo());
+
+        $canonicalPathInfo = $pageLoaderContext->getRoute()->getCanonicalPathInfo();
+        $ressourceIdentifier = $pageLoaderContext->getResourceIdentifier();
+        $this->eventDispatcher->dispatch(new PageLoaderLoadedEvent($pageResult, $pageLoaderContext, $request, $canonicalPathInfo, $ressourceIdentifier));
 
         return $pageResult;
     }
