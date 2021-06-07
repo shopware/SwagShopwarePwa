@@ -19,7 +19,7 @@ class PageControllerTest extends TestCase
     use IntegrationTestBehaviour;
     use SalesChannelApiTestBehaviour;
 
-    const ENDPOINT_PAGE = '/store-api/v' . PlatformRequest::API_VERSION . '/pwa/page';
+    const ENDPOINT_PAGE = '/store-api/pwa/page';
 
     /**
      * @var \Symfony\Bundle\FrameworkBundle\KernelBrowser
@@ -68,6 +68,7 @@ class PageControllerTest extends TestCase
 
         $this->ids->create('categoryId');
         $this->ids->create('cmsPageId');
+        $this->ids->create('cmsProductPageId');
 
         $this->ids->create('productActiveId');
         $this->ids->create('productActiveWithMainCategoriesId');
@@ -419,6 +420,32 @@ class PageControllerTest extends TestCase
         static::assertEquals('/Home-Shoes/canonical/', $response->canonicalPathInfo);
     }
 
+    public function testResolveProductPageWithCmsPage(): void
+    {
+        $this->createCmsPage();
+        $this->createCategories();
+        $this->createProduct(true);
+        $this->createSeoUrls();
+
+        $content = [
+            'path' => '/detail/' . $this->ids->get('productActiveId'),
+            'includes' => [
+                'pwa_page_result' => ['cmsPage']
+            ]
+        ];
+
+        $this->browser->request(
+            'POST',
+            self::ENDPOINT_PAGE,
+            $content
+        );
+
+        $response = json_decode($this->browser->getResponse()->getContent());
+
+        static::assertObjectHasAttribute('cmsPage', $response);
+        static::assertNotNull($response->cmsPage);
+    }
+
     private function createSalesChannelDomain()
     {
         $this->salesChannelDomainRepository->create([
@@ -432,7 +459,7 @@ class PageControllerTest extends TestCase
         ], Context::createDefaultContext());
     }
 
-    private function createProduct()
+    private function createProduct(bool $withCmsPage = false)
     {
         $categoryId = Uuid::randomHex();
         $data = [
@@ -454,6 +481,7 @@ class PageControllerTest extends TestCase
                         'visibility' => ProductVisibilityDefinition::VISIBILITY_ALL,
                     ],
                 ],
+                'cmsPageId' => $withCmsPage ? $this->ids->get('cmsProductPageId') : null
             ],
             [
                 'id' => $this->ids->get('productActiveWithMainCategoriesId'),
@@ -628,7 +656,7 @@ class PageControllerTest extends TestCase
 
     private function createCmsPage()
     {
-        $page = [
+        $landingPage = [
             'id' => $this->ids->get('cmsPageId'),
             'name' => 'shopware AG',
             'type' => 'landing_page',
@@ -651,6 +679,28 @@ class PageControllerTest extends TestCase
             ],
         ];
 
-        $this->cmsPageRepository->upsert([$page], Context::createDefaultContext());
+        $productPage = [
+            'id' => $this->ids->get('cmsProductPageId'),
+            'name' => 'shopware AG Detail',
+            'type' => 'product_detail',
+            'sections' => [
+                [
+                    'id' => Uuid::randomHex(),
+                    'type' => 'default',
+                    'position' => 0,
+                    'blocks' => [
+                        [
+                            'position' => 1,
+                            'type' => 'product-heading',
+                            'slots' => [
+                                ['type' => 'product-name', 'slot' => 'left', 'config' => ['content' => ['source' => FieldConfig::SOURCE_STATIC, 'value' => 'Lorem ipsum dolor']]]
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $this->cmsPageRepository->upsert([$landingPage, $productPage], Context::createDefaultContext());
     }
 }

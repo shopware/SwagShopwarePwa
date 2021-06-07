@@ -2,22 +2,29 @@
 
 This extension provides a collection of helper functions to integrate with the [shopware-pwa](https://github.com/DivanteLtd/shopware-pwa) client library.
 
-The current version of Shopware PWA requires an API version of **6.3.x or higher**. Backwards compatible versions of this plugin are available.
-There's no version of this plugin for Shopware 6.1 anymore.
+In order to use this extension with Shopware 6, make sure you install the latest [available version](#versions) compatible with your Shopware version.
 
-There is a [video on how to set up](https://drive.google.com/open?id=1ynpoWw9b7hljzkqzVv2JFDxTtgomyVg4) the plugin correctly (please be aware that this applies to the old 6.1 version).
+There is a [video on how to set up](https://drive.google.com/open?id=1ynpoWw9b7hljzkqzVv2JFDxTtgomyVg4) the extension correctly (please be aware that this applies to the old 6.1 version).
 
 ## Table of content
 
+* [Versions](#versions)
 * [Setup](#setup)
 * [Documentation](#documentation)
 * [Tests](#tests)
 
+## Versions
+
+| Shopware Version | SwagShopwarePwa Version | PWA Version |
+| --- | --- | --- |
+| 6.3.* | 0.2.* | 0.8.* |
+| 6.4.* | 0.3.* | 0.9.* |
+
 ## Setup
 
-### Require plugin
+### Install extension
 
-There are two ways you can require the plugin.
+There are two ways you can require the extension.
 
 #### Composer
 
@@ -27,7 +34,7 @@ Run
 $ composer require shopware-pwa/shopware-pwa
 ```
 
-within your Shopware installation directory. This will install a composer managed package of the plugin. To use the latest version run
+within your Shopware installation directory. This will install a composer managed package of the extension. To use the latest version run
 
 ```
 $ composer require shopware-pwa/shopware-pwa:dev-master
@@ -35,29 +42,29 @@ $ composer require shopware-pwa/shopware-pwa:dev-master
 
 instead.
 
-We recommend using this way of installing the plugin, because it reduces the risk of having an outdated/incompatible dependency.
+We recommend using this way of installing the extension, because it reduces the risk of having an outdated/incompatible dependency.
 
 #### Manual
 
-Clone the repository into the local plugins directory of your Shopware installation.
+Clone the repository into the local `plugins` directory of your Shopware installation.
 
 ```
 $ git clone https://github.com/elkmod/SwagShopwarePwa.git custom/plugins/SwagShopwarePwa
 ```
 
-This will allow you to make changes and pull requests to this very repository, since you're using a local copy of the plugin.
+This will allow you to make changes and pull requests to this very repository, since you're using a local copy of the extension.
 
-### Install plugin
+### Install extension
 
 Run the following commands in your Shopware root directory.
 
-Refresh plugin list
+Refresh extension list
 
 ```bash
 $ bin/console plugin:refresh
 ```
 
-Install and activate the plugin
+Install and activate the extension
 
 ```bash
 $ bin/console plugin:install --activate SwagShopwarePwa
@@ -85,33 +92,29 @@ $ bin/console dal:refresh:index
 
 ### Endpoints
 
-This plugin adds multiple endpoints to both, the store and the admin API. All endpoints below accept `POST` requests.
+This extension adds multiple endpoints to both, the store and the admin API. All endpoints below accept `POST` requests.
 
-**/store-api/v1/pwa/page**
+**/store-api/pwa/page**
 
 Resolves a given path to cms or product page and accepts include parameters to specifiy the fields contained in your response.
-
-**/store-api/v1/pwa/navigation**
-
-Delivers a category along with its child categories down to a desired level.
  
-**/api/v1/_action/pwa/dump-bundles**
+**/api/_action/pwa/dump-bundles**
 
-This endpoint is required to connect Shopware plugins with your PWA during the application build. It dumps your bundles metadata and PWA specific source files and delivers via a safe channel.
+This endpoint is required to connect Shopware extensions with your PWA during the application build. It dumps your extensions metadata and configuration and PWA specific source files and delivers via a safe channel.
  
 ## Tests
 
 Tests are located in `src/Test` and configured in `phpunit.xml`.
 
-In order to run the tests you have to set up the test database so that Shopware runs them with our plugin enabled.
+In order to run the tests you have to set up the test database so that Shopware runs them with our extension enabled.
 
-After the plugin is installed in your shop, make sure you execute the follwing command (in the Shopware root directory) to dump the current configuration of your shop to the test-database (when using Docker, run it inside the container):
+After the extension is installed in your shop, make sure you execute the follwing command (in the Shopware root directory) to dump the current configuration of your shop to the test-database (when using Docker, run it inside the container):
 
 ```bash
 $ ./psh.phar init-test-databases
 ```
 
-Then execute the following commands in the plugin's root directory to run the test.
+Then execute the following commands in the extension's root directory to run the test.
 
 ```bash
 $ composer install

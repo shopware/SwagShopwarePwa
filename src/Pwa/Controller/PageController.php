@@ -17,7 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @RouteScope(scopes={"sales-channel-api", "store-api"})
+ * @RouteScope(scopes={"store-api"})
  */
 class PageController extends AbstractController
 {
@@ -51,7 +51,7 @@ class PageController extends AbstractController
     }
 
     /**
-     * @Route("/store-api/v{version}/pwa/page", name="store-api.pwa.cms-page-resolve", methods={"POST"})
+     * @Route("/store-api/pwa/page", name="store-api.pwa.cms-page-resolve", methods={"POST"})
      *
      * Resolve a page for a given resource and resource identification or path
      * First, a PageLoaderContext object is assembled, which includes information about the resource, request and context.

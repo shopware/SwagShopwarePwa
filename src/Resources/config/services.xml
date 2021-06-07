@@ -20,13 +20,6 @@
             </call>
         </service>
 
-        <service id="SwagShopwarePwa\Pwa\Controller\NavigationController" public="true">
-            <argument type="service" id="SwagShopwarePwa\Pwa\Entity\SalesChannelNavigation\SalesChannelNavigationRepository"/>
-            <call method="setContainer">
-                <argument id="service_container" type="service"/>
-            </call>
-        </service>
-
 
         <!-- Page loader context builder -->
 

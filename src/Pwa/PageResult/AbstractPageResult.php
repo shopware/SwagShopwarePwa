@@ -2,6 +2,7 @@
 
 namespace SwagShopwarePwa\Pwa\PageResult;
 
+use Shopware\Core\Content\Cms\CmsPageEntity;
 use Shopware\Core\Framework\Struct\JsonSerializableTrait;
 use Shopware\Core\Framework\Struct\Struct;
 
@@ -28,6 +29,16 @@ abstract class AbstractPageResult extends Struct implements \JsonSerializable
      * @var string
      */
     protected $canonicalPathInfo;
+
+    /**
+     * @var CmsPageEntity|null
+     */
+    protected $cmsPage;
+
+    /**
+     * @var array
+     */
+    protected $breadcrumb;
 
     /**
      * @return string
@@ -65,5 +76,31 @@ abstract class AbstractPageResult extends Struct implements \JsonSerializable
     public function setCanonicalPathInfo(string $canonicalPathInfo): void
     {
         $this->canonicalPathInfo = $canonicalPathInfo;
+    }
+
+    /**
+     * @return array
+     */
+    public function getBreadcrumb(): ?array
+    {
+        return $this->breadcrumb;
+    }
+
+    public function setBreadcrumb(?array $breadcrumb)
+    {
+        $this->breadcrumb = $breadcrumb;
+    }
+
+    /**
+     * @return CmsPageEntity|null
+     */
+    public function getCmsPage(): ?CmsPageEntity
+    {
+        return $this->cmsPage;
+    }
+
+    public function setCmsPage(?CmsPageEntity $cmsPage)
+    {
+        $this->cmsPage = $cmsPage;
     }
 }
