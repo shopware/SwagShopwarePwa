@@ -12,7 +12,6 @@ use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\SalesChannelApiTestBehaviour;
 use Shopware\Core\Framework\Test\TestDataCollection;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Shopware\Core\PlatformRequest;
 
 class PageControllerTest extends TestCase
 {
@@ -56,6 +55,11 @@ class PageControllerTest extends TestCase
      */
     private $salesChannelRepository;
 
+    /**
+     * @var EntityRepositoryInterface
+     */
+    private $landingPageRepository;
+
     public function setUp(): void
     {
         $this->ids = new TestDataCollection(Context::createDefaultContext());
@@ -83,8 +87,12 @@ class PageControllerTest extends TestCase
         $this->cmsPageRepository = $this->getContainer()->get('cms_page.repository');
         $this->salesChannelDomainRepository = $this->getContainer()->get('sales_channel_domain.repository');
         $this->salesChannelRepository = $this->getContainer()->get('sales_channel.repository');
+        $this->landingPageRepository = $this->getContainer()->get('landing_page.repository');
     }
 
+    /**
+     * @group pwa-page-category
+     */
     public function testResolveCategoryPageRootPath(): void
     {
         $this->createCmsPage();
@@ -109,6 +117,9 @@ class PageControllerTest extends TestCase
         static::assertEquals($this->ids->get('categoryId'), $response->resourceIdentifier);
     }
 
+    /**
+     * @group pwa-page-category
+     */
     public function testResolveCategoryPage(): void
     {
         $this->createCmsPage();
@@ -139,6 +150,9 @@ class PageControllerTest extends TestCase
         static::assertNotNull($response->resourceIdentifier);
     }
 
+    /**
+     * @group pwa-page-category
+     */
     public function testResolveCategoryBreadcrumbLink(): void
     {
         $this->createCmsPage();
@@ -163,6 +177,9 @@ class PageControllerTest extends TestCase
         static::assertEquals('/Home-Shoes/Children-level-2/', $response['breadcrumb'][$this->ids->get('child2CategoryId')]['path']);
     }
 
+    /**
+     * @group pwa-page-category
+     */
     public function testResolveCategoryPageTechnicalUrl(): void
     {
         $this->createCmsPage();
@@ -188,6 +205,9 @@ class PageControllerTest extends TestCase
         static::assertNotNull($response->resourceIdentifier);
     }
 
+    /**
+     * @group pwa-page-category
+     */
     public function testResolveCategoryWithoutCmsPage(): void
     {
         $this->createCategories(false);
@@ -213,162 +233,9 @@ class PageControllerTest extends TestCase
         static::assertNotNull($response->resourceIdentifier);
     }
 
-    public function testProductPage(): void
-    {
-        $this->createCategories(false);
-        $this->createProduct();
-        $this->createSalesChannelDomain();
-        $this->createSeoUrls();
-
-        $content = [
-            'path' => '/foo-bar/prod'
-        ];
-
-        $this->browser->request(
-            'POST',
-            self::ENDPOINT_PAGE,
-            $content
-        );
-
-        $response = json_decode($this->browser->getResponse()->getContent());
-
-        static::assertObjectHasAttribute('product', $response);
-
-        static::assertEquals('frontend.detail.page', $response->resourceType);
-        static::assertObjectHasAttribute('resourceIdentifier', $response);
-        static::assertNotNull($response->resourceIdentifier);
-    }
-
-    public function testProductPageWithAssociation(): void
-    {
-        $this->createCategories(false);
-        $this->createProduct();
-        $this->createSalesChannelDomain();
-
-        $content = [
-            'path' => '/detail/' . $this->ids->get('productActiveId'),
-            'associations' => [
-                'manufacturer' => [],
-                'categories' => []
-            ]
-        ];
-
-        $this->browser->request(
-            'POST',
-            self::ENDPOINT_PAGE,
-            $content
-        );
-
-        $response = json_decode($this->browser->getResponse()->getContent(), true);
-
-        static::assertArrayHasKey('product', $response);
-        static::assertArrayHasKey('manufacturer', $response['product']);
-        static::assertNotNull($response['product']['manufacturer']);
-        static::assertArrayHasKey('categories', $response['product']);
-        static::assertNotNull($response['product']['categories']);
-    }
-
-    public function testProductPageTechnicalUrl(): void
-    {
-        $this->createCategories(false);
-        $this->createProduct();
-        $this->createSalesChannelDomain();
-
-        $content = [
-            'path' => '/detail/' . $this->ids->get('productActiveId')
-        ];
-
-        $this->browser->request(
-            'POST',
-            self::ENDPOINT_PAGE,
-            $content
-        );
-
-        $response = json_decode($this->browser->getResponse()->getContent());
-
-        static::assertObjectHasAttribute('product', $response);
-
-        static::assertEquals('frontend.detail.page', $response->resourceType);
-        static::assertObjectHasAttribute('resourceIdentifier', $response);
-        static::assertNotNull($response->resourceIdentifier);
-    }
-
-    public function testProductPageForInactive(): void
-    {
-        $this->createCategories(false);
-        $this->createProduct();
-        $this->createSalesChannelDomain();
-        $this->createSeoUrls();
-
-        $content = [
-            'path' => '/foo-bar/prod-inactive'
-        ];
-
-        $this->browser->request(
-            'POST',
-            self::ENDPOINT_PAGE,
-            $content
-        );
-
-        $response = json_decode($this->browser->getResponse()->getContent());
-
-        static::assertObjectHasAttribute('errors', $response);
-        static::assertIsArray($response->errors);
-
-        static::assertEquals(404, $response->errors[0]->status);
-        static::assertEquals('CONTENT__PRODUCT_NOT_FOUND', $response->errors[0]->code);
-
-    }
-
-    public function testProductHasBreadcrumbsLinks(): void
-    {
-        $this->createCategories(false);
-        $this->createProduct();
-        $this->createSalesChannelDomain();
-        $this->createSeoUrls();
-
-        $content = [
-            'path' => '/foo-bar/prod-has-breadcrumb'
-        ];
-
-        $this->browser->request(
-            'POST',
-            self::ENDPOINT_PAGE,
-            $content
-        );
-
-        $response = json_decode($this->browser->getResponse()->getContent(), true);
-
-        static::assertArrayHasKey('breadcrumb', $response);
-
-        static::assertEquals('/Home-Shoes/Children-canonical/', $response['breadcrumb'][$this->ids->get('childCategoryId')]['path']);
-        static::assertEquals('/Home-Shoes/Children-level-2/', $response['breadcrumb'][$this->ids->get('child2CategoryId')]['path']);
-        static::assertEquals('/navigation/' . $this->ids->get('child3CategoryId'), $response['breadcrumb'][$this->ids->get('child3CategoryId')]['path']);
-    }
-
-    public function testProductHasNoBreadcrumbsLinks(): void
-    {
-        $this->createCategories(false);
-        $this->createProduct();
-        $this->createSalesChannelDomain();
-        $this->createSeoUrls();
-
-        $content = [
-            'path' => '/detail/' . $this->ids->get('productActiveId')
-        ];
-
-        $this->browser->request(
-            'POST',
-            self::ENDPOINT_PAGE,
-            $content
-        );
-
-        $response = json_decode($this->browser->getResponse()->getContent(), true);
-
-        static::assertArrayHasKey('breadcrumb', $response);
-        static::assertNull($response['breadcrumb']);
-    }
-
+    /**
+     * @group pwa-page-category
+     */
     public function testResolveCategoryPageWithIncludes(): void
     {
         $this->createCmsPage();
@@ -398,6 +265,302 @@ class PageControllerTest extends TestCase
         static::assertObjectNotHasAttribute('breadcrumb', $response);
     }
 
+    /**
+     * @group pwa-page-landing
+     */
+    public function testResolveLandingPage(): void
+    {
+        $this->createCmsPage();
+        $this->createLandingPage(true);
+        $this->createSeoUrls();
+
+        $content = [
+            'path' => 'my-landing-page/exists'
+        ];
+
+        $this->browser->request(
+            'POST',
+            self::ENDPOINT_PAGE,
+            $content
+        );
+
+        $response = json_decode($this->browser->getResponse()->getContent());
+
+
+        static::assertObjectHasAttribute('cmsPage', $response);
+
+        static::assertEquals('shopware AG', $response->cmsPage->name);
+        static::assertEquals('frontend.landing.page', $response->resourceType);
+        static::assertObjectHasAttribute('resourceIdentifier', $response);
+        static::assertNotNull($response->resourceIdentifier);
+    }
+
+    /**
+     * @group pwa-page-landing
+     */
+    public function testResolveLandingPageTechnicalUrl(): void
+    {
+        $this->createCmsPage();
+        $this->createLandingPage(true);
+        $this->createSeoUrls();
+
+        $content = [
+            'path' => 'landingPage/' . $this->ids->get('landingPageId')
+        ];
+
+        $this->browser->request(
+            'POST',
+            self::ENDPOINT_PAGE,
+            $content
+        );
+
+        $response = json_decode($this->browser->getResponse()->getContent());
+
+
+        static::assertObjectHasAttribute('cmsPage', $response);
+
+        static::assertStringContainsString('my-landing-page', $response->canonicalPathInfo);
+        static::assertEquals('frontend.landing.page', $response->resourceType);
+        static::assertObjectHasAttribute('resourceIdentifier', $response);
+        static::assertNotNull($response->resourceIdentifier);
+    }
+
+    /**
+     * @group pwa-page-landing
+     */
+    public function testResolveLandingPageWihoutCmsPage(): void
+    {
+        $this->createLandingPage(false);
+        $this->createSeoUrls();
+
+        $content = [
+            'path' => 'my-landing-page/exists'
+        ];
+
+        $this->browser->request(
+            'POST',
+            self::ENDPOINT_PAGE,
+            $content
+        );
+
+        $response = json_decode($this->browser->getResponse()->getContent());
+
+
+        static::assertObjectHasAttribute('cmsPage', $response);
+
+        static::assertNull($response->cmsPage);
+
+        static::assertEquals('frontend.landing.page', $response->resourceType);
+        static::assertObjectHasAttribute('resourceIdentifier', $response);
+        static::assertNotNull($response->resourceIdentifier);
+    }
+
+    /**
+     * @group pwa-page-product
+     */
+    public function testResolveProductPage(): void
+    {
+        $this->createCategories(false);
+        $this->createProduct();
+        $this->createSalesChannelDomain();
+        $this->createSeoUrls();
+
+        $content = [
+            'path' => '/foo-bar/prod'
+        ];
+
+        $this->browser->request(
+            'POST',
+            self::ENDPOINT_PAGE,
+            $content
+        );
+
+        $response = json_decode($this->browser->getResponse()->getContent());
+
+        static::assertObjectHasAttribute('product', $response);
+
+        static::assertEquals('frontend.detail.page', $response->resourceType);
+        static::assertObjectHasAttribute('resourceIdentifier', $response);
+        static::assertNotNull($response->resourceIdentifier);
+    }
+
+    /**
+     * @group pwa-page-product
+     */
+    public function testResolveProductPageWithAssociation(): void
+    {
+        $this->createCategories(false);
+        $this->createProduct();
+        $this->createSalesChannelDomain();
+
+        $content = [
+            'path' => '/detail/' . $this->ids->get('productActiveId'),
+            'associations' => [
+                'manufacturer' => [],
+                'categories' => []
+            ]
+        ];
+
+        $this->browser->request(
+            'POST',
+            self::ENDPOINT_PAGE,
+            $content
+        );
+
+        $response = json_decode($this->browser->getResponse()->getContent(), true);
+
+        static::assertArrayHasKey('product', $response);
+        static::assertArrayHasKey('manufacturer', $response['product']);
+        static::assertNotNull($response['product']['manufacturer']);
+        static::assertArrayHasKey('categories', $response['product']);
+        static::assertNotNull($response['product']['categories']);
+    }
+
+    /**
+     * @group pwa-page-product
+     */
+    public function testResolveProductPageTechnicalUrl(): void
+    {
+        $this->createCategories(false);
+        $this->createProduct();
+        $this->createSalesChannelDomain();
+
+        $content = [
+            'path' => '/detail/' . $this->ids->get('productActiveId')
+        ];
+
+        $this->browser->request(
+            'POST',
+            self::ENDPOINT_PAGE,
+            $content
+        );
+
+        $response = json_decode($this->browser->getResponse()->getContent());
+
+        static::assertObjectHasAttribute('product', $response);
+
+        static::assertEquals('frontend.detail.page', $response->resourceType);
+        static::assertObjectHasAttribute('resourceIdentifier', $response);
+        static::assertNotNull($response->resourceIdentifier);
+    }
+
+    /**
+     * @group pwa-page-product
+     */
+    public function testResolveProductPageForInactive(): void
+    {
+        $this->createCategories(false);
+        $this->createProduct();
+        $this->createSalesChannelDomain();
+        $this->createSeoUrls();
+
+        $content = [
+            'path' => '/foo-bar/prod-inactive'
+        ];
+
+        $this->browser->request(
+            'POST',
+            self::ENDPOINT_PAGE,
+            $content
+        );
+
+        $response = json_decode($this->browser->getResponse()->getContent());
+
+        static::assertObjectHasAttribute('errors', $response);
+        static::assertIsArray($response->errors);
+
+        static::assertEquals(404, $response->errors[0]->status);
+        static::assertEquals('CONTENT__PRODUCT_NOT_FOUND', $response->errors[0]->code);
+
+    }
+
+    /**
+     * @group pwa-page-product
+     */
+    public function testResolveProductPageWithCmsPage(): void
+    {
+        $this->createCmsPage();
+        $this->createCategories();
+        $this->createProduct(true);
+        $this->createSeoUrls();
+
+        $content = [
+            'path' => '/detail/' . $this->ids->get('productActiveId'),
+            'includes' => [
+                'pwa_page_result' => ['cmsPage']
+            ]
+        ];
+
+        $this->browser->request(
+            'POST',
+            self::ENDPOINT_PAGE,
+            $content
+        );
+
+        $response = json_decode($this->browser->getResponse()->getContent());
+
+        static::assertObjectHasAttribute('cmsPage', $response);
+        static::assertNotNull($response->cmsPage);
+    }
+
+    /**
+     * @group pwa-page-product
+     */
+    public function testResolveProductHasBreadcrumbsLinks(): void
+    {
+        $this->createCategories(false);
+        $this->createProduct();
+        $this->createSalesChannelDomain();
+        $this->createSeoUrls();
+
+        $content = [
+            'path' => '/foo-bar/prod-has-breadcrumb'
+        ];
+
+        $this->browser->request(
+            'POST',
+            self::ENDPOINT_PAGE,
+            $content
+        );
+
+        $response = json_decode($this->browser->getResponse()->getContent(), true);
+
+        static::assertArrayHasKey('breadcrumb', $response);
+
+        static::assertEquals('/Home-Shoes/Children-canonical/', $response['breadcrumb'][$this->ids->get('childCategoryId')]['path']);
+        static::assertEquals('/Home-Shoes/Children-level-2/', $response['breadcrumb'][$this->ids->get('child2CategoryId')]['path']);
+        static::assertEquals('/navigation/' . $this->ids->get('child3CategoryId'), $response['breadcrumb'][$this->ids->get('child3CategoryId')]['path']);
+    }
+
+    /**
+     * @group pwa-page-product
+     */
+    public function testResolveProductHasNoBreadcrumbsLinks(): void
+    {
+        $this->createCategories(false);
+        $this->createProduct();
+        $this->createSalesChannelDomain();
+        $this->createSeoUrls();
+
+        $content = [
+            'path' => '/detail/' . $this->ids->get('productActiveId')
+        ];
+
+        $this->browser->request(
+            'POST',
+            self::ENDPOINT_PAGE,
+            $content
+        );
+
+        $response = json_decode($this->browser->getResponse()->getContent(), true);
+
+        static::assertArrayHasKey('breadcrumb', $response);
+        static::assertNull($response['breadcrumb']);
+    }
+
+    /**
+     * @group pwa-page-routing
+     */
     public function testResolveCanonicalUrl(): void
     {
         $this->createCmsPage();
@@ -423,30 +586,20 @@ class PageControllerTest extends TestCase
         static::assertEquals('/Home-Shoes/canonical/', $response->canonicalPathInfo);
     }
 
-    public function testResolveProductPageWithCmsPage(): void
+    /**
+     * @group pwa-page-routing
+     */
+    public function testResolveInvalidUrl(): void
     {
-        $this->createCmsPage();
-        $this->createCategories();
-        $this->createProduct(true);
-        $this->createSeoUrls();
-
-        $content = [
-            'path' => '/detail/' . $this->ids->get('productActiveId'),
-            'includes' => [
-                'pwa_page_result' => ['cmsPage']
-            ]
-        ];
-
         $this->browser->request(
             'POST',
-            self::ENDPOINT_PAGE,
-            $content
+            self::ENDPOINT_PAGE
         );
 
         $response = json_decode($this->browser->getResponse()->getContent());
 
-        static::assertObjectHasAttribute('cmsPage', $response);
-        static::assertNotNull($response->cmsPage);
+        static::assertEquals(\Symfony\Component\HttpFoundation\Response::HTTP_NOT_FOUND, $this->browser->getResponse()->getStatusCode());
+        static::assertObjectHasAttribute('errors', $response);
     }
 
     private function createSalesChannelDomain()
@@ -617,6 +770,16 @@ class PageControllerTest extends TestCase
                 'isValid' => true,
                 'isCanonical' => false,
             ],
+            [
+                'salesChannelId' => $this->ids->get('salesChannelId'),
+                'languageId' => Defaults::LANGUAGE_SYSTEM,
+                'routeName' => 'frontend.landing.page',
+                'pathInfo' => '/landingPage/' . $this->ids->get('landingPageId'),
+                'seoPathInfo' => 'my-landing-page/exists',
+                'foreignKey' => $this->ids->get('landingPageId'),
+                'isValid' => true,
+                'isCanonical' => false,
+            ],
         ], Context::createDefaultContext());
     }
 
@@ -656,6 +819,22 @@ class PageControllerTest extends TestCase
             [
                 'id' => $this->ids->get('salesChannelId'),
                 'navigationCategoryId' => $this->ids->get('categoryId')
+            ]
+        ], Context::createDefaultContext());
+    }
+
+    private function createLandingPage(bool $withCmsPage = true) {
+        $this->landingPageRepository->create([
+            [
+                'id' => $this->ids->get('landingPageId'),
+                'salesChannels' => [
+                    [
+                        'id' => $this->ids->get('salesChannelId')
+                    ]
+                ],
+                'name' => 'My test landing page',
+                'cmsPageId' => $withCmsPage ? $this->ids->get('cmsPageId') : null,
+                'url' => 'my-landing-page/exists'
             ]
         ], Context::createDefaultContext());
     }

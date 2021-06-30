@@ -54,6 +54,12 @@
             <tag name="pwa.page_loader"/>
         </service>
 
+        <service id="SwagShopwarePwa\Pwa\PageLoader\LandingPageLoader">
+            <argument type="service" id="Shopware\Core\Content\LandingPage\SalesChannel\LandingPageRoute" />
+            <argument type="service" id="SwagShopwarePwa\Pwa\PageResult\Landing\LandingPageResultHydrator" />
+            <tag name="pwa.page_loader"/>
+        </service>
+
 
         <!-- Page hydrators -->
 
@@ -67,6 +73,9 @@
                  parent="SwagShopwarePwa\Pwa\PageResult\AbstractPageResultHydrator"/>
 
         <service id="SwagShopwarePwa\Pwa\PageResult\Navigation\NavigationPageResultHydrator"
+                 parent="SwagShopwarePwa\Pwa\PageResult\AbstractPageResultHydrator"/>
+
+        <service id="SwagShopwarePwa\Pwa\PageResult\Landing\LandingPageResultHydrator"
                  parent="SwagShopwarePwa\Pwa\PageResult\AbstractPageResultHydrator"/>
 
 

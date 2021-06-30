@@ -1,6 +1,21 @@
 CHANGELOG for Shopware PWA
 ===================
 
+### 0.3.1
+
+> CMS landing pages are now supported
+
+**Added**
+* Constant `LANDING_PAGE_ROUTE` in `SwagShopwarePwa\Pwa\Controller\PageController`
+* Class `SwagShopwarePwa\Pwa\PageLoader\LandingPageLoader`
+* Class `SwagShopwarePwa\Pwa\PageResult\Landing\LandingPageResult`
+* Class `SwagShopwarePwa\Pwa\PageResult\Landing\LandingPageResultHydrator`
+* PHPUnit test groups
+    * `pwa-page-product`
+    * `pwa-page-category`
+    * `pwa-page-landing`
+    * `pwa-page-routing` 
+
 ### 0.3.0
 
 > PHP level has been increased to PHP 7.4
