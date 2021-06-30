@@ -13,6 +13,9 @@ class NavigationPageResultHydrator extends AbstractPageResultHydrator
     {
         $pageResult = new NavigationPageResult();
 
+        // We're passing the cms page anyway, so no need to return it twice
+        $category->assign(['cmsPage' => null]);
+
         $pageResult->setCategory($category);
         $pageResult->setCmsPage($cmsPageEntity);
         $pageResult->setBreadcrumb($this->getBreadcrumbs($category, $pageLoaderContext->getContext()));

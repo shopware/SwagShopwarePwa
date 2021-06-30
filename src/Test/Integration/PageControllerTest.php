@@ -131,6 +131,9 @@ class PageControllerTest extends TestCase
         static::assertObjectHasAttribute('cmsPage', $response);
         static::assertObjectHasAttribute('breadcrumb', $response);
 
+        static::assertObjectHasAttribute('category', $response);
+        static::assertNotNull($response->category->media);
+
         static::assertEquals('frontend.navigation.page', $response->resourceType);
         static::assertObjectHasAttribute('resourceIdentifier', $response);
         static::assertNotNull($response->resourceIdentifier);
@@ -625,6 +628,9 @@ class PageControllerTest extends TestCase
                 'salesChannelId' => $this->ids->get('salesChannelId'),
                 'name' => 'My test category',
                 'cmsPageId' => $withCmsPage ? $this->ids->get('cmsPageId') : null,
+                'media' => [
+                    'id' => $this->ids->get('categoryMediaId')
+                ],
                 'children' => [
                     [
                         'id' => $this->ids->get('childCategoryId'),
