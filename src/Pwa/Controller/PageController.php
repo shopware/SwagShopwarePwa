@@ -29,6 +29,8 @@ class PageController extends AbstractController
 
     const NAVIGATION_PAGE_ROUTE = 'frontend.navigation.page';
 
+    const LANDING_PAGE_ROUTE = 'frontend.landing.page';
+
     /**
      * @var PageLoaderContextBuilderInterface
      */
@@ -79,7 +81,7 @@ class PageController extends AbstractController
      *                          property="resourceType",
      *                          description="Type of page that was fetched. Indicates whether it is a product page or a category page",
      *                          type="string",
-     *                          enum={"frontend.detail.page", "frontend.navigation.page"}
+     *                          enum={"frontend.detail.page", "frontend.navigation.page", "frontend.landing.page"}
      *                      ),
      *                      @OA\Property(
      *                          property="resourceIdentifier",
@@ -136,6 +138,9 @@ Each element has the category identifier as its key and contains a `path` as wel
      *                                  description="The category associated with the loaded page.",
      *                                  ref="#/components/schemas/category_flat"
      *                              )
+     *                          ),
+     *                          @OA\Schema(
+     *                              description="A landing page result contains no specific fields."
      *                          )
      *                      }
      *                  )
@@ -190,7 +195,6 @@ Each element has the category identifier as its key and contains a `path` as wel
      */
     private function getPageResult(PageLoaderInterface $pageLoader, PageLoaderContext $pageLoaderContext): AbstractPageResult
     {
-
         /** @var AbstractPageResult $pageResult */
         $pageResult = $pageLoader->load($pageLoaderContext);
 
