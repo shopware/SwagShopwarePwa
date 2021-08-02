@@ -31,7 +31,7 @@ class DumpPluginConfigurationCommand extends Command
         parent::__construct();
     }
 
-    public function setDescription($description)
+    protected function configure()
     {
         $this->setDescription('Dump PWA plugin configurations and assets');
     }
