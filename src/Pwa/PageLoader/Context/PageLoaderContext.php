@@ -62,4 +62,14 @@ class PageLoaderContext
     {
         return $this->route->getRouteName();
     }
+
+    public function setResourceIdentifier(string $resourceIdentifier):void
+    {
+        $this->route->setResourceIdentifier($resourceIdentifier);
+    }
+
+    public function setResourceType(string $resourceType):void
+    {
+        $this->route->setResource($resourceType);
+    }
 }
