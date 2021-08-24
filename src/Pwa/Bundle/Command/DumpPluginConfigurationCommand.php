@@ -12,6 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class DumpPluginConfigurationCommand extends Command
 {
     protected static $defaultName = 'pwa:dump-plugins';
+    protected static $defaultDescription = 'Dump PWA plugin configurations and assets';
 
     /**
      * @var ConfigurationService
@@ -29,11 +30,6 @@ class DumpPluginConfigurationCommand extends Command
         $this->assetService = $assetService;
 
         parent::__construct();
-    }
-
-    public function setDescription($description)
-    {
-        $this->setDescription('Dump PWA plugin configurations and assets');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
