@@ -2,9 +2,9 @@
 
 namespace SwagShopwarePwa\Pwa\PageResult\Product;
 
+use Shopware\Core\Content\Cms\CmsPageEntity;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Content\Property\PropertyGroupCollection;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\AggregationResult\AggregationResultCollection;
 use SwagShopwarePwa\Pwa\PageResult\AbstractPageResult;
 
 class ProductPageResult extends AbstractPageResult

@@ -2,7 +2,7 @@
 
 namespace SwagShopwarePwa\Pwa\PageLoader\Context;
 
-use Shopware\Core\Content\Seo\SeoResolverInterface;
+use Shopware\Core\Content\Seo\AbstractSeoResolver;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use SwagShopwarePwa\Pwa\Controller\PageController;
 use SwagShopwarePwa\Pwa\Entity\SalesChannelRoute\SalesChannelRouteEntity;
@@ -17,17 +17,18 @@ class PathResolver implements PathResolverInterface
 {
     private const MATCH_MAP = [
         PageController::NAVIGATION_PAGE_ROUTE => '/^\/?navigation\/([a-f0-9]{32})$/',
-        PageController::PRODUCT_PAGE_ROUTE => '/^\/?detail\/([a-f0-9]{32})$/'
+        PageController::PRODUCT_PAGE_ROUTE => '/^\/?detail\/([a-f0-9]{32})$/',
+        PageController::LANDING_PAGE_ROUTE => '/^\/?landingPage\/([a-f0-9]{32})$/'
     ];
 
     private const ROOT_ROUTE_NAME = PageController::NAVIGATION_PAGE_ROUTE;
 
     /**
-     * @var SeoResolverInterface
+     * @var AbstractSeoResolver
      */
     private $seoResolver;
 
-    public function __construct(SeoResolverInterface $seoResolver)
+    public function __construct(AbstractSeoResolver $seoResolver)
     {
         $this->seoResolver = $seoResolver;
     }
@@ -43,7 +44,7 @@ class PathResolver implements PathResolverInterface
             return $this->resolveRootPath($context);
         }
 
-        $result = $this->seoResolver->resolveSeoPath(
+        $result = $this->seoResolver->resolve(
             $context->getContext()->getLanguageId(),
             $context->getSalesChannel()->getId(),
             $path

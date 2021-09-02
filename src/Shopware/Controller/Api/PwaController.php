@@ -39,7 +39,7 @@ class PwaController extends AbstractController
     }
 
     /**
-     * @Route("/api/v{version}/_action/pwa/dump-bundles", name="api.action.pwa.dump-bundles", methods={"POST"})
+     * @Route("/api/_action/pwa/dump-bundles", name="api.action.pwa.dump-bundles", methods={"POST"})
      *
      * @TODO: Resolve the correct asset URL given a LB / Proxy / CDN / static file server using asset management
      *

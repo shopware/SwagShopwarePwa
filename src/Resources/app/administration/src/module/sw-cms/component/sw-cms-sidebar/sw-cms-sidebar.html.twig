@@ -9,15 +9,11 @@
                 variant="warning"
                 appearance="pill"
                 size="small">
-                Experimental
+                PWA only
             </sw-label>
         </span>
 
         <div slot="content" class="sw-cms-sidebar__settings">
-
-            <sw-alert variant="info" appearance="default" :showIcon="true" :closable="false">
-                Page preview only works in PWA Sales Channels
-            </sw-alert>
 
             <sw-sales-channel-switch
                 ref="salesChannelSwitch"
@@ -36,6 +32,10 @@
                 placeholder="Select Language"
                 :options="salesChannelDomains">
             </sw-single-select>
+
+            <sw-alert variant="warning" appearance="default" :showIcon="true" :closable="false" v-if="!previewEnabled">
+                Select a Preview entity from above to preview the page
+            </sw-alert>
 
             <sw-button
                 :disabled="!previewEnabled"

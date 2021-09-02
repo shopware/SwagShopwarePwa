@@ -20,13 +20,6 @@
             </call>
         </service>
 
-        <service id="SwagShopwarePwa\Pwa\Controller\NavigationController" public="true">
-            <argument type="service" id="SwagShopwarePwa\Pwa\Entity\SalesChannelNavigation\SalesChannelNavigationRepository"/>
-            <call method="setContainer">
-                <argument id="service_container" type="service"/>
-            </call>
-        </service>
-
 
         <!-- Page loader context builder -->
 
@@ -54,22 +47,36 @@
         </service>
 
         <service id="SwagShopwarePwa\Pwa\PageLoader\NavigationPageLoader">
-            <argument type="service" id="sales_channel.category.repository"/>
             <argument type="service" id="Shopware\Core\Content\Cms\SalesChannel\SalesChannelCmsPageLoader"/>
             <argument type="service" id="SwagShopwarePwa\Pwa\PageResult\Navigation\NavigationPageResultHydrator"/>
             <argument type="service" id="Shopware\Core\Content\Category\CategoryDefinition"/>
+            <argument type="service" id="Shopware\Core\Content\Category\SalesChannel\CategoryRoute" />
+            <tag name="pwa.page_loader"/>
+        </service>
+
+        <service id="SwagShopwarePwa\Pwa\PageLoader\LandingPageLoader">
+            <argument type="service" id="Shopware\Core\Content\LandingPage\SalesChannel\LandingPageRoute" />
+            <argument type="service" id="SwagShopwarePwa\Pwa\PageResult\Landing\LandingPageResultHydrator" />
             <tag name="pwa.page_loader"/>
         </service>
 
 
         <!-- Page hydrators -->
 
-        <service id="SwagShopwarePwa\Pwa\PageResult\Product\ProductPageResultHydrator"/>
-
-        <service id="SwagShopwarePwa\Pwa\PageResult\Navigation\NavigationPageResultHydrator">
+        <service id="SwagShopwarePwa\Pwa\PageResult\AbstractPageResultHydrator" abstract="true">
             <argument type="service" id="Shopware\Storefront\Framework\Routing\Router"/>
             <argument type="service" id="seo_url.repository"/>
+            <argument type="service" id="Shopware\Core\Content\Category\Service\CategoryBreadcrumbBuilder"/>
         </service>
+
+        <service id="SwagShopwarePwa\Pwa\PageResult\Product\ProductPageResultHydrator"
+                 parent="SwagShopwarePwa\Pwa\PageResult\AbstractPageResultHydrator"/>
+
+        <service id="SwagShopwarePwa\Pwa\PageResult\Navigation\NavigationPageResultHydrator"
+                 parent="SwagShopwarePwa\Pwa\PageResult\AbstractPageResultHydrator"/>
+
+        <service id="SwagShopwarePwa\Pwa\PageResult\Landing\LandingPageResultHydrator"
+                 parent="SwagShopwarePwa\Pwa\PageResult\AbstractPageResultHydrator"/>
 
 
         <!-- Repositories -->

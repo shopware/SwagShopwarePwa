@@ -4,13 +4,9 @@ namespace SwagShopwarePwa\Pwa\PageLoader;
 
 use Shopware\Core\Content\Product\Exception\ProductNumberNotFoundException;
 use Shopware\Core\Content\Product\SalesChannel\Detail\AbstractProductDetailRoute;
-use Shopware\Core\Content\Product\SalesChannel\ProductAvailableFilter;
 use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductDefinition;
-use Shopware\Core\Content\Product\SalesChannel\SalesChannelProductEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\RequestCriteriaBuilder;
-use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
 use SwagShopwarePwa\Pwa\PageLoader\Context\PageLoaderContext;
 use SwagShopwarePwa\Pwa\PageResult\Product\ProductPageResult;
 use SwagShopwarePwa\Pwa\PageResult\Product\ProductPageResultHydrator;
@@ -80,11 +76,6 @@ class ProductPageLoader implements PageLoaderInterface
             $pageLoaderContext->getContext()->getContext()
         );
 
-        $criteria->addFilter(
-            new ProductAvailableFilter($pageLoaderContext->getContext()->getSalesChannel()->getId()),
-            new EqualsFilter('active', 1)
-        );
-      
         $result = $this->productRoute->load(
             $pageLoaderContext->getResourceIdentifier(),
             $pageLoaderContext->getRequest(),

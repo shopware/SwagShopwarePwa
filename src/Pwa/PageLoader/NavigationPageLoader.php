@@ -4,6 +4,9 @@ namespace SwagShopwarePwa\Pwa\PageLoader;
 
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Category\Exception\CategoryNotFoundException;
+use Shopware\Core\Content\Category\SalesChannel\AbstractCategoryRoute;
+use Shopware\Core\Content\Category\SalesChannel\CategoryRoute;
+use Shopware\Core\Content\Category\SalesChannel\CategoryRouteResponse;
 use Shopware\Core\Content\Cms\DataResolver\ResolverContext\EntityResolverContext;
 use Shopware\Core\Content\Cms\SalesChannel\SalesChannelCmsPageLoader;
 use Shopware\Core\Content\Cms\SalesChannel\SalesChannelCmsPageLoaderInterface;
@@ -31,11 +34,6 @@ class NavigationPageLoader implements PageLoaderInterface
     private $cmsPageLoader;
 
     /**
-     * @var SalesChannelRepositoryInterface
-     */
-    private $categoryRepository;
-
-    /**
      * @var NavigationPageResultHydrator
      */
     private $resultHydrator;
@@ -45,12 +43,17 @@ class NavigationPageLoader implements PageLoaderInterface
      */
     private $categoryDefinition;
 
-    public function __construct(SalesChannelRepositoryInterface $categoryRepository, SalesChannelCmsPageLoaderInterface $cmsPageLaoder, NavigationPageResultHydrator $resultHydrator, EntityDefinition $categoryDefinition)
+    /**
+     * @var AbstractCategoryRoute
+     */
+    private $categoryRoute;
+
+    public function __construct(SalesChannelCmsPageLoaderInterface $cmsPageLoader, NavigationPageResultHydrator $resultHydrator, EntityDefinition $categoryDefinition, AbstractCategoryRoute $categoryRoute)
     {
-        $this->cmsPageLoader = $cmsPageLaoder;
-        $this->categoryRepository = $categoryRepository;
+        $this->cmsPageLoader = $cmsPageLoader;
         $this->resultHydrator = $resultHydrator;
         $this->categoryDefinition = $categoryDefinition;
+        $this->categoryRoute = $categoryRoute;
     }
 
     public function getResourceType(): string
@@ -67,29 +70,35 @@ class NavigationPageLoader implements PageLoaderInterface
      */
     public function load(PageLoaderContext $pageLoaderContext): NavigationPageResult
     {
-        $categoryResult = $this->categoryRepository->search(
-            $this->prepareCategoryCriteria($pageLoaderContext),
+        $category = $this->categoryRoute->load(
+            $pageLoaderContext->getResourceIdentifier(),
+            $pageLoaderContext->getRequest(),
             $pageLoaderContext->getContext()
-        );
+        )->getCategory();
 
-        if(!$categoryResult->has($pageLoaderContext->getResourceIdentifier()))
-        {
-            throw new CategoryNotFoundException($pageLoaderContext->getResourceIdentifier());
-        }
-
-        /** @var $category CategoryEntity */
-        $category = $categoryResult->get($pageLoaderContext->getResourceIdentifier());
+        $cmsPage = $category->getCmsPage();
 
         if($pageLoaderContext instanceof PageLoaderPreviewContext)
         {
-            $cmsPageId = $pageLoaderContext->getPreviewPageIdentifier();
-        } else {
-            $cmsPageId = $category->getCmsPageId();
+            $cmsPage = $this->resolvePreviewCmsPage(
+                $pageLoaderContext->getPreviewPageIdentifier(),
+                $pageLoaderContext,
+                $category
+            );
         }
 
-        // The cms page might be empty or non-existent
-        if($cmsPageId !== null)
-        {
+        $pageResult = $this->resultHydrator->hydrate(
+            $pageLoaderContext,
+            $category,
+            $cmsPage
+        );
+
+        return $pageResult;
+    }
+
+    private function resolvePreviewCmsPage(string $cmsPageId, PageLoaderContext $pageLoaderContext, CategoryEntity $category)
+    {
+        if ($cmsPageId !== null) {
             $resolverContext = new EntityResolverContext(
                 $pageLoaderContext->getContext(),
                 $pageLoaderContext->getRequest(),
@@ -107,17 +116,6 @@ class NavigationPageLoader implements PageLoaderInterface
 
             $cmsPage = $cmsPages->get($cmsPageId) ?? null;
         }
-
-        $pageResult = $this->resultHydrator->hydrate($pageLoaderContext, $category, $cmsPage ?? null);
-
-        return $pageResult;
-    }
-
-    public function prepareCategoryCriteria(PageLoaderContext $pageLoaderContext): Criteria
-    {
-        $criteria = new Criteria([$pageLoaderContext->getResourceIdentifier()]);
-        $criteria->addAssociation('media');
-
-        return $criteria;
+        return $cmsPage;
     }
 }
