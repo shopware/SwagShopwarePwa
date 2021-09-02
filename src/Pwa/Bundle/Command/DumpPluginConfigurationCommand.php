@@ -33,7 +33,7 @@ class DumpPluginConfigurationCommand extends Command
 
     public function setDescription($description)
     {
-        $this->setDescription('Dump PWA plugin configurations and assets');
+        parent::setDescription('Dump PWA plugin configurations and assets');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
