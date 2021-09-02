@@ -1,6 +1,10 @@
 CHANGELOG for Shopware PWA
 ===================
+### 0.3.2
 
+**Fixed**
+
+* Fixed recursive call `setDescription` in `SwagShopwarePwa\Pwa\Bundle\Command\DumpPluginConfigurationCommand` to `parent::setDescription()`
 ### 0.3.1
 
 > CMS landing pages are now supported
