@@ -63,6 +63,7 @@ class PageLoaderPreviewContextBuilder implements PageLoaderContextBuilderInterfa
     private function createPreviewContext(PageLoaderContext $pageLoaderContext, string $previewPageIdentifier) {
         $previewContext = new PageLoaderPreviewContext();
 
+        $previewContext->setRoute($pageLoaderContext->getRoute());
         $previewContext->setRequest($pageLoaderContext->getRequest());
         $previewContext->setContext($pageLoaderContext->getContext());
         $previewContext->setResourceType($pageLoaderContext->getResourceType());
