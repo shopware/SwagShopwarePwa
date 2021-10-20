@@ -39,6 +39,7 @@
         <service id="SwagShopwarePwa\Pwa\Bundle\AssetService">
             <argument type="service" id="kernel" />
             <argument id="plugin.repository" type="service"/>
+            <argument id="app.repository" type="service"/>
             <argument type="service" id="SwagShopwarePwa\Pwa\Bundle\Helper\FormattingHelper"/>
             <argument type="service" id="shopware.filesystem.public"/>
             <tag name="kernel.event_subscriber"/>
