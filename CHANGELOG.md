@@ -1,6 +1,22 @@
 CHANGELOG for Shopware PWA
 ===================
 
+### 0.3.2
+
+> App extensions are now able to provide resources in their `src/Resources/app/pwa` directory.
+
+**Important note for all extensions providing resources**
+
+The default directory for extensions to place their PWA resources was `Resources/app/pwa` relative to their configured psr4-autoload namespace location (which defaults to `src/`, but can be changed in `composer.json#autoload.psr-4`).
+From this version on, this path is **fixed** to `src/Resources/app/pwa` - the namespace configuration will **no longer be taken into account**.
+
+The change had to be introduced to support Apps, which do not have to contain a `composer.json` file, hence there would be no configuration for the namespace location. Please make sure to move PWA resources from your plugin correspondingly, if you changed the autoload location.
+
+**Fixed**
+
+* Command description causing segmentation fault when using PHP 8 (@jissereitsma, @Floddy, @Laggertron)
+* Error in preview page loader (@Drumm3r)
+
 ### 0.3.1
 
 > CMS landing pages are now supported
