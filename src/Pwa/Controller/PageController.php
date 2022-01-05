@@ -97,7 +97,7 @@ class PageController extends AbstractController
      *                      @OA\Property(
      *                          property="cmsPage",
      *                          description="Hydrated CMS layout associated with the loaded page. Value is `null`, when no layout is assigned",
-     *                          ref="#/components/schemas/cms_page_flat"
+     *                          ref="#/components/schemas/CmsPage"
      *                      ),
      *                      @OA\Property(
      *                          property="breadcrumb",
@@ -123,12 +123,12 @@ Each element has the category identifier as its key and contains a `path` as wel
      *                              @OA\Property(
      *                                  property="product",
      *                                  description="The product associated with the loaded page.",
-     *                                  ref="#/components/schemas/product_flat"
+     *                                  ref="#/components/schemas/Product"
      *                              ),
      *                              @OA\Property(
      *                                  property="configurator",
      *                                  description="List of property groups with their corresponding options and information on how to display them.",
-     *                                  ref="#/components/schemas/property_group_flat"
+     *                                  ref="#/components/schemas/PropertyGroup"
      *                              )
      *                          ),
      *                          @OA\Schema(
@@ -136,7 +136,7 @@ Each element has the category identifier as its key and contains a `path` as wel
      *                              @OA\Property(
      *                                  property="category",
      *                                  description="The category associated with the loaded page.",
-     *                                  ref="#/components/schemas/category_flat"
+     *                                  ref="#/components/schemas/Category"
      *                              )
      *                          ),
      *                          @OA\Schema(
