@@ -1,6 +1,13 @@
 CHANGELOG for Shopware PWA
 ===================
 
+### 0.3.2
+
+**Fixed**
+
+* Command description causing segmentation fault when using PHP 8 (@jissereitsma, @Floddy, @Laggertron)
+* Error in preview page loader (@Drumm3r)
+
 ### 0.3.1
 
 > CMS landing pages are now supported
