@@ -14,6 +14,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use OpenApi\Annotations as OA;
+use Shopware\Core\System\SalesChannel\SalesChannelEntity;
+use Symfony\Component\HttpFoundation\IpUtils;
+use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 
 /**
  * @RouteScope(scopes={"store-api"})
@@ -36,10 +39,12 @@ class PageController extends AbstractController
      */
     private $pageLoaderContextBuilder;
 
+
     /**
      * @var PageLoaderInterface[]
      */
     private $pageLoaders;
+
 
     public function __construct(PageLoaderContextBuilderInterface $pageLoaderContextBuilder, iterable $pageLoaders)
     {
@@ -50,8 +55,7 @@ class PageController extends AbstractController
             $this->pageLoaders[$pageLoader->getResourceType()] = $pageLoader;
         }
     }
-
-    /**
+/**
      * @Route("/store-api/pwa/page", name="store-api.pwa.cms-page-resolve", methods={"POST"})
      *
      * @OA\Post(
@@ -152,6 +156,11 @@ Each element has the category identifier as its key and contains a `path` as wel
      *          description="The resource could not be resolved or no path is provided.",
      *          ref="#/components/responses/404"
      *     ),
+     *     @OA\Response(
+     *          response="503",
+     *          description="The resource could is temporarily unavailable or under construction.",
+     *          ref="#/components/responses/503"
+     *     ),
      * )
      *
      * Resolve a page for a given resource and resource identification or path
@@ -161,8 +170,12 @@ Each element has the category identifier as its key and contains a `path` as wel
      * @param Request $request
      * @return CmsPageRouteResponse
      */
-    public function resolve(Request $request, SalesChannelContext $context): CmsPageRouteResponse
+    public function resolve(Request $request, SalesChannelContext $context)
     {
+        if($this->checkMaintenanceActive($request) && !$this->checkClientIps($request)){
+            throw new ServiceUnavailableHttpException(60, "This site is temporarily unavailable or under construction");
+        }
+
         /** @var PageLoaderContext $pageLoaderContext */
         $pageLoaderContext = $this->pageLoaderContextBuilder->build($request, $context);
 
@@ -203,5 +216,24 @@ Each element has the category identifier as its key and contains a `path` as wel
         $pageResult->setCanonicalPathInfo($pageLoaderContext->getRoute()->getCanonicalPathInfo() ?: $pageLoaderContext->getRoute()->getPathInfo());
 
         return $pageResult;
+    }
+
+    private function checkMaintenanceActive(Request $request){
+        $salesChannel = $this->getSalesChannelFromRequest($request);   
+        return $salesChannel->isMaintenance();
+    }
+
+    private function checkClientIps(Request $request){
+        $salesChannel = $this->getSalesChannelFromRequest($request);   
+        return IpUtils::checkIp(
+            (string) $request->getClientIp(),
+            $salesChannel->getMaintenanceIpWhitelist()
+        );
+    }
+
+    private function getSalesChannelFromRequest(Request $request) :SalesChannelEntity
+    {
+        $salesChannelContext = $request->attributes->get("sw-sales-channel-context");
+       return $salesChannelContext->getSalesChannel();
     }
 }
