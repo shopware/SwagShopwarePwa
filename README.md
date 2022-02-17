@@ -49,7 +49,7 @@ We recommend using this way of installing the extension, because it reduces the 
 Clone the repository into the local `plugins` directory of your Shopware installation.
 
 ```
-$ git clone https://github.com/elkmod/SwagShopwarePwa.git custom/plugins/SwagShopwarePwa
+$ git clone https://github.com/shopware/SwagShopwarePwa.git custom/plugins/SwagShopwarePwa
 ```
 
 This will allow you to make changes and pull requests to this very repository, since you're using a local copy of the extension.
