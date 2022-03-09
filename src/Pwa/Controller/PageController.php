@@ -180,7 +180,7 @@ Each element has the category identifier as its key and contains a `path` as wel
             throw new PageNotFoundException($pageLoaderContext->getResourceType() . $pageLoaderContext->getResourceIdentifier());
         }
 
-        return new CmsPageRouteResponse($this->getPageResult($pageLoader, $pageLoaderContext, $request));
+        return new CmsPageRouteResponse($this->getPageResult($pageLoader, $pageLoaderContext));
     }
 
     /**
@@ -201,7 +201,7 @@ Each element has the category identifier as its key and contains a `path` as wel
      * @param PageLoaderContext $pageLoaderContext
      * @return AbstractPageResult
      */
-    private function getPageResult(PageLoaderInterface $pageLoader, PageLoaderContext $pageLoaderContext, Request $request): AbstractPageResult
+    private function getPageResult(PageLoaderInterface $pageLoader, PageLoaderContext $pageLoaderContext): AbstractPageResult
     {
         /** @var AbstractPageResult $pageResult */
         $pageResult = $pageLoader->load($pageLoaderContext);
@@ -212,7 +212,7 @@ Each element has the category identifier as its key and contains a `path` as wel
 
         $canonicalPathInfo = $pageLoaderContext->getRoute()->getCanonicalPathInfo();
         $ressourceIdentifier = $pageLoaderContext->getResourceIdentifier();
-        $this->eventDispatcher->dispatch(new PageLoaderLoadedEvent($pageResult, $pageLoaderContext, $request, $canonicalPathInfo, $ressourceIdentifier));
+        $this->eventDispatcher->dispatch(new PageLoaderLoadedEvent($pageResult, $pageLoaderContext, $canonicalPathInfo, $ressourceIdentifier));
 
         return $pageResult;
     }

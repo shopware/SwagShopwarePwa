@@ -22,25 +22,21 @@ class PageLoaderLoadedEvent
     protected $canonicalPathInfo;
 
     /** @var string */
-    protected $ressourceIdentifier; 
+    protected $ressourceIdentifier;
 
     public function __construct(
         AbstractPageResult $pageLoaderResult,
         PageLoaderContext $pageLoaderContext,
-        Request $request,
-        ?string $canonicalPathInfo = null,  
+        ?string $canonicalPathInfo = null,
         string $ressourceIdentifier
-    )
-    {
+    ) {
         $this->pageLoaderResult = $pageLoaderResult;
         $this->pageLoaderContext = $pageLoaderContext;
-        $this->request = $request;
+        $this->request = $pageLoaderContext->getRequest();
         $this->canonicalPathInfo = $canonicalPathInfo;
         $this->ressourceIdentifier = $ressourceIdentifier;
     }
 
-    
-    
     public function setPageLoaderResult(AbstractPageResult $pageLoaderResult)
     {
         $this->pageLoaderResult = $pageLoaderResult;
@@ -80,7 +76,6 @@ class PageLoaderLoadedEvent
     {
         return $this->ressourceIdentifier;
     }
-
 
     public function getRequest(): Request
     {
