@@ -35,7 +35,7 @@ class PathResolver implements PathResolverInterface
      */
     private $eventDispatcher;
 
-    public function __construct(SeoResolverInterface $seoResolver, EventDispatcherInterface $eventDispatcher)
+    public function __construct(AbstractSeoResolver $seoResolver, EventDispatcherInterface $eventDispatcher)
     {
         $this->seoResolver = $seoResolver;
         $this->eventDispatcher = $eventDispatcher;
