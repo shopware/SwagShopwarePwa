@@ -44,7 +44,7 @@ class DumpPluginConfigurationCommand extends Command
 
         // TODO: Remove with 0.4
         $io->text('Configurations');
-        $io->warning('Plugin configurations are not dumped anymore since version 0.3.3')
+        $io->warning('Plugin configurations are not dumped anymore since version 0.3.3');
 
         $io->text('Assets');
         $assetArtifact = $this->assetService->dumpBundles();

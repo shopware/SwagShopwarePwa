@@ -60,11 +60,11 @@ class PwaController extends AbstractController
         return new JsonResponse([
             'success' => true,
             'buildArtifact' => [
-                'asset' => DIRECTORY_SEPARATOR . $assetArtifact
+                'asset' => DIRECTORY_SEPARATOR . $assetArtifact,
                 // TODO: Remove with 0.4
                 'config' => 'Not available - please run "npx @shopware-pwa/cli init" or update your "shopware-pwa" package manually.'
             ],
-            'bundleConfig' => $bundleConfig;
+            'bundleConfig' => $bundleConfig
         ]);
     }
 }
