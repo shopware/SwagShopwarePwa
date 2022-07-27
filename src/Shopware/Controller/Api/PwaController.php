@@ -48,7 +48,7 @@ class PwaController extends AbstractController
     public function dumpBundles(Request $request): JsonResponse
     {
         try {
-            $configArtifact = $this->configurationService->dumpBundles();
+            $bundleConfig = $this->configurationService->getBundleConfig();
             $assetArtifact = $this->assetService->dumpBundles();
         } catch (\Exception $e) {
             return new JsonResponse([
@@ -60,9 +60,11 @@ class PwaController extends AbstractController
         return new JsonResponse([
             'success' => true,
             'buildArtifact' => [
-                'config' => DIRECTORY_SEPARATOR . $configArtifact,
                 'asset' => DIRECTORY_SEPARATOR . $assetArtifact
-            ]
+                // TODO: Remove with 0.4
+                'config' => 'Not available - please run "npx @shopware-pwa/cli init" or update your "shopware-pwa" package manually.'
+            ],
+            'bundleConfig' => $bundleConfig;
         ]);
     }
 }

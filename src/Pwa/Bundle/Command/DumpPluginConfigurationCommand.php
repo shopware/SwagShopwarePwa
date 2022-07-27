@@ -42,9 +42,9 @@ class DumpPluginConfigurationCommand extends Command
 
         $io->title('Shopware PWA Extension');
 
+        // TODO: Remove with 0.4
         $io->text('Configurations');
-        $configArtifact = $this->configurationService->dumpBundles();
-        $io->comment('Wrote configurations to \'' . $configArtifact . '\'');
+        $io->warning('Plugin configurations are not dumped anymore since version 0.3.3')
 
         $io->text('Assets');
         $assetArtifact = $this->assetService->dumpBundles();

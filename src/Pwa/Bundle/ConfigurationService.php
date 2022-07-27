@@ -63,14 +63,14 @@ class ConfigurationService implements EventSubscriberInterface
         $this->fileSystem = $fileSystem;
     }
 
-    public static function getSubscribedEvents()
-    {
-        return [
-            PluginPostActivateEvent::class => 'dumpBundles',
-            PluginPostDeactivateEvent::class => 'dumpBundles'
-        ];
+    public function getBundleConfig(): array {
+        return $this->getInfo();
     }
 
+    /**
+     * @deprecated will be removed with version 0.4.0 - pleas use bundleConfig() instead.
+     * // TODO: Remove with 0.4
+     */
     public function dumpBundles(): string
     {
         $bundleInformationSerialized = json_encode($this->getInfo(), JSON_PRETTY_PRINT);
@@ -130,6 +130,9 @@ class ConfigurationService implements EventSubscriberInterface
         return $this->configService->all();
     }
 
+    /**
+     * TODO: Remove with 0.4
+     */
     private function writeToPublicDirectory(string $content, string $checksum): string
     {
         $this->fileSystem->createDir('pwa');

@@ -1,6 +1,15 @@
 CHANGELOG for Shopware PWA
 ===================
 
+### 0.3.3
+
+**Fixed**
+
+* Removed plugin configuration dumps from configuration service
+* Deprecated `ConfigurationService::dumpBundles`
+* Changed API endpoint `/api/_action/pwa/dump-bundles` it returns plugin configs directly
+* Removed event subscribers that dump plugin configurations upon lifecycle methods
+
 ### 0.3.2
 
 **Fixed**
