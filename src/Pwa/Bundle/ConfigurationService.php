@@ -18,7 +18,7 @@ use SwagShopwarePwa\Pwa\Bundle\Helper\FormattingHelper;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 
-class ConfigurationService implements EventSubscriberInterface
+class ConfigurationService
 {
     /**
      * @var string
