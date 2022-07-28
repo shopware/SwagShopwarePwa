@@ -4,6 +4,7 @@ namespace SwagShopwarePwa\Pwa\Bundle;
 
 use League\Flysystem\FileNotFoundException;
 use League\Flysystem\FilesystemInterface;
+use Shopware\Core\Framework\App\AppEntity;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -28,7 +29,7 @@ class AssetService implements EventSubscriberInterface
     /**
      * @var string
      */
-    private $resourcesDirectory = '/Resources/app/pwa';
+    private $resourcesDirectory = '/src/Resources/app/pwa';
 
     /**
      * @var Kernel
@@ -42,6 +43,11 @@ class AssetService implements EventSubscriberInterface
     private $pluginRepository;
 
     /**
+     * @var EntityRepositoryInterface
+     */
+    private $appRepository;
+
+    /**
      * @var FormattingHelper
      */
     private $helper;
@@ -51,10 +57,16 @@ class AssetService implements EventSubscriberInterface
      */
     private $fileSystem;
 
-    public function __construct(Kernel $kernel, EntityRepositoryInterface $pluginRepository, FormattingHelper $helper, FilesystemInterface $fileSystem)
+    public function __construct(
+        Kernel $kernel,
+        EntityRepositoryInterface $pluginRepository,
+        EntityRepositoryInterface $appRepository,
+        FormattingHelper $helper,
+        FilesystemInterface $fileSystem)
     {
         $this->kernel = $kernel;
         $this->pluginRepository = $pluginRepository;
+        $this->appRepository = $appRepository;
         $this->helper = $helper;
         $this->fileSystem = $fileSystem;
     }
@@ -73,7 +85,7 @@ class AssetService implements EventSubscriberInterface
         $archivePath = $this->kernel->getCacheDir() . '/../../' . $this->assetArtifactDirectory . '.zip';
 
         // Look for assets
-        list($bundles, $checksum) = $this->getBundles();
+        list($bundles, $checksum) = $this->getExtensions();
 
         // Zip directory
         $this->createAssetsArchive($archivePath, $bundles);
@@ -119,35 +131,38 @@ class AssetService implements EventSubscriberInterface
         $zip->close();
     }
 
-    private function getBundles()
+    private function getExtensions()
     {
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('active', true));
 
         /** @var PluginCollection $plugins */
         $plugins = $this->pluginRepository->search($criteria, Context::createDefaultContext());
-        $pluginNames = $plugins->map(function (PluginEntity $plugin) {
-            return $plugin->getName();
-        });
+        $apps = $this->appRepository->search($criteria, Context::createDefaultContext());
 
-        /** @var BundleInterface[] $kernelBundles */
-        $kernelBundles = $this->kernel->getBundles();
+        $kernelProjectDir = $this->kernel->getProjectDir();
 
-        foreach ($kernelBundles as $kernelBundle)
-        {
-            if(!in_array($kernelBundle->getName(), $pluginNames)) {
-                continue;
-            }
+        $extensionMetaData = [];
 
-            $bundles[] = [
-                'name' => $kernelBundle->getName(),
-                'path' => $kernelBundle->getPath()
+        /** @var $apps iterable<AppEntity> */
+        foreach($apps as $app) {
+            $extensionMetaData[] = [
+                'name' => $app->getName(),
+                'path' => implode([$kernelProjectDir, $app->getPath()], DIRECTORY_SEPARATOR)
             ];
         }
 
-        $checksum = md5(\GuzzleHttp\json_encode($bundles));
+        /** @var $apps iterable<PluginEntity> */
+        foreach($plugins as $plugin) {
+            $extensionMetaData[] = [
+                'name' => $plugin->getName(),
+                'path' => implode([$kernelProjectDir, $plugin->getPath()], DIRECTORY_SEPARATOR)
+            ];
+        }
 
-        return [$bundles, $checksum];
+        $checksum = md5(\GuzzleHttp\json_encode($extensionMetaData));
+
+        return [$extensionMetaData, $checksum];
     }
 
     private function writeToPublicDirectory(string $sourceArchive, string $checksum = null): string
