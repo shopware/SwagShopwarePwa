@@ -1,6 +1,13 @@
 CHANGELOG for Shopware PWA
 ===================
 
+### 0.3.4
+
+**Changed**
+
+* Changed deprecated routes scope annotation from `@RouteScope(...)` to new `@Route(...)` format.
+
+
 ### 0.3.3
 
 **Fixed**
