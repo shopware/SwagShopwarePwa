@@ -2,21 +2,17 @@
 
 namespace SwagShopwarePwa\Pwa\Bundle;
 
-use League\Flysystem\FileNotFoundException;
-use League\Flysystem\FilesystemInterface;
+use League\Flysystem\FilesystemException;
+use League\Flysystem\FilesystemOperator;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
-use Shopware\Core\Framework\Plugin\Event\PluginPostActivateEvent;
-use Shopware\Core\Framework\Plugin\Event\PluginPostDeactivateEvent;
 use Shopware\Core\Framework\Plugin\PluginCollection;
 use Shopware\Core\Framework\Plugin\PluginEntity;
 use Shopware\Core\Kernel;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use SwagShopwarePwa\Pwa\Bundle\Helper\FormattingHelper;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 
 class ConfigurationService
 {
@@ -30,7 +26,7 @@ class ConfigurationService
      */
     private $kernel;
     /**
-     * @var EntityRepositoryInterface
+     * @var EntityRepository
      */
     private $pluginRepository;
 
@@ -45,17 +41,17 @@ class ConfigurationService
     private $helper;
 
     /**
-     * @var FilesystemInterface
+     * @var FilesystemOperator
      */
     private $fileSystem;
 
     public function __construct(
         Kernel $kernel,
-        EntityRepositoryInterface $pluginRepository,
+        EntityRepository $pluginRepository,
         SystemConfigService $configService,
         FormattingHelper $helper,
-        FilesystemInterface $fileSystem)
-    {
+        FilesystemOperator $fileSystem
+    ) {
         $this->kernel = $kernel;
         $this->pluginRepository = $pluginRepository;
         $this->configService = $configService;
@@ -63,6 +59,9 @@ class ConfigurationService
         $this->fileSystem = $fileSystem;
     }
 
+    /**
+     * @return array<int|string, mixed>
+     */
     public function getBundleConfig(): array {
         return $this->getInfo();
     }
@@ -78,6 +77,9 @@ class ConfigurationService
         return $this->writeToPublicDirectory($bundleInformationSerialized, md5($bundleInformationSerialized));
     }
 
+    /**
+     * @return array<int|string, mixed>
+     */
     private function getInfo(): array
     {
         $criteria = new Criteria();
@@ -95,9 +97,8 @@ class ConfigurationService
             $pluginsAssoc[$plugin->getName()] = $plugin;
         }
 
-        /** @var BundleInterface[] $kernelBundles */
         $kernelBundles = $this->kernel->getBundles();
-
+        $bundleInfos = [];
         $pluginConfigurations = $this->getPluginConfigurations();
 
         foreach($kernelBundles as $kernelBundle)
@@ -125,7 +126,10 @@ class ConfigurationService
         return $bundleInfos;
     }
 
-    private function getPluginConfigurations()
+    /**
+     * @return array<mixed>
+     */
+    private function getPluginConfigurations(): array
     {
         return $this->configService->all();
     }
@@ -135,20 +139,22 @@ class ConfigurationService
      */
     private function writeToPublicDirectory(string $content, string $checksum): string
     {
-        $this->fileSystem->createDir('pwa');
-
-        $output = $checksum ?? 'pwa_bundles';
-
-        $outputPath = 'pwa/' . $output  . '.json';
-
         try {
+            $this->fileSystem->createDirectory('pwa');
+
+            $output = $checksum ?? 'pwa_bundles';
+
+            $outputPath = 'pwa/' . $output  . '.json';
+
             $this->fileSystem->delete($outputPath);
-        } catch (FileNotFoundException $e)
+
+            $this->fileSystem->write($outputPath, $content);
+        } catch (FilesystemException $e)
         {
             // Catch gracefully
+            $outputPath = '';
         }
 
-        $this->fileSystem->write($outputPath, $content);
 
         return $outputPath;
     }

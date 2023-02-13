@@ -2,10 +2,10 @@
 
 namespace SwagShopwarePwa\Pwa\Bundle;
 
-use League\Flysystem\FileNotFoundException;
-use League\Flysystem\FilesystemInterface;
+use League\Flysystem\FilesystemException;
+use League\Flysystem\FilesystemOperator;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Plugin\Event\PluginPostActivateEvent;
@@ -16,7 +16,6 @@ use Shopware\Core\Kernel;
 use SplFileInfo;
 use SwagShopwarePwa\Pwa\Bundle\Helper\FormattingHelper;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 
 class AssetService implements EventSubscriberInterface
 {
@@ -36,7 +35,7 @@ class AssetService implements EventSubscriberInterface
     private $kernel;
 
     /**
-     * @var EntityRepositoryInterface
+     * @var EntityRepository
      */
 
     private $pluginRepository;
@@ -47,11 +46,11 @@ class AssetService implements EventSubscriberInterface
     private $helper;
 
     /**
-     * @var FilesystemInterface
+     * @var FilesystemOperator
      */
     private $fileSystem;
 
-    public function __construct(Kernel $kernel, EntityRepositoryInterface $pluginRepository, FormattingHelper $helper, FilesystemInterface $fileSystem)
+    public function __construct(Kernel $kernel, EntityRepository $pluginRepository, FormattingHelper $helper, FilesystemOperator $fileSystem)
     {
         $this->kernel = $kernel;
         $this->pluginRepository = $pluginRepository;
@@ -59,7 +58,10 @@ class AssetService implements EventSubscriberInterface
         $this->fileSystem = $fileSystem;
     }
 
-    public static function getSubscribedEvents()
+    /**
+     * @return string[]
+     */
+    public static function getSubscribedEvents(): array
     {
         return [
             PluginPostActivateEvent::class => 'dumpBundles',
@@ -81,7 +83,7 @@ class AssetService implements EventSubscriberInterface
         return $this->writeToPublicDirectory($archivePath, $checksum);
     }
 
-    private function createAssetsArchive(string $archivePath, array $bundles)
+    private function createAssetsArchive(string $archivePath, array $bundles): void
     {
         $zip = new \ZipArchive();
         $zip->open($archivePath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
@@ -119,7 +121,10 @@ class AssetService implements EventSubscriberInterface
         $zip->close();
     }
 
-    private function getBundles()
+    /**
+     * @return array<int|string, mixed>
+     */
+    private function getBundles(): array
     {
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('active', true));
@@ -130,9 +135,8 @@ class AssetService implements EventSubscriberInterface
             return $plugin->getName();
         });
 
-        /** @var BundleInterface[] $kernelBundles */
         $kernelBundles = $this->kernel->getBundles();
-
+        $bundles = [];
         foreach ($kernelBundles as $kernelBundle)
         {
             if(!in_array($kernelBundle->getName(), $pluginNames)) {
@@ -145,27 +149,28 @@ class AssetService implements EventSubscriberInterface
             ];
         }
 
-        $checksum = md5(\GuzzleHttp\json_encode($bundles));
+        $checksum = md5(\json_encode($bundles));
 
         return [$bundles, $checksum];
     }
 
     private function writeToPublicDirectory(string $sourceArchive, string $checksum = null): string
     {
-        $this->fileSystem->createDir('pwa');
-
-        $output = $checksum ?? 'pwa_assets';
-
-        $outputPath = 'pwa/' . $output  . '.zip';
-
         try {
+            $this->fileSystem->createDirectory('pwa');
+
+            $output = $checksum ?? 'pwa_assets';
+
+            $outputPath = 'pwa/' . $output  . '.zip';
+
             $this->fileSystem->delete($outputPath);
-        } catch (FileNotFoundException $e)
+
+            $this->fileSystem->writeStream($outputPath, fopen($sourceArchive, 'r'));
+        } catch (FilesystemException $e)
         {
             // Catch gracefully
+            $outputPath = '';
         }
-
-        $this->fileSystem->writeStream($outputPath, fopen($sourceArchive, 'r'));
 
         return $outputPath;
     }
