@@ -19,6 +19,7 @@ There is a [video on how to set up](https://drive.google.com/open?id=1ynpoWw9b7h
 | --- | --- | --- |
 | 6.3.* | 0.2.* | 0.8.* |
 | 6.4.* | 0.3.* | 0.9.* |
+| 6.5.* | 0.4.* | canary |
 
 ## Setup
 
