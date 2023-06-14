@@ -1,5 +1,5 @@
 {
-  "name": "shopware-pwa/shopware-pwa-6.5",
+  "name": "shopware-pwa/shopware-pwa",
   "description": "Shopware PWA extension",
   "type": "shopware-platform-plugin",
   "license": "MIT",
