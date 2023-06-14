@@ -5,7 +5,7 @@ namespace SwagShopwarePwa\Pwa\PageResult;
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Category\Service\CategoryBreadcrumbBuilder;
 use Shopware\Core\Content\Seo\SeoUrl\SeoUrlEntity;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
@@ -16,7 +16,7 @@ use SwagShopwarePwa\Pwa\Controller\PageController;
 abstract class AbstractPageResultHydrator
 {
     /**
-     * @var EntityRepositoryInterface
+     * @var EntityRepository
      */
     private $seoUrlRepository;
 
@@ -30,7 +30,7 @@ abstract class AbstractPageResultHydrator
      */
     private $categoryBreadcrumbBuilder;
 
-    public function __construct(Router $router, EntityRepositoryInterface $seoUrlRepository, CategoryBreadcrumbBuilder $categoryBreadcrumbBuilder)
+    public function __construct(Router $router, EntityRepository $seoUrlRepository, CategoryBreadcrumbBuilder $categoryBreadcrumbBuilder)
     {
         $this->router = $router;
         $this->seoUrlRepository = $seoUrlRepository;

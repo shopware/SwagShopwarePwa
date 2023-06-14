@@ -2,7 +2,6 @@
 
 namespace SwagShopwarePwa\Shopware\Controller\Api;
 
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use SwagShopwarePwa\Pwa\Bundle\AssetService;
 use SwagShopwarePwa\Pwa\Bundle\ConfigurationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -12,7 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @RouteScope(scopes={"api"})
+ * @Route(defaults={"_routeScope"={"api"}})
  */
 class PwaController extends AbstractController
 {

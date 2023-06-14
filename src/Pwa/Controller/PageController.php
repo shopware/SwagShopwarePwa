@@ -3,7 +3,6 @@
 namespace SwagShopwarePwa\Pwa\Controller;
 
 use Shopware\Core\Content\Cms\Exception\PageNotFoundException;
-use Shopware\Core\Framework\Routing\Annotation\RouteScope;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use SwagShopwarePwa\Pwa\PageLoader\Context\PageLoaderContext;
 use SwagShopwarePwa\Pwa\PageLoader\Context\PageLoaderContextBuilderInterface;
@@ -16,7 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use OpenApi\Annotations as OA;
 
 /**
- * @RouteScope(scopes={"store-api"})
+ * @Route(defaults={"_routeScope"={"store-api"}})
  */
 class PageController extends AbstractController
 {
@@ -163,7 +162,6 @@ Each element has the category identifier as its key and contains a `path` as wel
      */
     public function resolve(Request $request, SalesChannelContext $context): CmsPageRouteResponse
     {
-        /** @var PageLoaderContext $pageLoaderContext */
         $pageLoaderContext = $this->pageLoaderContextBuilder->build($request, $context);
 
         $pageLoader = $this->getPageLoader($pageLoaderContext);
