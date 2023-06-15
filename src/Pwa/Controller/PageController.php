@@ -4,6 +4,7 @@ namespace SwagShopwarePwa\Pwa\Controller;
 
 use Shopware\Core\Content\Cms\Exception\PageNotFoundException;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
+use SwagShopwarePwa\Pwa\Event\PageLoaderLoadedEvent;
 use SwagShopwarePwa\Pwa\PageLoader\Context\PageLoaderContext;
 use SwagShopwarePwa\Pwa\PageLoader\Context\PageLoaderContextBuilderInterface;
 use SwagShopwarePwa\Pwa\PageLoader\PageLoaderInterface;
@@ -13,6 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use OpenApi\Annotations as OA;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * @Route(defaults={"_routeScope"={"store-api"}})
@@ -40,7 +42,12 @@ class PageController extends AbstractController
      */
     private $pageLoaders;
 
-    public function __construct(PageLoaderContextBuilderInterface $pageLoaderContextBuilder, iterable $pageLoaders)
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
+
+    public function __construct(PageLoaderContextBuilderInterface $pageLoaderContextBuilder, iterable $pageLoaders, EventDispatcherInterface $eventDispatcher)
     {
         $this->pageLoaderContextBuilder = $pageLoaderContextBuilder;
 
@@ -48,6 +55,7 @@ class PageController extends AbstractController
         foreach ($pageLoaders as $pageLoader) {
             $this->pageLoaders[$pageLoader->getResourceType()] = $pageLoader;
         }
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -199,6 +207,10 @@ Each element has the category identifier as its key and contains a `path` as wel
         $pageResult->setResourceType($pageLoaderContext->getResourceType());
         $pageResult->setResourceIdentifier($pageLoaderContext->getResourceIdentifier());
         $pageResult->setCanonicalPathInfo($pageLoaderContext->getRoute()->getCanonicalPathInfo() ?: $pageLoaderContext->getRoute()->getPathInfo());
+
+        $canonicalPathInfo = $pageLoaderContext->getRoute()->getCanonicalPathInfo();
+        $ressourceIdentifier = $pageLoaderContext->getResourceIdentifier();
+        $this->eventDispatcher->dispatch(new PageLoaderLoadedEvent($pageResult, $pageLoaderContext, $canonicalPathInfo, $ressourceIdentifier));
 
         return $pageResult;
     }

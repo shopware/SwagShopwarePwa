@@ -6,6 +6,8 @@ use Shopware\Core\Content\Seo\AbstractSeoResolver;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use SwagShopwarePwa\Pwa\Controller\PageController;
 use SwagShopwarePwa\Pwa\Entity\SalesChannelRoute\SalesChannelRouteEntity;
+use SwagShopwarePwa\Pwa\Event\BeforeSeoResolverResolveEvent;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Resolves a url path to get a route.
@@ -28,9 +30,15 @@ class PathResolver implements PathResolverInterface
      */
     private $seoResolver;
 
-    public function __construct(AbstractSeoResolver $seoResolver)
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
+
+    public function __construct(AbstractSeoResolver $seoResolver, EventDispatcherInterface $eventDispatcher)
     {
         $this->seoResolver = $seoResolver;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -44,6 +52,9 @@ class PathResolver implements PathResolverInterface
             return $this->resolveRootPath($context);
         }
 
+        $event = $this->eventDispatcher->dispatch(new BeforeSeoResolverResolveEvent($path, $context));
+        $path = $event->getPath();
+        
         $result = $this->seoResolver->resolve(
             $context->getContext()->getLanguageId(),
             $context->getSalesChannel()->getId(),
