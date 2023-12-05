@@ -13,9 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route(defaults={"_routeScope"={"store-api"}})
- */
+#[Route(defaults: ['_routeScope' => ['store-api']])]
 class PageController extends AbstractController
 {
     const PRODUCT_PAGE_ROUTE = 'frontend.detail.page';
@@ -42,13 +40,7 @@ class PageController extends AbstractController
         }
     }
 
-    /**
-     * @Route("/store-api/pwa/page", name="store-api.pwa.cms-page-resolve", methods={"POST"})
-     *
-     * Resolve a page for a given resource and resource identification or path
-     * First, a PageLoaderContext object is assembled, which includes information about the resource, request and context.
-     * Then, the page is loaded through the page loader only given the page loader context.
-     */
+    #[Route(path: '/store-api/pwa/page', name: 'store-api.pwa.cms-page-resolve', methods: ['POST'])]
     public function resolve(Request $request, SalesChannelContext $context): CmsPageRouteResponse
     {
         $pageLoaderContext = $this->pageLoaderContextBuilder->build($request, $context);

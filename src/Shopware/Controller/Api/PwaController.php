@@ -9,9 +9,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route(defaults={"_routeScope"={"api"}})
- */
+#[Route(defaults: ['_routeScope' => ['api']])]
 class PwaController extends AbstractController
 {
     public function __construct(
@@ -20,13 +18,7 @@ class PwaController extends AbstractController
     ) {
     }
 
-    /**
-     * @Route("/api/_action/pwa/dump-bundles", name="api.action.pwa.dump-bundles", methods={"POST"})
-     *
-     * @TODO: Resolve the correct asset URL given a LB / Proxy / CDN / static file server using asset management
-     *
-     * @return JsonResponse
-     */
+    #[Route(path: '/api/_action/pwa/dump-bundles', name: 'api.action.pwa.dump-bundles', methods: ['POST'])]
     public function dumpBundles(Request $request): JsonResponse
     {
         try {
