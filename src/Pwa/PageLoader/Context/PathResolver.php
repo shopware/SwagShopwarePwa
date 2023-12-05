@@ -23,14 +23,9 @@ class PathResolver implements PathResolverInterface
 
     private const ROOT_ROUTE_NAME = PageController::NAVIGATION_PAGE_ROUTE;
 
-    /**
-     * @var AbstractSeoResolver
-     */
-    private $seoResolver;
-
-    public function __construct(AbstractSeoResolver $seoResolver)
-    {
-        $this->seoResolver = $seoResolver;
+    public function __construct(
+        private readonly AbstractSeoResolver $seoResolver
+    ) {
     }
 
     /**

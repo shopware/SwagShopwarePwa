@@ -15,7 +15,7 @@ use SwagShopwarePwa\Pwa\PageResult\Product\ProductPageResultHydrator;
  * This class is a wrapper/proxy for the Shopware\Storefront\Page\Product\ProductPageLoader which is a part of the Shopware storefront bundle.
  * We don't want dependencies from this layer of the application, that's why there is this facade
  * Once composite page loading will be included in the Shopware core, this layer of abstraction becomes obsolete.
- * Otherwise it can serve as a structural reference for the implementation of the sales channel api.
+ * Otherwise, it can serve as a structural reference for the implementation of the sales channel api.
  *
  * @package SwagShopwarePwa\Pwa\PageLoader
  */
@@ -23,42 +23,17 @@ class ProductPageLoader implements PageLoaderInterface
 {
     private const RESOURCE_TYPE = 'frontend.detail.page';
 
-    /**
-     * @var AbstractProductDetailRoute
-     */
-    private $productRoute;
-
-    /**
-     * @var ProductPageResultHydrator
-     */
-    private $resultHydrator;
-
-    /**
-     * @var RequestCriteriaBuilder
-     */
-    private $requestCriteriaBuilder;
-
-    /**
-     * @var SalesChannelProductDefinition
-     */
-    private $productDefinition;
-
     public function getResourceType(): string
     {
         return self::RESOURCE_TYPE;
     }
 
     public function __construct(
-        AbstractProductDetailRoute $productDetailRoute,
-        ProductPageResultHydrator $resultHydrator,
-        RequestCriteriaBuilder $requestCriteriaBuilder,
-        SalesChannelProductDefinition $productDefinition
-    )
-    {
-        $this->productRoute = $productDetailRoute;
-        $this->resultHydrator = $resultHydrator;
-        $this->requestCriteriaBuilder = $requestCriteriaBuilder;
-        $this->productDefinition = $productDefinition;
+        private readonly AbstractProductDetailRoute $productRoute,
+        private readonly ProductPageResultHydrator $resultHydrator,
+        private readonly RequestCriteriaBuilder $requestCriteriaBuilder,
+        private readonly SalesChannelProductDefinition $productDefinition
+    ) {
     }
 
     /**

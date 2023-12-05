@@ -9,44 +9,32 @@ class PageLoaderPreviewContextBuilder implements PageLoaderContextBuilderInterfa
 {
     public const PREVIEW_DELIMITER = '__preview';
 
-    /**
-     * @var PageLoaderContextBuilderInterface
-     */
-    private $coreBuilder;
-
-    public function __construct(PageLoaderContextBuilderInterface $pageLoaderContextBuilder)
-    {
-        $this->coreBuilder = $pageLoaderContextBuilder;
+    public function __construct(
+        private readonly PageLoaderContextBuilderInterface $coreBuilder
+    ) {
     }
 
     /**
      * Strips the preview section and passes the request to the original context builder
-     *
-     * @param Request $request
-     * @param SalesChannelContext $context
-     * @return PageLoaderContext
      */
     public function build(Request $request, SalesChannelContext $context): PageLoaderContext
     {
-        /** @var string $previewPageId */
         $previewPageId = null;
         $path = $request->get('path');
 
-        if($path !== null)
-        {
+        if ($path !== null) {
             $pathElements = explode('/' . self::PREVIEW_DELIMITER . '/', $path, 2);
 
-            if(count($pathElements) == 2) {
+            if (\count($pathElements) == 2) {
                 $previewPageId = $pathElements[1];
                 $request->request->set('path', $pathElements[0]);
 
             }
         }
 
-        /** @var PageLoaderContext $pageLoaderContext */
         $pageLoaderContext = $this->coreBuilder->build($request, $context);
 
-        if($previewPageId) {
+        if ($previewPageId) {
             return $this->createPreviewContext($pageLoaderContext, $previewPageId);
         }
 
@@ -55,12 +43,9 @@ class PageLoaderPreviewContextBuilder implements PageLoaderContextBuilderInterfa
 
     /**
      * Creates a preview context from a normal context
-     *
-     * @param PageLoaderContext $pageLoaderContext
-     * @param string $previewPageIdentifier
-     * @return PageLoaderPreviewContext
      */
-    private function createPreviewContext(PageLoaderContext $pageLoaderContext, string $previewPageIdentifier) {
+    private function createPreviewContext(PageLoaderContext $pageLoaderContext, string $previewPageIdentifier): PageLoaderPreviewContext
+    {
         $previewContext = new PageLoaderPreviewContext();
 
         $previewContext->setRoute($pageLoaderContext->getRoute());

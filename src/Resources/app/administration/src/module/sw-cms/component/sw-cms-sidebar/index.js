@@ -50,7 +50,7 @@ Shopware.Component.override('sw-cms-sidebar', {
 
             const previewLink = this.buildPreviewLink(this.previewDomain, this.page, entity);
 
-            var win = window.open(previewLink, '_blank');
+            const win = window.open(previewLink, '_blank');
             win.focus();
         },
 

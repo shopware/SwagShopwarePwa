@@ -12,8 +12,8 @@
     }
   },
   "require": {
-    "shopware/core": "~6.5.0",
-    "shopware/storefront":  "~6.5.0"
+    "shopware/core": "~6.6.x-dev",
+    "shopware/storefront":  "~6.6.x-dev"
   },
   "extra": {
     "shopware-plugin-class": "SwagShopwarePwa\\SwagShopwarePwa",
@@ -21,6 +21,11 @@
     "label": {
       "de-DE": "PWA Integration",
       "en-GB": "PWA Integration"
+    }
+  },
+  "config": {
+    "allow-plugins": {
+      "symfony/runtime": true
     }
   }
 }

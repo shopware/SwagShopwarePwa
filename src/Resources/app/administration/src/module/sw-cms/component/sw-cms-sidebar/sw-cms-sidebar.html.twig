@@ -26,7 +26,11 @@
 
             <sw-single-select
                 v-if="previewSalesChannel.domains.length > 0"
-                v-model="previewDomain"
+                {% if VUE3 %}
+                    v-model:value="previewDomain"
+                {% else %}
+                    v-model="previewDomain"
+                {% endif %}
                 required
                 label="Language"
                 placeholder="Select Language"

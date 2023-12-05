@@ -7,115 +7,76 @@ use Shopware\Core\Framework\Struct\Struct;
 
 class SalesChannelRouteEntity extends Struct
 {
-    /**
-     * @var string
-     */
-    protected $routeName;
+    protected string $routeName;
 
-    /**
-     * @var string
-     */
-    protected $pathInfo;
+    protected string $pathInfo;
 
-    /**
-     * @var string
-     */
-    protected $seoPathInfo;
+    protected string $seoPathInfo;
 
-    /**
-     * @var string
-     */
-    protected $isCanonical;
+    protected string $isCanonical;
 
-    /**
-     * @var string
-     */
-    protected $resource;
+    protected string $resource;
 
-    /**
-     * @var string
-     */
-    protected $resourceIdentifier;
+    protected string $resourceIdentifier;
 
-    /**
-     * @var string|null
-     */
-    protected $canonicalPathInfo;
+    protected ?string $canonicalPathInfo = null;
 
-    /**
-     * @return string
-     */
     public function getRouteName(): string
     {
         return $this->routeName;
     }
 
-    public function setRouteName(string $routeName)
+    public function setRouteName(string $routeName): void
     {
         $this->routeName = $routeName;
     }
 
-    /**
-     * @return string
-     */
     public function getPathInfo(): string
     {
         return $this->pathInfo;
     }
 
-    public function setPathInfo(string $pathInfo)
+    public function setPathInfo(string $pathInfo): void
     {
         $this->pathInfo = $pathInfo;
     }
 
-    /**
-     * @return string
-     */
     public function getSeoPathInfo(): string
     {
         return $this->seoPathInfo;
     }
 
-    public function setSeoPathInfo(string $seoPathInfo)
+    public function setSeoPathInfo(string $seoPathInfo): void
     {
         $this->seoPathInfo = $seoPathInfo;
     }
 
-    /**
-     * @return string
-     */
     public function getIsCanonical(): string
     {
         return $this->isCanonical;
     }
 
-    public function setIsCanonical(string $isCanonical)
+    public function setIsCanonical(string $isCanonical): void
     {
         $this->isCanonical = $isCanonical;
     }
 
-    /**
-     * @return string
-     */
     public function getResource(): string
     {
         return $this->resource;
     }
 
-    public function setResource(string $resource)
+    public function setResource(string $resource): void
     {
         $this->resource = $resource;
     }
 
-    /**
-     * @return string
-     */
     public function getResourceIdentifier(): string
     {
         return $this->resourceIdentifier;
     }
 
-    public function setResourceIdentifier(string $resourceIdentifier)
+    public function setResourceIdentifier(string $resourceIdentifier): void
     {
         $this->resourceIdentifier = $resourceIdentifier;
     }

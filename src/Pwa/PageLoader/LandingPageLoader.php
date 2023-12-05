@@ -3,7 +3,6 @@
 namespace SwagShopwarePwa\Pwa\PageLoader;
 
 use Shopware\Core\Content\LandingPage\SalesChannel\AbstractLandingPageRoute;
-use Shopware\Core\Content\LandingPage\SalesChannel\LandingPageRoute;
 use SwagShopwarePwa\Pwa\PageLoader\Context\PageLoaderContext;
 use SwagShopwarePwa\Pwa\PageResult\Landing\LandingPageResult;
 use SwagShopwarePwa\Pwa\PageResult\Landing\LandingPageResultHydrator;
@@ -17,20 +16,10 @@ class LandingPageLoader implements PageLoaderInterface
 {
     private const RESOURCE_TYPE = 'frontend.landing.page';
 
-    /**
-     * @var LandingPageRoute
-     */
-    private $landingPageRoute;
-
-    /**
-     * @var LandingPageResultHydrator
-     */
-    private $resultHydrator;
-
-    public function __construct(AbstractLandingPageRoute $landingPageRoute, LandingPageResultHydrator $resultHydrator)
-    {
-        $this->landingPageRoute = $landingPageRoute;
-        $this->resultHydrator = $resultHydrator;
+    public function __construct(
+        private readonly AbstractLandingPageRoute $landingPageRoute,
+        private readonly LandingPageResultHydrator $resultHydrator
+    ) {
     }
 
     public function getResourceType(): string
@@ -38,11 +27,6 @@ class LandingPageLoader implements PageLoaderInterface
         return self::RESOURCE_TYPE;
     }
 
-    /**
-     * @param PageLoaderContext $pageLoaderContext
-     *
-     * @return LandingPageResult
-     */
     public function load(PageLoaderContext $pageLoaderContext): LandingPageResult
     {
         $landingPageResult = $this->landingPageRoute->load(
@@ -51,11 +35,9 @@ class LandingPageLoader implements PageLoaderInterface
             $pageLoaderContext->getContext()
         );
 
-        $pageResult = $this->resultHydrator->hydrate(
+        return $this->resultHydrator->hydrate(
             $pageLoaderContext,
             $landingPageResult->getLandingPage()->getCmsPage() ?? null
         );
-
-        return $pageResult;
     }
 }

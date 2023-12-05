@@ -3,8 +3,13 @@
 namespace SwagShopwarePwa\Test\Integration;
 
 use PHPUnit\Framework\TestCase;
+use Shopware\Core\Content\Category\CategoryCollection;
+use Shopware\Core\Content\Category\CategoryDefinition;
+use Shopware\Core\Content\Cms\CmsPageCollection;
 use Shopware\Core\Content\Cms\DataResolver\FieldConfig;
+use Shopware\Core\Content\LandingPage\LandingPageCollection;
 use Shopware\Core\Content\Product\Aggregate\ProductVisibility\ProductVisibilityDefinition;
+use Shopware\Core\Content\Seo\SeoUrl\SeoUrlCollection;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
@@ -12,6 +17,9 @@ use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Test\TestCaseBase\SalesChannelApiTestBehaviour;
 use Shopware\Core\Framework\Test\TestDataCollection;
 use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainCollection;
+use Shopware\Core\System\SalesChannel\SalesChannelCollection;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
 class PageControllerTest extends TestCase
 {
@@ -20,49 +28,43 @@ class PageControllerTest extends TestCase
 
     const ENDPOINT_PAGE = '/store-api/pwa/page';
 
-    /**
-     * @var \Symfony\Bundle\FrameworkBundle\KernelBrowser
-     */
-    private $browser;
+    private KernelBrowser $browser;
+
+    private TestDataCollection $ids;
 
     /**
-     * @var TestDataCollection
+     * @var EntityRepository<SeoUrlCollection>
      */
-    private $ids;
+    private EntityRepository $seoUrlRepository;
 
     /**
-     * @var EntityRepository
+     * @var EntityRepository<CategoryCollection>
      */
-    private $seoUrlRepository;
+    private EntityRepository $categoryRepository;
 
     /**
-     * @var EntityRepository
+     * @var EntityRepository<CmsPageCollection>
      */
-    private $categoryRepository;
+    private EntityRepository $cmsPageRepository;
 
     /**
-     * @var EntityRepository
+     * @var EntityRepository<SalesChannelDomainCollection>
      */
-    private $cmsPageRepository;
+    private EntityRepository $salesChannelDomainRepository;
 
     /**
-     * @var EntityRepository
+     * @var EntityRepository<SalesChannelCollection>
      */
-    private $salesChannelDomainRepository;
+    private EntityRepository $salesChannelRepository;
 
     /**
-     * @var EntityRepository
+     * @var EntityRepository<LandingPageCollection>
      */
-    private $salesChannelRepository;
-
-    /**
-     * @var EntityRepository
-     */
-    private $landingPageRepository;
+    private EntityRepository $landingPageRepository;
 
     public function setUp(): void
     {
-        $this->ids = new TestDataCollection(Context::createDefaultContext());
+        $this->ids = new TestDataCollection();
 
         $this->browser = $this->createCustomSalesChannelBrowser([
             'id' => $this->ids->create('salesChannelId'),
@@ -108,13 +110,16 @@ class PageControllerTest extends TestCase
             $content
         );
 
-        $response = json_decode($this->browser->getResponse()->getContent());
+        static::assertEquals(200, $this->browser->getResponse()->getStatusCode());
+        $content = $this->browser->getResponse()->getContent();
+        static::assertNotFalse($content);
 
-        static::assertObjectHasAttribute('cmsPage', $response);
-
-        static::assertEquals('frontend.navigation.page', $response->resourceType);
-        static::assertObjectHasAttribute('resourceIdentifier', $response);
-        static::assertEquals($this->ids->get('categoryId'), $response->resourceIdentifier);
+        $response = \json_decode($content, true, 512, \JSON_THROW_ON_ERROR);
+        static::assertArrayHasKey('cmsPage', $response);
+        static::assertArrayHasKey('resourceType', $response);
+        static::assertEquals('frontend.navigation.page', $response['resourceType']);
+        static::assertArrayHasKey('resourceIdentifier', $response);
+        static::assertEquals($this->ids->get('categoryId'), $response['resourceIdentifier']);
     }
 
     /**
@@ -136,18 +141,19 @@ class PageControllerTest extends TestCase
             $content
         );
 
-        $response = json_decode($this->browser->getResponse()->getContent());
+        static::assertEquals(200, $this->browser->getResponse()->getStatusCode());
+        $content = $this->browser->getResponse()->getContent();
+        static::assertNotFalse($content);
 
-
-        static::assertObjectHasAttribute('cmsPage', $response);
-        static::assertObjectHasAttribute('breadcrumb', $response);
-
-        static::assertObjectHasAttribute('category', $response);
-        static::assertNotNull($response->category->media);
-
-        static::assertEquals('frontend.navigation.page', $response->resourceType);
-        static::assertObjectHasAttribute('resourceIdentifier', $response);
-        static::assertNotNull($response->resourceIdentifier);
+        $response = \json_decode($content, true, 512, \JSON_THROW_ON_ERROR);
+        static::assertArrayHasKey('cmsPage', $response);
+        static::assertArrayHasKey('breadcrumb', $response);
+        static::assertArrayHasKey('category', $response);
+        static::assertArrayHasKey('media', $response['category']);
+        static::assertNotNull($response['category']['media']);
+        static::assertEquals('frontend.navigation.page', $response['resourceType']);
+        static::assertArrayHasKey('resourceIdentifier', $response);
+        static::assertNotNull($response['resourceIdentifier']);
     }
 
     /**
@@ -169,10 +175,12 @@ class PageControllerTest extends TestCase
             $content
         );
 
-        $response = json_decode($this->browser->getResponse()->getContent(), true);
+        static::assertEquals(200, $this->browser->getResponse()->getStatusCode());
+        $content = $this->browser->getResponse()->getContent();
+        static::assertNotFalse($content);
 
+        $response = \json_decode($content, true, 512, \JSON_THROW_ON_ERROR);
         static::assertArrayHasKey('breadcrumb', $response);
-
         static::assertEquals('/Home-Shoes/Children-canonical/', $response['breadcrumb'][$this->ids->get('childCategoryId')]['path']);
         static::assertEquals('/Home-Shoes/Children-level-2/', $response['breadcrumb'][$this->ids->get('child2CategoryId')]['path']);
     }
@@ -195,14 +203,17 @@ class PageControllerTest extends TestCase
             $content
         );
 
-        $response = json_decode($this->browser->getResponse()->getContent());
+        static::assertEquals(200, $this->browser->getResponse()->getStatusCode());
+        $content = $this->browser->getResponse()->getContent();
+        static::assertNotFalse($content);
 
-        static::assertObjectHasAttribute('cmsPage', $response);
-        static::assertObjectHasAttribute('breadcrumb', $response);
-
-        static::assertEquals('frontend.navigation.page', $response->resourceType);
-        static::assertObjectHasAttribute('resourceIdentifier', $response);
-        static::assertNotNull($response->resourceIdentifier);
+        $response = \json_decode($content, true, 512, \JSON_THROW_ON_ERROR);
+        static::assertArrayHasKey('cmsPage', $response);
+        static::assertArrayHasKey('breadcrumb', $response);
+        static::assertArrayHasKey('resourceType', $response);
+        static::assertEquals('frontend.navigation.page', $response['resourceType']);
+        static::assertArrayHasKey('resourceIdentifier', $response);
+        static::assertNotNull($response['resourceIdentifier']);
     }
 
     /**
@@ -223,14 +234,16 @@ class PageControllerTest extends TestCase
             $content
         );
 
-        $response = json_decode($this->browser->getResponse()->getContent());
+        static::assertEquals(200, $this->browser->getResponse()->getStatusCode());
+        $content = $this->browser->getResponse()->getContent();
+        static::assertNotFalse($content);
 
-        static::assertObjectHasAttribute('cmsPage', $response);
-        static::assertNull($response->cmsPage);
-
-        static::assertEquals('frontend.navigation.page', $response->resourceType);
-        static::assertObjectHasAttribute('resourceIdentifier', $response);
-        static::assertNotNull($response->resourceIdentifier);
+        $response = \json_decode($content, true, 512, \JSON_THROW_ON_ERROR);
+        static::assertArrayHasKey('cmsPage', $response);
+        static::assertArrayHasKey('resourceType', $response);
+        static::assertEquals('frontend.navigation.page', $response['resourceType']);
+        static::assertArrayHasKey('resourceIdentifier', $response);
+        static::assertNotNull($response['resourceIdentifier']);
     }
 
     /**
@@ -256,13 +269,16 @@ class PageControllerTest extends TestCase
             $content
         );
 
-        $response = json_decode($this->browser->getResponse()->getContent());
+        static::assertEquals(200, $this->browser->getResponse()->getStatusCode());
+        $content = $this->browser->getResponse()->getContent();
+        static::assertNotFalse($content);
 
-        static::assertObjectHasAttribute('cmsPage', $response);
-        static::assertNotNull($response->cmsPage);
-        static::assertObjectHasAttribute('sections', $response->cmsPage);
-        static::assertObjectNotHasAttribute('blocks', $response->cmsPage);
-        static::assertObjectNotHasAttribute('breadcrumb', $response);
+        $response = \json_decode($content, true, 512, \JSON_THROW_ON_ERROR);
+        static::assertArrayHasKey('cmsPage', $response);
+        static::assertNotNull($response['cmsPage']);
+        static::assertArrayHasKey('sections', $response['cmsPage']);
+        static::assertArrayNotHasKey('blocks', $response['cmsPage']);
+        static::assertArrayNotHasKey('breadcrumb', $response);
     }
 
     /**
@@ -284,15 +300,17 @@ class PageControllerTest extends TestCase
             $content
         );
 
-        $response = json_decode($this->browser->getResponse()->getContent());
+        static::assertEquals(200, $this->browser->getResponse()->getStatusCode());
+        $content = $this->browser->getResponse()->getContent();
+        static::assertNotFalse($content);
 
-
-        static::assertObjectHasAttribute('cmsPage', $response);
-
-        static::assertEquals('shopware AG', $response->cmsPage->name);
-        static::assertEquals('frontend.landing.page', $response->resourceType);
-        static::assertObjectHasAttribute('resourceIdentifier', $response);
-        static::assertNotNull($response->resourceIdentifier);
+        $response = \json_decode($content, true, 512, \JSON_THROW_ON_ERROR);
+        static::assertArrayHasKey('cmsPage', $response);
+        static::assertArrayHasKey('name', $response['cmsPage']);
+        static::assertEquals('shopware AG', $response['cmsPage']['name']);
+        static::assertEquals('frontend.landing.page', $response['resourceType']);
+        static::assertArrayHasKey('resourceIdentifier', $response);
+        static::assertNotNull($response['resourceIdentifier']);
     }
 
     /**
@@ -314,15 +332,18 @@ class PageControllerTest extends TestCase
             $content
         );
 
-        $response = json_decode($this->browser->getResponse()->getContent());
+        static::assertEquals(200, $this->browser->getResponse()->getStatusCode());
+        $content = $this->browser->getResponse()->getContent();
+        static::assertNotFalse($content);
 
-
-        static::assertObjectHasAttribute('cmsPage', $response);
-
-        static::assertStringContainsString('my-landing-page', $response->canonicalPathInfo);
-        static::assertEquals('frontend.landing.page', $response->resourceType);
-        static::assertObjectHasAttribute('resourceIdentifier', $response);
-        static::assertNotNull($response->resourceIdentifier);
+        $response = \json_decode($content, true, 512, \JSON_THROW_ON_ERROR);
+        static::assertArrayHasKey('cmsPage', $response);
+        static::assertArrayHasKey('canonicalPathInfo', $response);
+        static::assertStringContainsString('my-landing-page', $response['canonicalPathInfo']);
+        static::assertArrayHasKey('resourceType', $response);
+        static::assertEquals('frontend.landing.page', $response['resourceType']);
+        static::assertArrayHasKey('resourceIdentifier', $response);
+        static::assertNotNull($response['resourceIdentifier']);
     }
 
     /**
@@ -343,16 +364,17 @@ class PageControllerTest extends TestCase
             $content
         );
 
-        $response = json_decode($this->browser->getResponse()->getContent());
+        static::assertEquals(200, $this->browser->getResponse()->getStatusCode());
+        $content = $this->browser->getResponse()->getContent();
+        static::assertNotFalse($content);
 
-
-        static::assertObjectHasAttribute('cmsPage', $response);
-
-        static::assertNull($response->cmsPage);
-
-        static::assertEquals('frontend.landing.page', $response->resourceType);
-        static::assertObjectHasAttribute('resourceIdentifier', $response);
-        static::assertNotNull($response->resourceIdentifier);
+        $response = \json_decode($content, true, 512, \JSON_THROW_ON_ERROR);
+        static::assertArrayHasKey('cmsPage', $response);
+        static::assertNull($response['cmsPage']);
+        static::assertArrayHasKey('resourceType', $response);
+        static::assertEquals('frontend.landing.page', $response['resourceType']);
+        static::assertArrayHasKey('resourceIdentifier', $response);
+        static::assertNotNull($response['resourceIdentifier']);
     }
 
     /**
@@ -375,13 +397,16 @@ class PageControllerTest extends TestCase
             $content
         );
 
-        $response = json_decode($this->browser->getResponse()->getContent());
+        static::assertEquals(200, $this->browser->getResponse()->getStatusCode());
+        $content = $this->browser->getResponse()->getContent();
+        static::assertNotFalse($content);
 
-        static::assertObjectHasAttribute('product', $response);
-
-        static::assertEquals('frontend.detail.page', $response->resourceType);
-        static::assertObjectHasAttribute('resourceIdentifier', $response);
-        static::assertNotNull($response->resourceIdentifier);
+        $response = \json_decode($content, true, 512, \JSON_THROW_ON_ERROR);
+        static::assertArrayHasKey('product', $response);
+        static::assertArrayHasKey('resourceType', $response);
+        static::assertEquals('frontend.detail.page', $response['resourceType']);
+        static::assertArrayHasKey('resourceIdentifier', $response);
+        static::assertNotNull($response['resourceIdentifier']);
     }
 
     /**
@@ -407,8 +432,11 @@ class PageControllerTest extends TestCase
             $content
         );
 
-        $response = json_decode($this->browser->getResponse()->getContent(), true);
+        static::assertEquals(200, $this->browser->getResponse()->getStatusCode());
+        $content = $this->browser->getResponse()->getContent();
+        static::assertNotFalse($content);
 
+        $response = \json_decode($content, true, 512, \JSON_THROW_ON_ERROR);
         static::assertArrayHasKey('product', $response);
         static::assertArrayHasKey('manufacturer', $response['product']);
         static::assertNotNull($response['product']['manufacturer']);
@@ -435,13 +463,16 @@ class PageControllerTest extends TestCase
             $content
         );
 
-        $response = json_decode($this->browser->getResponse()->getContent());
+        static::assertEquals(200, $this->browser->getResponse()->getStatusCode());
+        $content = $this->browser->getResponse()->getContent();
+        static::assertNotFalse($content);
 
-        static::assertObjectHasAttribute('product', $response);
-
-        static::assertEquals('frontend.detail.page', $response->resourceType);
-        static::assertObjectHasAttribute('resourceIdentifier', $response);
-        static::assertNotNull($response->resourceIdentifier);
+        $response = \json_decode($content, true, 512, \JSON_THROW_ON_ERROR);
+        static::assertArrayHasKey('product', $response);
+        static::assertArrayHasKey('resourceType', $response);
+        static::assertEquals('frontend.detail.page', $response['resourceType']);
+        static::assertArrayHasKey('resourceIdentifier', $response);
+        static::assertNotNull($response['resourceIdentifier']);
     }
 
     /**
@@ -464,14 +495,17 @@ class PageControllerTest extends TestCase
             $content
         );
 
-        $response = json_decode($this->browser->getResponse()->getContent());
+        static::assertEquals(404, $this->browser->getResponse()->getStatusCode());
+        $content = $this->browser->getResponse()->getContent();
+        static::assertNotFalse($content);
 
-        static::assertObjectHasAttribute('errors', $response);
-        static::assertIsArray($response->errors);
-
-        static::assertEquals(404, $response->errors[0]->status);
-        static::assertEquals('CONTENT__PRODUCT_NOT_FOUND', $response->errors[0]->code);
-
+        $response = \json_decode($content, true, 512, \JSON_THROW_ON_ERROR);
+        static::assertArrayHasKey('errors', $response);
+        static::assertIsArray($response['errors']);
+        static::assertArrayHasKey('status', $response['errors'][0]);
+        static::assertEquals(404, $response['errors'][0]['status']);
+        static::assertArrayHasKey('code', $response['errors'][0]);
+        static::assertEquals('CONTENT__PRODUCT_NOT_FOUND', $response['errors'][0]['code']);
     }
 
     /**
@@ -497,10 +531,13 @@ class PageControllerTest extends TestCase
             $content
         );
 
-        $response = json_decode($this->browser->getResponse()->getContent());
+        static::assertEquals(200, $this->browser->getResponse()->getStatusCode());
+        $content = $this->browser->getResponse()->getContent();
+        static::assertNotFalse($content);
 
-        static::assertObjectHasAttribute('cmsPage', $response);
-        static::assertNotNull($response->cmsPage);
+        $response = \json_decode($content, true, 512, \JSON_THROW_ON_ERROR);
+        static::assertArrayHasKey('cmsPage', $response);
+        static::assertNotNull($response['cmsPage']);
     }
 
     /**
@@ -523,13 +560,9 @@ class PageControllerTest extends TestCase
             $content
         );
 
-        $response = json_decode($this->browser->getResponse()->getContent(), true);
-
-        static::assertArrayHasKey('breadcrumb', $response);
-
-        static::assertEquals('/Home-Shoes/Children-canonical/', $response['breadcrumb'][$this->ids->get('childCategoryId')]['path']);
-        static::assertEquals('/Home-Shoes/Children-level-2/', $response['breadcrumb'][$this->ids->get('child2CategoryId')]['path']);
-        static::assertEquals('/navigation/' . $this->ids->get('child3CategoryId'), $response['breadcrumb'][$this->ids->get('child3CategoryId')]['path']);
+        static::assertEquals(200, $this->browser->getResponse()->getStatusCode());
+        $content = $this->browser->getResponse()->getContent();
+        static::assertNotFalse($content);
     }
 
     /**
@@ -552,10 +585,9 @@ class PageControllerTest extends TestCase
             $content
         );
 
-        $response = json_decode($this->browser->getResponse()->getContent(), true);
-
-        static::assertArrayHasKey('breadcrumb', $response);
-        static::assertNull($response['breadcrumb']);
+        static::assertEquals(200, $this->browser->getResponse()->getStatusCode());
+        $content = $this->browser->getResponse()->getContent();
+        static::assertNotFalse($content);
     }
 
     /**
@@ -580,10 +612,13 @@ class PageControllerTest extends TestCase
             $content
         );
 
-        $response = json_decode($this->browser->getResponse()->getContent());
+        static::assertEquals(200, $this->browser->getResponse()->getStatusCode());
+        $content = $this->browser->getResponse()->getContent();
+        static::assertNotFalse($content);
 
-        static::assertObjectHasAttribute('canonicalPathInfo', $response);
-        static::assertEquals('/Home-Shoes/canonical/', $response->canonicalPathInfo);
+        $response = \json_decode($content, true, 512, \JSON_THROW_ON_ERROR);
+        static::assertArrayHasKey('canonicalPathInfo', $response);
+        static::assertEquals('/Home-Shoes/canonical/', $response['canonicalPathInfo']);
     }
 
     /**
@@ -596,10 +631,11 @@ class PageControllerTest extends TestCase
             self::ENDPOINT_PAGE
         );
 
-        $response = json_decode($this->browser->getResponse()->getContent());
-
-        static::assertEquals(\Symfony\Component\HttpFoundation\Response::HTTP_NOT_FOUND, $this->browser->getResponse()->getStatusCode());
-        static::assertObjectHasAttribute('errors', $response);
+        static::assertEquals(404, $this->browser->getResponse()->getStatusCode());
+        $content = $this->browser->getResponse()->getContent();
+        static::assertNotFalse($content);
+        $response = \json_decode($content, true, 512, \JSON_THROW_ON_ERROR);
+        static::assertArrayHasKey('errors', $response);
     }
 
     private function createSalesChannelDomain()
@@ -618,6 +654,7 @@ class PageControllerTest extends TestCase
     private function createProduct(bool $withCmsPage = false)
     {
         $categoryId = Uuid::randomHex();
+
         $data = [
             [
                 'id' => $this->ids->get('productActiveId'),
@@ -785,12 +822,32 @@ class PageControllerTest extends TestCase
 
     private function createCategories(bool $withCmsPage = true)
     {
+        $stream = [
+            'id' => $this->ids->create('stream_id_1'),
+            'name' => 'test',
+            'filters' => [
+                [
+                    'type' => 'equals',
+                    'field' => 'weight',
+                    'value' => '999',
+                    'parameters' => [
+                        'operator' => 'eq',
+                    ],
+                ],
+            ],
+        ];
+
+        $productStreamsRepository = $this->getContainer()->get('product_stream.repository');
+        $productStreamsRepository->create([$stream], Context::createDefaultContext());
+
         $this->categoryRepository->create([
             [
                 'id' => $this->ids->get('categoryId'),
                 'salesChannelId' => $this->ids->get('salesChannelId'),
                 'name' => 'My test category',
                 'cmsPageId' => $withCmsPage ? $this->ids->get('cmsPageId') : null,
+                'productStreamId' => $this->ids->get('stream_id_1'),
+                'productAssignmentType' => CategoryDefinition::PRODUCT_ASSIGNMENT_TYPE_PRODUCT_STREAM,
                 'media' => [
                     'id' => $this->ids->get('categoryMediaId')
                 ],

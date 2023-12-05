@@ -3,7 +3,6 @@
 namespace SwagShopwarePwa\Pwa\PageLoader\Context;
 
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
-use SwagShopwarePwa\Pwa\Entity\SalesChannelRoute\SalesChannelRouteEntity;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -19,14 +18,9 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  */
 class PageLoaderContextBuilder implements PageLoaderContextBuilderInterface
 {
-    /**
-     * @var PathResolverInterface
-     */
-    private $pathResolver;
-
-    public function __construct(PathResolverInterface $pathResolver)
-    {
-        $this->pathResolver = $pathResolver;
+    public function __construct(
+        private readonly PathResolverInterface $pathResolver
+    ) {
     }
 
     public function build(Request $request, SalesChannelContext $context): PageLoaderContext
@@ -37,9 +31,6 @@ class PageLoaderContextBuilder implements PageLoaderContextBuilderInterface
             throw new NotFoundHttpException('Please provide a path to be resolved.');
         }
 
-        /**
-         * @var $routes SalesChannelRouteEntity
-         */
         $route = $this->pathResolver->resolve($path, $context);
 
         if ($route === null) {

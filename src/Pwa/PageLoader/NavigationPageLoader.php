@@ -3,16 +3,12 @@
 namespace SwagShopwarePwa\Pwa\PageLoader;
 
 use Shopware\Core\Content\Category\CategoryEntity;
-use Shopware\Core\Content\Category\Exception\CategoryNotFoundException;
 use Shopware\Core\Content\Category\SalesChannel\AbstractCategoryRoute;
-use Shopware\Core\Content\Category\SalesChannel\CategoryRoute;
-use Shopware\Core\Content\Category\SalesChannel\CategoryRouteResponse;
+use Shopware\Core\Content\Cms\CmsPageEntity;
 use Shopware\Core\Content\Cms\DataResolver\ResolverContext\EntityResolverContext;
-use Shopware\Core\Content\Cms\SalesChannel\SalesChannelCmsPageLoader;
 use Shopware\Core\Content\Cms\SalesChannel\SalesChannelCmsPageLoaderInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityDefinition;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
 use SwagShopwarePwa\Pwa\PageLoader\Context\PageLoaderContext;
 use SwagShopwarePwa\Pwa\PageLoader\Context\PageLoaderPreviewContext;
 use SwagShopwarePwa\Pwa\PageResult\Navigation\NavigationPageResult;
@@ -28,32 +24,12 @@ class NavigationPageLoader implements PageLoaderInterface
 {
     private const RESOURCE_TYPE = 'frontend.navigation.page';
 
-    /**
-     * @var SalesChannelCmsPageLoaderInterface
-     */
-    private $cmsPageLoader;
-
-    /**
-     * @var NavigationPageResultHydrator
-     */
-    private $resultHydrator;
-
-    /**
-     * @var EntityDefinition
-     */
-    private $categoryDefinition;
-
-    /**
-     * @var AbstractCategoryRoute
-     */
-    private $categoryRoute;
-
-    public function __construct(SalesChannelCmsPageLoaderInterface $cmsPageLoader, NavigationPageResultHydrator $resultHydrator, EntityDefinition $categoryDefinition, AbstractCategoryRoute $categoryRoute)
-    {
-        $this->cmsPageLoader = $cmsPageLoader;
-        $this->resultHydrator = $resultHydrator;
-        $this->categoryDefinition = $categoryDefinition;
-        $this->categoryRoute = $categoryRoute;
+    public function __construct(
+        private readonly SalesChannelCmsPageLoaderInterface $cmsPageLoader,
+        private readonly NavigationPageResultHydrator $resultHydrator,
+        private readonly EntityDefinition $categoryDefinition,
+        private readonly AbstractCategoryRoute $categoryRoute
+    ) {
     }
 
     public function getResourceType(): string
@@ -61,13 +37,6 @@ class NavigationPageLoader implements PageLoaderInterface
         return self::RESOURCE_TYPE;
     }
 
-    /**
-     * @param PageLoaderContext $pageLoaderContext
-     *
-     * @return NavigationPageResult
-     *
-     * @throws CategoryNotFoundException
-     */
     public function load(PageLoaderContext $pageLoaderContext): NavigationPageResult
     {
         $category = $this->categoryRoute->load(
@@ -78,8 +47,7 @@ class NavigationPageLoader implements PageLoaderInterface
 
         $cmsPage = $category->getCmsPage();
 
-        if($pageLoaderContext instanceof PageLoaderPreviewContext)
-        {
+        if ($pageLoaderContext instanceof PageLoaderPreviewContext) {
             $cmsPage = $this->resolvePreviewCmsPage(
                 $pageLoaderContext->getPreviewPageIdentifier(),
                 $pageLoaderContext,
@@ -87,35 +55,34 @@ class NavigationPageLoader implements PageLoaderInterface
             );
         }
 
-        $pageResult = $this->resultHydrator->hydrate(
+        return $this->resultHydrator->hydrate(
             $pageLoaderContext,
             $category,
             $cmsPage
         );
-
-        return $pageResult;
     }
 
-    private function resolvePreviewCmsPage(string $cmsPageId, PageLoaderContext $pageLoaderContext, CategoryEntity $category)
+    private function resolvePreviewCmsPage(
+        string $cmsPageId,
+        PageLoaderContext $pageLoaderContext,
+        CategoryEntity $category
+    ): ?CmsPageEntity
     {
-        if ($cmsPageId !== null) {
-            $resolverContext = new EntityResolverContext(
-                $pageLoaderContext->getContext(),
-                $pageLoaderContext->getRequest(),
-                $this->categoryDefinition,
-                $category
-            );
+        $resolverContext = new EntityResolverContext(
+            $pageLoaderContext->getContext(),
+            $pageLoaderContext->getRequest(),
+            $this->categoryDefinition,
+            $category
+        );
 
-            $cmsPages = $this->cmsPageLoader->load(
-                $pageLoaderContext->getRequest(),
-                new Criteria([$cmsPageId]),
-                $pageLoaderContext->getContext(),
-                $category->getSlotConfig(),
-                $resolverContext
-            );
+        $cmsPages = $this->cmsPageLoader->load(
+            $pageLoaderContext->getRequest(),
+            new Criteria([$cmsPageId]),
+            $pageLoaderContext->getContext(),
+            $category->getSlotConfig(),
+            $resolverContext
+        );
 
-            $cmsPage = $cmsPages->get($cmsPageId) ?? null;
-        }
-        return $cmsPage;
+        return $cmsPages->get($cmsPageId) ?? null;
     }
 }
