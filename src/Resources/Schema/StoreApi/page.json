@@ -37,15 +37,6 @@
                     {
                       "type": "object",
                       "properties": {
-                        "resourceType": {
-                          "type": "string",
-                          "description": "Type of page that was fetched. Indicates whether it is a product page or a category page.",
-                          "enum": [
-                            "frontend.detail.page",
-                            "frontend.navigation.page",
-                            "frontend.landing.page"
-                          ]
-                        },
                         "resourceIdentifier": {
                           "type": "string",
                           "description": "Identifier of the page that was fetched",
@@ -77,6 +68,13 @@
                       "type": "object",
                       "description": "A product result contains product information and product variant/configuration information. It corresponds with a `resourceType` of `frontend.detail.page",
                       "properties": {
+                        "resourceType": {
+                          "type": "string",
+                          "description": "Type of page that was fetched. Indicates whether it is a product page or a category page.",
+                          "enum": [
+                            "frontend.detail.page"
+                          ]
+                        },
                         "product": {
                           "description": "The product associated with the loaded pag.",
                           "$ref": "#/components/schemas/Product"
@@ -91,6 +89,13 @@
                       "type": "object",
                       "description": "A category result contains category information. It corresponds with a `resourceType` of `frontend.navigation.page`",
                       "properties": {
+                        "resourceType": {
+                          "type": "string",
+                          "description": "Type of page that was fetched. Indicates whether it is a product page or a category page.",
+                          "enum": [
+                            "frontend.navigation.page"
+                          ]
+                        },
                         "category": {
                           "description": "The category associated with the loaded page.",
                           "$ref": "#/components/schemas/Category"
@@ -98,8 +103,17 @@
                       }
                     },
                     {
-                      "type": "null",
-                      "description": "A landing page result contains no specific fields."
+                      "type": "object",
+                      "description": "A landing page result contains no specific fields.",
+                      "properties": {
+                        "resourceType": {
+                          "type": "string",
+                          "description": "Type of page that was fetched. Indicates whether it is a product page or a category page.",
+                          "enum": [
+                            "frontend.landing.page"
+                          ]
+                        }
+                      }
                     }
                   ]
                 }
