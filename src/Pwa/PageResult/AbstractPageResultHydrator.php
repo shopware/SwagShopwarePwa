@@ -1,9 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace SwagShopwarePwa\Pwa\PageResult;
 
 use Shopware\Core\Content\Category\CategoryEntity;
 use Shopware\Core\Content\Category\Service\CategoryBreadcrumbBuilder;
+use Shopware\Core\Content\Seo\SeoUrl\SeoUrlCollection;
 use Shopware\Core\Content\Seo\SeoUrl\SeoUrlEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
@@ -16,27 +17,18 @@ use SwagShopwarePwa\Pwa\Controller\PageController;
 abstract class AbstractPageResultHydrator
 {
     /**
-     * @var EntityRepository
+     * @param EntityRepository<SeoUrlCollection> $seoUrlRepository
      */
-    private $seoUrlRepository;
-
-    /**
-     * @var Router
-     */
-    private $router;
-
-    /**
-     * @var CategoryBreadcrumbBuilder
-     */
-    private $categoryBreadcrumbBuilder;
-
-    public function __construct(Router $router, EntityRepository $seoUrlRepository, CategoryBreadcrumbBuilder $categoryBreadcrumbBuilder)
-    {
-        $this->router = $router;
-        $this->seoUrlRepository = $seoUrlRepository;
-        $this->categoryBreadcrumbBuilder = $categoryBreadcrumbBuilder;
+    public function __construct(
+        private readonly Router $router,
+        private readonly EntityRepository $seoUrlRepository,
+        private readonly CategoryBreadcrumbBuilder $categoryBreadcrumbBuilder
+    ) {
     }
 
+    /**
+     * @return array<string, array<string, mixed>>
+     */
     protected function getBreadcrumbs(CategoryEntity $category, SalesChannelContext $context): array
     {
         $breadcrumbs = [];
@@ -57,6 +49,10 @@ abstract class AbstractPageResultHydrator
         return $breadcrumbs;
     }
 
+    /**
+     * @param array<string> $categoryIds
+     * @return array<string, string>
+     */
     private function getCanonicalUrls(array $categoryIds, SalesChannelContext $context): array
     {
         $criteria = new Criteria();

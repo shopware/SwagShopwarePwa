@@ -2,20 +2,20 @@
 
 namespace SwagShopwarePwa\Pwa\Entity\SalesChannelRoute;
 
+use Shopware\Core\Content\Seo\SeoUrl\SeoUrlCollection;
 use Shopware\Core\Content\Seo\SeoUrl\SeoUrlEntity;
 use Shopware\Core\Framework\Api\Context\SalesChannelApiSource;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\EntitySearchResult;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 
 class SalesChannelRouteRepository
 {
     /**
-     * @var EntityRepository
+     * @var EntityRepository<SeoUrlCollection>
      */
-    private $seoUrlRepository;
+    private EntityRepository $seoUrlRepository;
 
     public function __construct($seoUrlRepository)
     {
@@ -35,7 +35,6 @@ class SalesChannelRouteRepository
         $criteria->addFilter(new EqualsFilter('languageId', $context->getLanguageId()));
         $criteria->addFilter(new EqualsFilter('salesChannelId', $contextSource->getSalesChannelId()));
 
-        /** @var EntitySearchResult $seoUrlCollection */
         $seoUrlCollection = $this->seoUrlRepository->search($criteria, $context);
 
         return $this->prepareRoutes($seoUrlCollection->getElements());
@@ -45,7 +44,7 @@ class SalesChannelRouteRepository
      * @param SeoUrlEntity[] $routes
      * @return SalesChannelRouteEntity[]
      */
-    private function prepareRoutes($routes): array
+    private function prepareRoutes(array $routes): array
     {
         $preparedRoutes = [];
 

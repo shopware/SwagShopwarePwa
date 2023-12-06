@@ -5,45 +5,20 @@ namespace SwagShopwarePwa\Shopware\Controller\Api;
 use SwagShopwarePwa\Pwa\Bundle\AssetService;
 use SwagShopwarePwa\Pwa\Bundle\ConfigurationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Asset\Packages;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route(defaults={"_routeScope"={"api"}})
- */
+#[Route(defaults: ['_routeScope' => ['api']])]
 class PwaController extends AbstractController
 {
-    /**
-     * @var ConfigurationService
-     */
-    private $configurationService;
-
-    /**
-     * @var AssetService
-     */
-    private $assetService;
-
-    /**
-     * @var Packages
-     */
-    private $packages;
-
-    public function __construct(ConfigurationService $configurationService, AssetService $assetService, Packages $packages)
-    {
-        $this->configurationService = $configurationService;
-        $this->assetService = $assetService;
-        $this->packages = $packages;
+    public function __construct(
+        private readonly ConfigurationService $configurationService,
+        private readonly AssetService $assetService
+    ) {
     }
 
-    /**
-     * @Route("/api/_action/pwa/dump-bundles", name="api.action.pwa.dump-bundles", methods={"POST"})
-     *
-     * @TODO: Resolve the correct asset URL given a LB / Proxy / CDN / static file server using asset management
-     *
-     * @return JsonResponse
-     */
+    #[Route(path: '/api/_action/pwa/dump-bundles', name: 'api.action.pwa.dump-bundles', methods: ['POST'])]
     public function dumpBundles(Request $request): JsonResponse
     {
         try {
@@ -60,8 +35,6 @@ class PwaController extends AbstractController
             'success' => true,
             'buildArtifact' => [
                 'asset' => DIRECTORY_SEPARATOR . $assetArtifact,
-                // TODO: Remove with 0.4
-                'config' => 'Not available - please run "npx @shopware-pwa/cli init" or update your "shopware-pwa" package manually.'
             ],
             'bundleConfig' => $bundleConfig
         ]);

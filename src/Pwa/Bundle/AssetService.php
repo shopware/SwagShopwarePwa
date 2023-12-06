@@ -19,43 +19,19 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class AssetService implements EventSubscriberInterface
 {
-    /**
-     * @var string
-     */
-    private $assetArtifactDirectory = 'pwa-bundles-assets';
+    private string $assetArtifactDirectory = 'pwa-bundles-assets';
+
+    private string $resourcesDirectory = '/Resources/app/pwa';
 
     /**
-     * @var string
+     * @param EntityRepository<PluginCollection> $pluginRepository
      */
-    private $resourcesDirectory = '/Resources/app/pwa';
-
-    /**
-     * @var Kernel
-     */
-    private $kernel;
-
-    /**
-     * @var EntityRepository
-     */
-
-    private $pluginRepository;
-
-    /**
-     * @var FormattingHelper
-     */
-    private $helper;
-
-    /**
-     * @var FilesystemOperator
-     */
-    private $fileSystem;
-
-    public function __construct(Kernel $kernel, EntityRepository $pluginRepository, FormattingHelper $helper, FilesystemOperator $fileSystem)
-    {
-        $this->kernel = $kernel;
-        $this->pluginRepository = $pluginRepository;
-        $this->helper = $helper;
-        $this->fileSystem = $fileSystem;
+    public function __construct(
+        private readonly Kernel $kernel,
+        private readonly EntityRepository $pluginRepository,
+        private readonly FormattingHelper $helper,
+        private readonly FilesystemOperator $fileSystem
+    ) {
     }
 
     /**
@@ -88,23 +64,19 @@ class AssetService implements EventSubscriberInterface
         $zip = new \ZipArchive();
         $zip->open($archivePath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
 
-        foreach($bundles as $bundle)
-        {
+        foreach ($bundles as $bundle) {
             $bundleAssetPath = $bundle['path'] . $this->resourcesDirectory;
 
-            if(!is_dir($bundleAssetPath))
-            {
+            if (!is_dir($bundleAssetPath)) {
                 continue;
             }
 
             /** @var SplFileInfo[] $files */
             $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($bundleAssetPath));
 
-            foreach($files as $name => $file)
-            {
+            foreach ($files as $name => $file) {
 
-                if(is_dir($name))
-                {
+                if (is_dir($name)) {
                     continue;
                 }
 
@@ -113,8 +85,7 @@ class AssetService implements EventSubscriberInterface
             }
         }
 
-        if($zip->count() <= 0)
-        {
+        if ($zip->count() <= 0) {
             $zip->addFromString('_placeholder_', '');
         }
 
@@ -137,9 +108,8 @@ class AssetService implements EventSubscriberInterface
 
         $kernelBundles = $this->kernel->getBundles();
         $bundles = [];
-        foreach ($kernelBundles as $kernelBundle)
-        {
-            if(!in_array($kernelBundle->getName(), $pluginNames)) {
+        foreach ($kernelBundles as $kernelBundle) {
+            if (!in_array($kernelBundle->getName(), $pluginNames)) {
                 continue;
             }
 
@@ -166,8 +136,7 @@ class AssetService implements EventSubscriberInterface
             $this->fileSystem->delete($outputPath);
 
             $this->fileSystem->writeStream($outputPath, fopen($sourceArchive, 'r'));
-        } catch (FilesystemException $e)
-        {
+        } catch (FilesystemException $e) {
             // Catch gracefully
             $outputPath = '';
         }

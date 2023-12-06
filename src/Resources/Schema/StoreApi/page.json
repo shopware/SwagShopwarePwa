@@ -1,0 +1,137 @@
+{
+  "openapi": "3.0.0",
+  "info": [],
+  "paths": {
+    "/pwa/page": {
+      "post": {
+        "tags": [
+          "Store API",
+          "Shopware PWA"
+        ],
+        "summary": "Resolves a page by its relative `path`. Additional information, like *breadcrumb*, an associated *product* or *category* and the type of resource is fetched along with it.",
+        "description": "Resolve a page for a given resource and resource identification or path\nFirst, a PageLoaderContext object is assembled, which includes information about the resource, request and context.\nThen, the page is loaded through the page loader only given the page loader context.",
+        "operationId": "pwaResolvePage",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "path": {
+                    "description": "Relative path to the page that should be resolved",
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The resolved page including additional data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "resourceIdentifier": {
+                          "type": "string",
+                          "description": "Identifier of the page that was fetched",
+                          "pattern": "^[0-9a-f]{32}$"
+                        },
+                        "canonicalPathInfo": {
+                          "description": "Hydrated CMS layout associated with the loaded page. Value is `null`, when no layout is assigned",
+                          "$ref": "#/components/schemas/CmsPage"
+                        },
+                        "breadcrumb": {
+                          "type": "object",
+                          "description": "Contains information about the category path to the loaded page.\nEach element has the category identifier as its key and contains a `path` as well as a `name`. Elements are ordered by descending hierarchy in the category tree.",
+                          "example":{
+                            "2bef17ac2bb54c63a2403bdca434d0df": {
+                              "name": "Shoes, Baby & Health",
+                              "path": "/Shoes-Baby-Health/"
+                            },
+                            "5ce716877e33420cbe3794f92939de70": {
+                              "name": "Electronics",
+                              "path": "/Shoes-Baby-Health/Electronics\/"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "description": "A product result contains product information and product variant/configuration information. It corresponds with a `resourceType` of `frontend.detail.page",
+                      "properties": {
+                        "resourceType": {
+                          "type": "string",
+                          "description": "Type of page that was fetched. Indicates whether it is a product page or a category page.",
+                          "enum": [
+                            "frontend.detail.page"
+                          ]
+                        },
+                        "product": {
+                          "description": "The product associated with the loaded pag.",
+                          "$ref": "#/components/schemas/Product"
+                        },
+                        "configuration": {
+                            "description": "List of property groups with their corresponding options and information on how to display them.",
+                            "$ref": "#/components/schemas/PropertyGroup"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "description": "A category result contains category information. It corresponds with a `resourceType` of `frontend.navigation.page`",
+                      "properties": {
+                        "resourceType": {
+                          "type": "string",
+                          "description": "Type of page that was fetched. Indicates whether it is a product page or a category page.",
+                          "enum": [
+                            "frontend.navigation.page"
+                          ]
+                        },
+                        "category": {
+                          "description": "The category associated with the loaded page.",
+                          "$ref": "#/components/schemas/Category"
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "description": "A landing page result contains no specific fields.",
+                      "properties": {
+                        "resourceType": {
+                          "type": "string",
+                          "description": "Type of page that was fetched. Indicates whether it is a product page or a category page.",
+                          "enum": [
+                            "frontend.landing.page"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The resource could not be resolved or no path is provided..",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/responses/404"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

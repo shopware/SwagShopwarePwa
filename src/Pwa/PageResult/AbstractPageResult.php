@@ -15,34 +15,19 @@ abstract class AbstractPageResult extends Struct implements \JsonSerializable
 {
     use JsonSerializableTrait;
 
-    /**
-     * @var string
-     */
-    protected $resourceType;
+    protected string $resourceType;
+
+    protected string $resourceIdentifier;
+
+    protected string $canonicalPathInfo;
+
+    protected ?CmsPageEntity $cmsPage;
 
     /**
-     * @var string
+     * @var array<string, array<string, mixed>>
      */
-    protected $resourceIdentifier;
+    protected ?array $breadcrumb;
 
-    /**
-     * @var string
-     */
-    protected $canonicalPathInfo;
-
-    /**
-     * @var CmsPageEntity|null
-     */
-    protected $cmsPage;
-
-    /**
-     * @var array
-     */
-    protected $breadcrumb;
-
-    /**
-     * @return string
-     */
     public function getResourceType(): string
     {
         return $this->resourceType;
@@ -53,7 +38,7 @@ abstract class AbstractPageResult extends Struct implements \JsonSerializable
         return 'pwa_page_result';
     }
 
-    public function setResourceType(string $resourceType)
+    public function setResourceType(string $resourceType): void
     {
         $this->resourceType = $resourceType;
     }
@@ -63,7 +48,7 @@ abstract class AbstractPageResult extends Struct implements \JsonSerializable
         return $this->resourceIdentifier;
     }
 
-    public function setResourceIdentifier(string $resourceIdentifier)
+    public function setResourceIdentifier(string $resourceIdentifier): void
     {
         $this->resourceIdentifier = $resourceIdentifier;
     }
@@ -79,27 +64,24 @@ abstract class AbstractPageResult extends Struct implements \JsonSerializable
     }
 
     /**
-     * @return array
+     * @return array<string, array<string, mixed>>|null
      */
     public function getBreadcrumb(): ?array
     {
         return $this->breadcrumb;
     }
 
-    public function setBreadcrumb(?array $breadcrumb)
+    public function setBreadcrumb(?array $breadcrumb): void
     {
         $this->breadcrumb = $breadcrumb;
     }
 
-    /**
-     * @return CmsPageEntity|null
-     */
     public function getCmsPage(): ?CmsPageEntity
     {
         return $this->cmsPage;
     }
 
-    public function setCmsPage(?CmsPageEntity $cmsPage)
+    public function setCmsPage(?CmsPageEntity $cmsPage): void
     {
         $this->cmsPage = $cmsPage;
     }
