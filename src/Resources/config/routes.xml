@@ -4,7 +4,7 @@
         xsi:schemaLocation="http://symfony.com/schema/routing
         https://symfony.com/schema/routing/routing-1.0.xsd">
 
-    <import resource="../../**/Pwa/Controller/*Controller.php" type="annotation" />
-    <import resource="../../**/Shopware/Controller/Api/*Controller.php" type="annotation" />
+    <import resource="../../**/Pwa/Controller/*Controller.php" type="attribute" />
+    <import resource="../../**/Shopware/Controller/Api/*Controller.php" type="attribute" />
 
 </routes>
