@@ -3,17 +3,19 @@
   "description": "Shopware PWA extension",
   "type": "shopware-platform-plugin",
   "license": "MIT",
-  "authors": [{
+  "authors": [
+    {
       "name": "shopware AG"
-  }],
+    }
+  ],
   "autoload": {
     "psr-4": {
       "SwagShopwarePwa\\": "src/"
     }
   },
   "require": {
-    "shopware/core": "~6.6.x-dev",
-    "shopware/storefront":  "~6.6.x-dev"
+    "shopware/core": "~6.6.0",
+    "shopware/storefront": "~6.6.0"
   },
   "extra": {
     "shopware-plugin-class": "SwagShopwarePwa\\SwagShopwarePwa",
