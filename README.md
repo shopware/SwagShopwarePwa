@@ -1,5 +1,9 @@
 # Shopware PWA extension
 
+> [!NOTE]  
+> This extension is deprecated, only compatibility for different Shopware versions is maintained.  
+> Consider using [Shopware Composable Frontends](https://developer.shopware.com/frontends/).
+
 This extension provides a collection of helper functions to integrate with the [shopware-pwa](https://github.com/DivanteLtd/shopware-pwa) client library.
 
 In order to use this extension with Shopware 6, make sure you install the latest [available version](#versions) compatible with your Shopware version.
